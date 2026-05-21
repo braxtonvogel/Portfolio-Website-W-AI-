@@ -1,6 +1,6 @@
 import { projects } from "./projects";
 
-export function fakeAIAnswer(query: string) {
+export function searchSkills(query: string) {
   const q = query.toLowerCase();
 
   const matches = projects.filter((p) => {
@@ -17,16 +17,15 @@ export function fakeAIAnswer(query: string) {
   if (matches.length > 0) {
     const project = matches[0];
 
-    return {
-      type: "found",
-      message: `Yes — Braxton has experience with this from his ${project.title} project.`,
-      link: project.href,
-    };
+    return [
+      {
+        project: {
+          title: project.title,
+          slug: project.slug || project.id,
+        },
+      },
+    ];
   }
 
-  return {
-    type: "not_found",
-    message:
-      "This isn’t strongly represented yet — but you can explore the projects to see related experience.",
-  };
+  return [];
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { searchSkills } from "@/lib/fakeAI";
 
 export default function FloatingFakeAI() {
   const [open, setOpen] = useState(false);
@@ -9,8 +10,7 @@ export default function FloatingFakeAI() {
   const [response, setResponse] = useState<any>(null);
 
   function handleAsk() {
-    // SAFE FALLBACK (no missing imports, no build errors)
-    const results: any[] = [];
+    const results = searchSkills(input);
 
     if (results.length === 0) {
       setResponse({
@@ -31,7 +31,6 @@ export default function FloatingFakeAI() {
 
   return (
     <>
-      {/* ================= FLOATING BUTTON ================= */}
       <button
         onClick={() => setOpen(!open)}
         className="
@@ -48,7 +47,6 @@ export default function FloatingFakeAI() {
         AI
       </button>
 
-      {/* ================= CHAT BOX ================= */}
       {open && (
         <div
           className="
