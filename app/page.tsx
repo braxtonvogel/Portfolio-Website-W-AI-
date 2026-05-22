@@ -80,6 +80,7 @@ const skills = {
 
 export default function Home() {
   const [coverOpen, setCoverOpen] = useState(false); // ✅ ADDED
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-16 space-y-24 bg-black text-white min-h-screen">
@@ -121,13 +122,12 @@ export default function Home() {
               LinkedIn
             </a>
 
-            <a
-              href="https://drive.google.com/file/d/1i2IB3PlhpH8Tw2mdchiCBTNQglnFGOK6/view?usp=sharing"
-              target="_blank"
-              className="px-4 py-2 border border-white rounded-full hover:bg-white hover:text-black transition"
-            >
-              Resume
-            </a>
+          <button
+  onClick={() => setResumeOpen(true)}
+  className="px-4 py-2 border border-white rounded-full hover:bg-white hover:text-black transition"
+>
+  Resume
+</button>
 
             {/* ✅ COVER LETTER BUTTON (FIXED) */}
             <button
@@ -177,6 +177,33 @@ export default function Home() {
           </div>
         </div>
       )}
+
+{resumeOpen && (
+  <div
+    className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+    onClick={() => setResumeOpen(false)}
+  >
+    <div
+      className="relative w-[90%] h-[90%] bg-white rounded-xl overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* CLOSE BUTTON */}
+      <button
+        onClick={() => setResumeOpen(false)}
+        className="absolute top-3 right-3 text-black text-2xl font-bold z-10"
+      >
+        ✕
+      </button>
+
+      {/* PDF VIEWER */}
+      <iframe
+        src="/Braxton_Vogel_Resume.pdf"
+        className="w-full h-full"
+      />
+    </div>
+  </div>
+)}
+
 
       {/* ================= OVERVIEW ================= */}
       <section className="space-y-4">
