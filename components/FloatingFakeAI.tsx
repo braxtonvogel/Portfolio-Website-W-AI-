@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { searchSkills } from "@/lib/fakeAI";
+import { searchSkills } from "../lib/fakeAI";
 
 export default function FloatingFakeAI() {
   const [open, setOpen] = useState(false);
