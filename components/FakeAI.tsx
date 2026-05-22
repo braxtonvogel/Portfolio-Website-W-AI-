@@ -7,6 +7,261 @@ type Message = {
   content: string;
 };
 
+/* ================= KNOWLEDGE BASE ================= */
+const knowledgeBase = {
+  languages: {
+    python:
+      "Yes — Braxton has extensive Python experience from multiple projects including his Student Risk Prediction System and Stateful Browser Automation Engine.",
+
+    java:
+      "Yes — Braxton has Java experience from his Chat Server and D&D Character Builder projects.",
+
+    html:
+      "Yes — Braxton has HTML experience from his File Manager UI project.",
+
+    sql:
+      "Yes — Braxton has SQL experience from his D&D Character Builder Database System.",
+  },
+
+ frameworks: {
+  springboot:
+    "Yes — Braxton has Spring Boot backend experience from his D&D Character Builder Database System.",
+
+  react:
+    "Yes — Braxton has React frontend experience from his File Manager UI project and this portfolio site.",
+
+  streamlit:
+    "Yes — Braxton has Streamlit dashboard and web app experience from his Student Risk Prediction System.",
+
+  playwright:
+    "Yes — Braxton has Playwright browser automation experience from his Stateful Browser Automation Engine.",
+
+  chromium:
+    "Yes — Braxton has Chromium automation experience from his Stateful Browser Automation Engine.",
+
+  shap:
+    "Yes — Braxton has SHAP explainability experience from his Student Risk Prediction System.",
+
+  llama3:
+    "Yes — Braxton has Llama 3 integration experience from his Student Risk Prediction System.",
+
+  nova:
+    "Yes — Braxton has Nova LLM integration experience from his Student Risk Prediction System.",
+
+  scikitlearn:
+    "Yes — Braxton has Scikit-learn experience from his Student Risk Prediction System.",
+
+  llama:
+    "Yes — Braxton has Llama 3 LLM integration experience from his Student Risk Prediction System.",
+
+  novallm:
+    "Yes — Braxton has Nova LLM integration experience from his Student Risk Prediction System.",
+
+  llmintegration:
+    "Yes — Braxton has large language model integration experience using Nova and Llama 3.",
+
+  frontenddesign:
+    "Yes — Braxton has frontend design experience from his File Manager UI project.",
+},
+
+  concepts: {
+  machinelearning:
+    "Yes — Braxton has machine learning experience from his Student Risk Prediction System.",
+
+  ml:
+    "Yes — Braxton has machine learning experience from his Student Risk Prediction System.",
+
+  randomforest:
+    "Yes — Braxton has Random Forest model experience from his Student Risk Prediction System.",
+
+  featureengineering:
+    "Yes — Braxton has feature engineering experience from his Student Risk Prediction System.",
+
+  datascience:
+    "Yes — Braxton has data science experience from his Student Risk Prediction System.",
+
+  datavisualization:
+    "Yes — Braxton has data visualization experience from his Student Risk Prediction System.",
+
+  datasets:
+    "Yes — Braxton has real-world dataset handling experience using the OULAD dataset in his Student Risk Prediction System.",
+
+  datasetanalysis:
+    "Yes — Braxton has dataset analysis experience from his Student Risk Prediction System.",
+
+  ai:
+    "Yes — Braxton has AI integration experience from his Student Risk Prediction System.",
+
+  explainability:
+    "Yes — Braxton has AI explainability and feature importance analysis experience using SHAP.",
+
+  featureimportance:
+    "Yes — Braxton has feature importance analysis experience using SHAP in his Student Risk Prediction System.",
+
+  llm:
+    "Yes — Braxton has large language model integration experience using Nova and Llama 3.",
+
+  insightgeneration:
+    "Yes — Braxton has AI-driven insight generation experience using LLM integration.",
+
+  backend:
+    "Yes — Braxton has backend engineering experience from projects including his D&D Character Builder and Chat Server.",
+
+  modularbackend:
+    "Yes — Braxton has modular backend structure experience from his Student Risk Prediction System and backend projects.",
+
+  frontend:
+    "Yes — Braxton has frontend development experience from his File Manager UI project.",
+
+  fullstack:
+    "Yes — Braxton has full-stack development experience from his D&D Character Builder Database System.",
+
+  fullstackintegration:
+    "Yes — Braxton has full-stack integration experience from his D&D Character Builder Database System.",
+
+  mvc:
+    "Yes — Braxton has MVC architecture experience from his D&D Character Builder Database System.",
+
+  database:
+    "Yes — Braxton has relational database design experience from his D&D Character Builder Database System.",
+
+  relationalmodeling:
+    "Yes — Braxton has relational database modeling experience from his D&D Character Builder Database System.",
+
+  networking:
+    "Yes — Braxton has networking experience from his Chat Server project.",
+
+  sockets:
+    "Yes — Braxton has socket programming experience from his Chat Server project.",
+
+  clientserver:
+    "Yes — Braxton has client-server architecture experience from his Chat Server project.",
+
+  realtime:
+    "Yes — Braxton has real-time messaging system experience from his Chat Server project.",
+
+  networkdesign:
+    "Yes — Braxton has network communication design experience from his Chat Server project.",
+
+  multiclient:
+    "Yes — Braxton has multi-client handling experience from his Chat Server project.",
+
+  automation:
+    "Yes — Braxton has automation workflow design experience from his Stateful Browser Automation Engine.",
+
+  processautomation:
+    "Yes — Braxton has process automation experience from his Stateful Browser Automation Engine.",
+
+  workflowoptimization:
+    "Yes — Braxton has workflow optimization experience from automation and frontend projects.",
+
+  sessionmanagement:
+    "Yes — Braxton has persistent session management experience from his Stateful Browser Automation Engine.",
+
+  authentication:
+    "Yes — Braxton has stateful authentication system experience from his Stateful Browser Automation Engine.",
+
+  dynamicweb:
+    "Yes — Braxton has dynamic web interaction experience from his Stateful Browser Automation Engine.",
+
+  browserdebugging:
+    "Yes — Braxton has browser workflow debugging experience from Playwright automation systems.",
+
+  reusablesoftware:
+    "Yes — Braxton has reusable software design experience from automation and backend projects.",
+
+  uiux:
+    "Yes — Braxton has UI/UX design experience from his File Manager UI project.",
+
+  responsive:
+    "Yes — Braxton has responsive frontend design experience from his File Manager UI project.",
+
+  responsiveui:
+    "Yes — Braxton has responsive UI system design experience from his File Manager UI project.",
+
+  componentarchitecture:
+    "Yes — Braxton has component-based architecture experience from React frontend projects.",
+
+  userinterface:
+    "Yes — Braxton has user interface design experience from frontend and UI/UX projects.",
+
+  designsystems:
+    "Yes — Braxton has design consistency system experience from frontend UI/UX projects.",
+
+  debugging:
+    "Yes — Braxton has debugging experience across backend systems, automation tools, and frontend applications.",
+
+  frontenddebugging:
+    "Yes — Braxton has frontend debugging experience from React and UI development projects.",
+
+  github:
+    "Yes — Braxton has GitHub workflow and project management experience across multiple projects.",
+
+  documentation:
+    "Yes — Braxton has software documentation experience from multiple development projects.",
+
+  research:
+    "Yes — Braxton has research and technical documentation experience from multiple software projects.",
+
+  datadriven:
+    "Yes — Braxton has data-driven decision-making experience from machine learning and analytics projects.",
+
+  criticalthinking:
+    "Yes — Braxton has demonstrated critical thinking skills through machine learning and systems engineering projects.",
+
+  strategicplanning:
+    "Yes — Braxton has strategic planning experience from long-term software project development.",
+
+  teamwork:
+    "Yes — Braxton has teamwork and collaboration experience from group software engineering projects.",
+
+  creativity:
+    "Yes — Braxton has creative thinking experience demonstrated through UI/UX and software design projects.",
+
+  security:
+    "Yes — Braxton has basic security testing experience from his D&D Character Builder project.",
+
+  softwarearchitecture:
+    "Yes — Braxton has software architecture experience across backend, automation, and ML systems.",
+
+  systemarchitecture:
+    "Yes — Braxton has system architecture experience from backend and full-stack development projects.",
+
+  problemsolving:
+    "Yes — Braxton has strong problem solving and innovation skills demonstrated through multiple engineering projects.",
+
+  javadevelopment:
+    "Yes — Braxton has Java development experience from his Chat Server and D&D Character Builder projects.",
+
+  commandline:
+    "Yes — Braxton has command-line application design experience from backend and networking projects.",
+
+  projectstructuring:
+    "Yes — Braxton has project structuring experience across multiple software engineering projects.",
+
+  mlpipeline:
+    "Yes — Braxton has machine learning pipeline design experience from his Student Risk Prediction System.",
+
+  pythonarchitecture:
+    "Yes — Braxton has Python project architecture experience from multiple software engineering projects.",
+
+  dashboards:
+    "Yes — Braxton has Streamlit dashboard development experience from his Student Risk Prediction System.",
+
+  webapps:
+    "Yes — Braxton has experience building interactive ML web applications using Streamlit.",
+
+  predictionui:
+    "Yes — Braxton has experience designing real-time prediction user interfaces using Streamlit.",
+
+  riskprediction:
+    "Yes — Braxton has experience building risk probability prediction systems in his Student Risk Prediction System.",
+
+  oulad:
+    "Yes — Braxton has experience working with the real-world OULAD educational dataset.",
+},
+};
+
 export default function FakeAI() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -20,14 +275,11 @@ export default function FakeAI() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
-  // Auto-focus + initial disclaimer message
+  // Auto-focus + disclaimer
   useEffect(() => {
     if (open) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
+      setTimeout(() => inputRef.current?.focus(), 100);
 
-      // only show disclaimer once per open session
       setMessages((prev) => {
         if (prev.length === 0) {
           return [
@@ -38,12 +290,13 @@ export default function FakeAI() {
             },
           ];
         }
+
         return prev;
       });
     }
   }, [open]);
 
-  // Normalize input so "spring boot" === "springboot"
+  // Normalize input
   function normalize(text: string) {
     return text.toLowerCase().replace(/\s+/g, "").trim();
   }
@@ -53,28 +306,32 @@ export default function FakeAI() {
 
     const q = normalize(input);
 
-    setMessages((prev) => [...prev, { role: "user", content: input }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: input },
+    ]);
 
     let response = "";
 
-    if (q.includes("springboot")) {
+    // ================= SEARCH KNOWLEDGE BASE =================
+    let found = false;
+
+    for (const group of Object.values(knowledgeBase)) {
+      for (const key in group) {
+        if (q.includes(key)) {
+          response = group[key as keyof typeof group];
+          found = true;
+          break;
+        }
+      }
+
+      if (found) break;
+    }
+
+    // ================= FALLBACK =================
+    if (!found) {
       response =
-        "Yes — Braxton has Spring Boot experience from his D&D Character Builder project.";
-    } else if (q.includes("sql")) {
-      response =
-        "Yes — Braxton has SQL experience from his D&D Character Builder project.";
-    } else if (q.includes("python")) {
-      response =
-        "Yes — Braxton has Python experience from multiple projects including his Student Risk Prediction System.";
-    } else if (q.includes("java")) {
-      response =
-        "Yes — Braxton has Java experience from his Chat Server project.";
-    } else if (q.includes("machinelearning") || q.includes("ml")) {
-      response =
-        "Yes — Braxton has machine learning experience from his Student Risk Prediction System.";
-    } else {
-      response =
-        "That topic isn’t explicitly listed, but check his projects for related experience.";
+        "That topic isn’t explicitly listed, but check Braxton’s project pages for related experience.";
     }
 
     setTimeout(() => {
