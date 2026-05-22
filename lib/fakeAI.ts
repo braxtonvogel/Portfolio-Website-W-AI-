@@ -7,7 +7,7 @@ export function searchSkills(query: string) {
     const text =
       p.title.toLowerCase() +
       " " +
-      p.tech.join(" ").toLowerCase() +
+      p.tech.join(" ").toLowerCase() + // ✅ FIX HERE
       " " +
       p.skills.join(" ").toLowerCase();
 
@@ -21,7 +21,8 @@ export function searchSkills(query: string) {
       {
         project: {
           title: project.title,
-          slug: project.slug || project.id,
+          slug: project.href,
+          href: project.href,
         },
       },
     ];

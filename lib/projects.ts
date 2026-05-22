@@ -2,7 +2,7 @@ export type Project = {
   title: string;
   href: string;
   type: string;
-  tech: string;
+  tech: string[];   // 👈 FIXED
   skills: string[];
 };
 
@@ -11,7 +11,13 @@ export const projects: Project[] = [
     title: "Student Risk Prediction System (AI + ML + WEB APP)",
     type: "Personal Project",
     href: "/projects/student-risk-prediction-system",
-    tech: "Python • Scikit-learn • Pandas • Streamlit • LLM (Nova / Llama 3)",
+    tech: [
+      "Python",
+      "Scikit-learn",
+      "Pandas",
+      "Streamlit",
+      "LLM (Nova / Llama 3)"
+    ],
     skills: [
       "Python",
       "Machine Learning",
@@ -25,7 +31,7 @@ export const projects: Project[] = [
     title: "D&D Character Builder",
     type: "Group Project",
     href: "/projects/dnd-builder",
-    tech: "Python • Spring Boot • SQL • Database Design",
+    tech: ["Python", "Spring Boot", "SQL", "Database Design"],
     skills: [
       "Python",
       "Spring Boot",
@@ -38,7 +44,7 @@ export const projects: Project[] = [
     title: "Stateful Browser Automation Engine",
     type: "Personal Project",
     href: "/projects/stateful-browser-automation-engine",
-    tech: "Python • Playwright • Chromium • Session Automation",
+    tech: ["Python", "Playwright", "Chromium", "Session Automation"],
     skills: [
       "Python",
       "Playwright",
@@ -50,7 +56,7 @@ export const projects: Project[] = [
     title: "Chat Server",
     type: "Personal Project",
     href: "/projects/chat-server",
-    tech: "Java • Sockets • Networking",
+    tech: ["Java", "Sockets", "Networking"],
     skills: [
       "Java",
       "Sockets",
@@ -63,7 +69,7 @@ export const projects: Project[] = [
     title: "File Manager UI",
     type: "Partnership Project",
     href: "/projects/file-manager-ui",
-    tech: "HTML • React • UI/UX • Frontend Design",
+    tech: ["HTML", "React", "UI/UX", "Frontend Design"],
     skills: [
       "React",
       "UI/UX",
