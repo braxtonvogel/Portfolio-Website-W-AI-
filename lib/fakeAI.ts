@@ -4,10 +4,14 @@ export function searchSkills(query: string) {
   const q = query.toLowerCase();
 
   const matches = projects.filter((p) => {
+    const techText = Array.isArray(p.tech)
+      ? p.tech.join(" ")
+      : p.tech;
+
     const text =
       p.title.toLowerCase() +
       " " +
-      p.tech.join(" ").toLowerCase() + // ✅ FIX HERE
+      techText.toLowerCase() +
       " " +
       p.skills.join(" ").toLowerCase();
 
@@ -21,8 +25,7 @@ export function searchSkills(query: string) {
       {
         project: {
           title: project.title,
-          slug: project.href,
-          href: project.href,
+          slug: project.href, // safe + consistent
         },
       },
     ];
