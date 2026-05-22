@@ -108,7 +108,7 @@ export default function Home() {
               className="px-4 py-2 border border-white rounded-full hover:bg-white hover:text-black transition">
               LinkedIn
             </a>
-            <a href="https://drive.google.com/file/d/1bt7bg_uFG6usq73oC-o6TaRyD0oJjn77/view" target="_blank"
+            <a href="https://drive.google.com/file/d/1i2IB3PlhpH8Tw2mdchiCBTNQglnFGOK6/view?usp=sharing" target="_blank"
               className="px-4 py-2 border border-white rounded-full hover:bg-white hover:text-black transition">
               Resume
             </a>
