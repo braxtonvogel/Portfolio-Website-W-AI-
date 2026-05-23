@@ -113,7 +113,7 @@ export default function StatefulBrowserAutomationProject() {
 
           <div>
             <h3 className="text-lg mb-2">
-              Persistent Login Setup
+              Finished Product
             </h3>
 
             <Image

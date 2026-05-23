@@ -93,11 +93,11 @@ export default function Home() {
           </h1>
 
           <p className="text-zinc-300 text-lg">
-            SOFTWARE ENGINEERING STUDENT - SHSU
+            SOFTWARE ENGINEER
           </p>
 
           <p className="text-zinc-300 text-lg">
-            Sam Houston State University • 2024 – Present
+            Student
           </p>
 
           <div className="text-zinc-400 text-sm flex justify-center md:justify-start gap-6 flex-wrap">
@@ -230,6 +230,73 @@ export default function Home() {
           </ul>
         </div>
       </section>
+
+      {/* ================= EDUCATION ================= */}
+<section className="space-y-6">
+  <h2 className="text-2xl font-semibold">Education</h2>
+
+  <details className="group border border-white rounded-xl p-8 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
+    
+    {/* TITLE */}
+    <summary className="list-none flex flex-col items-center text-center">
+      <h3 className="text-2xl font-semibold transition-all duration-300 group-hover:-translate-y-2">
+        Sam Houston State University - SHSU
+      </h3>
+
+      <p className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-all duration-300 mt-2">
+        Click to view more
+      </p>
+    </summary>
+
+    {/* ANIMATED WRAPPER (KEY FIX) */}
+    <div
+      className="
+        grid
+        grid-rows-[0fr]
+        group-open:grid-rows-[1fr]
+        transition-[grid-template-rows]
+        duration-500
+        ease-in-out
+      "
+    >
+      <div className="overflow-hidden">
+        
+        {/* CONTENT WITH FADE + SLIDE */}
+        <div className="mt-6 text-left w-full border-t border-zinc-700 pt-6 space-y-4
+                        opacity-0 translate-y-3
+                        group-open:opacity-100 group-open:translate-y-0
+                        transition-all duration-500 ease-out">
+
+          <p className="text-zinc-200 leading-7">
+            <span className="font-semibold">
+              Bachelor of Science in Software Engineering
+            </span>
+            <br />
+            Sam Houston State University (SHSU), Huntsville, Texas
+          </p>
+
+          <ul className="list-disc pl-6 text-zinc-300 space-y-2">
+            <li>General GPA: 3.4</li>
+            <li>Major GPA: 3.6</li>
+            <li>Timeframe: 2024 - Present</li>
+          </ul>
+
+          <p className="text-zinc-300 leading-7">
+            During my time at Sam Houston State University, I have focused heavily
+            on building practical software engineering skills through independent
+            development projects, collaborative coursework, and self-driven
+            technical exploration outside the classroom. Alongside my academic
+            studies, I have developed full-stack applications, machine learning
+            systems, automation tools, networking projects, and UI-focused software
+            while continuously expanding my knowledge in software architecture,
+            data science, backend systems, and modern development workflows.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </details>
+</section>
 
       {/* ================= CERTIFICATIONS ================= */}
       <section>
