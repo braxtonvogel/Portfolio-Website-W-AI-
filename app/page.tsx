@@ -173,7 +173,7 @@ useEffect(() => {
     <main className="relative isolate overflow-hidden bg-black text-white min-h-screen">
 
 {/* ================= CINEMATIC BACKGROUND ================= */}
-<div className="fixed inset-0 min-h-[100dvh] overflow-visible pointer-events-none -z-10">
+<div className="fixed inset-0 pointer-events-none -z-10 bg-black">
 
   {/* MOUSE LIGHT */}
   <div
