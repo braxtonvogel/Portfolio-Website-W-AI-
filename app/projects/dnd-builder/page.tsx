@@ -157,7 +157,7 @@ export default function DnDProject() {
             <ul className="list-disc pl-6 space-y-2">
               <li>SQL database design</li>
               <li>Spring Boot backend</li>
-              <li>Java development</li>
+              <li>Python development</li>
               <li>Relational modeling</li>
               <li>MVC architecture</li>
             </ul>

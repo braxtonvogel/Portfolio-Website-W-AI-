@@ -1,9 +1,11 @@
 "use client";
 
+import { motion } from "framer-motion";
 import FakeAI from "@/components/FakeAI";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react"; // ✅ ADDED (required for modal)
+import { useState, useEffect } from "react";
+import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 
 const projects = [
   {
@@ -82,11 +84,55 @@ export default function Home() {
   const [coverOpen, setCoverOpen] = useState(false); // ✅ ADDED
   const [resumeOpen, setResumeOpen] = useState(false);
 
+  const [status, setStatus] = useState<null | "sending" | "success" | "error">(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+  const handleMouseMove = (e: MouseEvent) => {
+    setMouse({ x: e.clientX, y: e.clientY });
+  };
+
+  window.addEventListener("mousemove", handleMouseMove);
+  return () => window.removeEventListener("mousemove", handleMouseMove);
+}, []);
+
   return (
-    <main className="max-w-5xl mx-auto px-6 py-16 space-y-24 bg-black text-white min-h-screen">
+    <main className="relative z-10 max-w-5xl mx-auto px-6 pb-16 space-y-20 bg-black text-white min-h-screen">
+
+<div
+  className="pointer-events-none fixed inset-0 z-0"
+  style={{
+    background: `radial-gradient(
+      450px circle at ${mouse.x}px ${mouse.y}px,
+      rgba(255,255,255,0.10),
+      transparent 60%
+    )`,
+  }}
+/>
+
+<nav className="sticky top-0 z-50 backdrop-blur-md bg-black/60 border-b border-white/10">
+  <div className="max-w-5xl mx-auto px-6 py-3 flex items-center text-sm text-zinc-300">
+  
+  {/* LEFT SIDE: NAME */}
+  <div className="font-semibold text-white">
+    Braxton Vogel
+  </div>
+
+  {/* RIGHT SIDE: LINKS */}
+  <div className="ml-auto flex gap-6">
+    <a href="#home" className="hover:text-white transition">Home</a>
+    <a href="#education" className="hover:text-white transition">Education</a>
+    <a href="#projects" className="hover:text-white transition">Projects</a>
+    <a href="#skills" className="hover:text-white transition">Skills</a>
+    <a href="#contact" className="hover:text-white transition">Contact</a>
+  </div>
+
+</div>
+</nav>
 
       {/* ================= HEADER ================= */}
-      <section className="flex flex-col md:flex-row items-center justify-between gap-10 text-center md:text-left">
+      <section id="home" className="flex flex-col md:flex-row items-center justify-between gap-10 text-center md:text-left">
         <div className="space-y-4 flex-1">
           <h1 className="text-6xl font-bold tracking-tight">
             Braxton Vogel
@@ -101,8 +147,8 @@ export default function Home() {
           </p>
 
           <div className="text-zinc-400 text-sm flex justify-center md:justify-start gap-6 flex-wrap">
-            <p>bvg007@shsu.edu</p>
-            <p>346-413-7560</p>
+            <p>{CONTACT_EMAIL}</p>
+            <p>{CONTACT_PHONE}</p>
           </div>
 
           <div className="flex justify-center md:justify-start flex-wrap gap-4 pt-4">
@@ -232,7 +278,7 @@ export default function Home() {
       </section>
 
       {/* ================= EDUCATION ================= */}
-<section className="space-y-6">
+<section id="education" className="space-y-6">
   <h2 className="text-2xl font-semibold">Education</h2>
 
   <details className="group border border-white rounded-xl p-8 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
@@ -311,7 +357,7 @@ export default function Home() {
       </section>
 
       {/* ================= PROJECTS ================= */}
-      <section className="space-y-6">
+      <section id="projects" className="space-y-6">
         <h2 className="text-2xl font-semibold">Projects</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -337,50 +383,213 @@ export default function Home() {
       </section>
 
       {/* ================= SKILLS ================= */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-semibold">Skills</h2>
+<motion.section
+  id="skills"
+  initial={{ opacity: 0 }}
+  whileInView={{ opacity: 1 }}
+  viewport={{ once: true, amount: 0.2 }}
+  transition={{ duration: 0.4 }}
+  className="space-y-6"
+>
+  <h2 className="text-2xl font-semibold">Skills</h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Technical</h3>
-            <div className="space-y-2">
-              {skills.technical.map((skill) => (
-                <Link key={skill.name} href={skill.href}>
-                  <div className="border border-white rounded-lg p-3 text-sm text-zinc-300 hover:bg-white hover:text-black transition hover:scale-[1.02] cursor-pointer">
-                    {skill.name}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+  <div className="grid md:grid-cols-3 gap-6">
 
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Interpersonal</h3>
-            <div className="space-y-2">
-              {skills.interpersonal.map((skill) => (
-                <Link key={skill.name} href={skill.href}>
-                  <div className="border border-white rounded-lg p-3 text-sm text-zinc-300 hover:bg-white hover:text-black transition hover:scale-[1.02] cursor-pointer">
-                    {skill.name}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+    {/* ================= TECHNICAL ================= */}
+    <div>
+      <h3 className="text-lg font-semibold mb-4 text-zinc-200">
+        Technical
+      </h3>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Professional</h3>
-            <div className="space-y-2">
-              {skills.professional.map((skill) => (
-                <Link key={skill.name} href={skill.href}>
-                  <div className="border border-white rounded-lg p-3 text-sm text-zinc-300 hover:bg-white hover:text-black transition hover:scale-[1.02] cursor-pointer">
-                    {skill.name}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="flex flex-wrap gap-3">
+        {skills.technical.map((skill, index) => (
+          <motion.div
+            key={skill.name}
+            initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(6px)" }}
+            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.03,
+              ease: [0.2, 0.8, 0.2, 1],
+            }}
+            className="
+              px-4 py-2 rounded-full
+              border border-zinc-700
+              text-sm text-zinc-300
+              bg-white/5
+              backdrop-blur-sm
+              cursor-pointer
+              hover:bg-white
+              hover:text-black
+              hover:border-white
+              hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]
+              hover:-translate-y-1
+              hover:scale-105
+              transition-all duration-300 ease-out
+            "
+          >
+            {skill.name}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+
+    {/* ================= INTERPERSONAL ================= */}
+    <div>
+      <h3 className="text-lg font-semibold mb-4 text-zinc-200">
+        Interpersonal
+      </h3>
+
+      <div className="flex flex-wrap gap-3">
+        {skills.interpersonal.map((skill, index) => (
+          <motion.div
+            key={skill.name}
+            initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(6px)" }}
+            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.03,
+              ease: [0.2, 0.8, 0.2, 1],
+            }}
+            className="
+              px-4 py-2 rounded-full
+              border border-zinc-700
+              text-sm text-zinc-300
+              bg-white/5
+              backdrop-blur-sm
+              cursor-pointer
+              hover:bg-white
+              hover:text-black
+              hover:border-white
+              hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]
+              hover:-translate-y-1
+              hover:scale-105
+              transition-all duration-300 ease-out
+            "
+          >
+            {skill.name}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+
+    {/* ================= PROFESSIONAL ================= */}
+    <div>
+      <h3 className="text-lg font-semibold mb-4 text-zinc-200">
+        Professional
+      </h3>
+
+      <div className="flex flex-wrap gap-3">
+        {skills.professional.map((skill, index) => (
+          <motion.div
+            key={skill.name}
+            initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(6px)" }}
+            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.03,
+              ease: [0.2, 0.8, 0.2, 1],
+            }}
+            className="
+              px-4 py-2 rounded-full
+              border border-zinc-700
+              text-sm text-zinc-300
+              bg-white/5
+              backdrop-blur-sm
+              cursor-pointer
+              hover:bg-white
+              hover:text-black
+              hover:border-white
+              hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]
+              hover:-translate-y-1
+              hover:scale-105
+              transition-all duration-300 ease-out
+            "
+          >
+            {skill.name}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</motion.section>
+
+
+{/* ================= CONTACT ================= */}
+<section id="contact" className="space-y-6">
+  <h2 className="text-2xl font-semibold">Contact</h2>
+
+  <form
+    className="space-y-4"
+    onSubmit={(e) => {
+      e.preventDefault();
+
+      const form = e.target as HTMLFormElement;
+
+      const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+      const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+      const phone = (form.elements.namedItem("phone") as HTMLInputElement).value;
+      const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value;
+
+      const subject = `Portfolio Contact from ${name}`;
+
+      const body = [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Phone: ${phone || "Not provided"}`,
+        "",
+        "Message:",
+        message,
+      ].join("\n");
+
+      const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+
+      window.location.href = mailto;
+    }}
+  >
+    <input
+      name="name"
+      placeholder="Your Name"
+      className="w-full p-3 rounded-lg bg-white/5 border border-zinc-700 text-white"
+      required
+    />
+
+    <input
+      name="email"
+      placeholder="Your Email"
+      className="w-full p-3 rounded-lg bg-white/5 border border-zinc-700 text-white"
+      required
+    />
+
+    {/* OPTIONAL PHONE FIELD */}
+    <input
+      name="phone"
+      placeholder="Your Phone (optional)"
+      className="w-full p-3 rounded-lg bg-white/5 border border-zinc-700 text-white"
+    />
+
+    <textarea
+      name="message"
+      placeholder="Your Message"
+      rows={5}
+      className="w-full p-3 rounded-lg bg-white/5 border border-zinc-700 text-white"
+      required
+    />
+
+    <button
+      type="submit"
+      className="px-6 py-3 border border-white rounded-lg hover:bg-white hover:text-black transition"
+    >
+      Send Message
+    </button>
+  </form>
+</section>
 
     </main>
   );
