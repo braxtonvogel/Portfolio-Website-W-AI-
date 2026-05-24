@@ -87,63 +87,272 @@ export default function Home() {
   const [status, setStatus] = useState<null | "sending" | "success" | "error">(null);
   const [scrolled, setScrolled] = useState(false);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [scrollY, setScrollY] = useState(0);
+  const [activeSection, setActiveSection] = useState("home");
+
+  
+ const phrases = [
+  "intelligent software systems",
+  "AI-powered tools",
+  "modern engineering experiences",
+  "full-stack applications",
+  "automation systems",
+  "data science pipelines",
+];
+
+const [phraseIndex, setPhraseIndex] = useState(0);
+const [displayText, setDisplayText] = useState("");
+const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
     setMouse({ x: e.clientX, y: e.clientY });
   };
 
+  const handleScroll = () => {
+    setScrollY(window.scrollY);
+  };
+
   window.addEventListener("mousemove", handleMouseMove);
-  return () => window.removeEventListener("mousemove", handleMouseMove);
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("mousemove", handleMouseMove);
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
+useEffect(() => {
+  const current = phrases[phraseIndex];
+
+  const timeout = setTimeout(() => {
+    if (!deleting) {
+      if (displayText.length < current.length) {
+        setDisplayText(current.slice(0, displayText.length + 1));
+      } else {
+        setTimeout(() => setDeleting(true), 1000);
+      }
+    } else {
+      if (displayText.length > 0) {
+        setDisplayText(current.slice(0, displayText.length - 1));
+      } else {
+        setDeleting(false);
+        setPhraseIndex((p) => (p + 1) % phrases.length);
+      }
+    }
+  }, deleting ? 40 : 70);
+
+  return () => clearTimeout(timeout);
+}, [displayText, deleting, phraseIndex]);
+
+      useEffect(() => {
+  const sections = ["home", "education", "projects", "skills", "contact"];
+
+  const handleScroll = () => {
+    let current = "home";
+
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.35) {
+        current = id;
+      }
+    }
+
+    setActiveSection(current);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  handleScroll(); // run once on load
+
+  return () => window.removeEventListener("scroll", handleScroll);
 }, []);
 
   return (
-    <main className="relative z-10 max-w-5xl mx-auto px-6 pb-16 space-y-20 bg-black text-white min-h-screen">
+    <main className="relative isolate overflow-hidden bg-black text-white min-h-screen">
 
-<div
-  className="pointer-events-none fixed inset-0 z-0"
-  style={{
-    background: `radial-gradient(
-      450px circle at ${mouse.x}px ${mouse.y}px,
-      rgba(255,255,255,0.10),
-      transparent 60%
-    )`,
-  }}
-/>
+{/* ================= CINEMATIC BACKGROUND ================= */}
+<div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
 
-<nav className="sticky top-0 z-50 backdrop-blur-md bg-black/60 border-b border-white/10">
-  <div className="max-w-5xl mx-auto px-6 py-3 flex items-center text-sm text-zinc-300">
-  
-  {/* LEFT SIDE: NAME */}
-  <div className="font-semibold text-white">
-    Braxton Vogel
-  </div>
+  {/* MOUSE LIGHT */}
+  <div
+    className="absolute inset-0 transition-opacity duration-700"
+    style={{
+      opacity: Math.max(0.15, 1 - scrollY / 700),
+      background: `radial-gradient(
+        500px circle at ${mouse.x}px ${mouse.y}px,
+        rgba(56,189,248,0.10),
+        transparent 60%
+      )`,
+    }}
+  />
 
-  {/* RIGHT SIDE: LINKS */}
-  <div className="ml-auto flex gap-6">
-    <a href="#home" className="hover:text-white transition">Home</a>
-    <a href="#education" className="hover:text-white transition">Education</a>
-    <a href="#projects" className="hover:text-white transition">Projects</a>
-    <a href="#skills" className="hover:text-white transition">Skills</a>
-  </div>
+  {/* LARGE BACKGROUND ORBS */}
+  <motion.div
+    animate={{
+      x: [0, 60, -40, 0],
+      y: [0, -40, 30, 0],
+      scale: [1, 1.08, 0.95, 1],
+    }}
+    transition={{
+      duration: 25,
+      repeat: Infinity,
+      ease: "easeInOut",
+    }}
+    className="absolute top-[-200px] left-[-150px] w-[700px] h-[700px] rounded-full bg-cyan-500/10 blur-[140px]"
+  />
+
+  <motion.div
+    animate={{
+      x: [0, -80, 30, 0],
+      y: [0, 50, -40, 0],
+      scale: [1, 0.92, 1.05, 1],
+    }}
+    transition={{
+      duration: 30,
+      repeat: Infinity,
+      ease: "easeInOut",
+    }}
+    className="absolute bottom-[-300px] right-[-200px] w-[800px] h-[800px] rounded-full bg-blue-500/10 blur-[160px]"
+  />
+
+  <motion.div
+    animate={{
+      x: [0, 40, -30, 0],
+      y: [0, -20, 40, 0],
+    }}
+    transition={{
+      duration: 20,
+      repeat: Infinity,
+      ease: "easeInOut",
+    }}
+    className="absolute top-[30%] left-[40%] w-[500px] h-[500px] rounded-full bg-white/5 blur-[120px]"
+  />
+  {/* CENTER RIPPLE SYSTEM (FIXED) */}
+{[0, 1, 2, 3, 4].map((i) => (
+  <motion.div
+    key={i}
+    className="absolute left-1/2 top-1/2 rounded-full border border-cyan-300/20 shadow-[0_0_40px_rgba(56,189,248,0.2)]"
+    style={{
+      x: "-50%",
+      y: "-50%",
+    }}
+    initial={{
+      scale: 0.5,
+      opacity: 0.6,
+    }}
+    animate={{
+      scale: 8,
+      opacity: 0.1,
+    }}
+    transition={{
+      duration: 4,
+      delay: i * 0.6,
+      repeat: Infinity,
+      ease: "easeOut",
+    }}
+  />
+))}
+</div>
+
+<div className="fixed top-0 left-0 w-full z-50 flex justify-center bg-black/60 backdrop-blur-md border-b border-white/10 py-3 gap-2 md:gap-6 text-xs md:text-sm flex-wrap">
+
+  <a
+  href="#home"
+  className={`relative group px-2 py-1 transition ${
+    activeSection === "home" ? "text-white" : "text-zinc-300"
+  }`}
+>
+  Home
+  <span
+    className={`absolute left-0 -bottom-1 h-[1px] bg-cyan-400 transition-all ${
+      activeSection === "home" ? "w-full" : "w-0 group-hover:w-full"
+    }`}
+  />
+</a>
+
+  <a
+  href="#education"
+  className={`relative group px-2 py-1 transition ${
+    activeSection === "education" ? "text-white" : "text-zinc-300"
+  }`}
+>
+  Education
+  <span
+    className={`absolute left-0 -bottom-1 h-[1px] bg-cyan-400 transition-all ${
+      activeSection === "education" ? "w-full" : "w-0 group-hover:w-full"
+    }`}
+  />
+</a>
+
+  <a
+  href="#projects"
+  className={`relative group px-2 py-1 transition ${
+    activeSection === "projects" ? "text-white" : "text-zinc-300"
+  }`}
+>
+  Projects
+  <span
+    className={`absolute left-0 -bottom-1 h-[1px] bg-cyan-400 transition-all ${
+      activeSection === "projects" ? "w-full" : "w-0 group-hover:w-full"
+    }`}
+  />
+</a>
+
+  <a
+  href="#skills"
+  className={`relative group px-2 py-1 transition ${
+    activeSection === "skills" ? "text-white" : "text-zinc-300"
+  }`}
+>
+  Skills
+  <span
+    className={`absolute left-0 -bottom-1 h-[1px] bg-cyan-400 transition-all ${
+      activeSection === "skills" ? "w-full" : "w-0 group-hover:w-full"
+    }`}
+  />
+</a>
+
+  <a
+  href="#contact"
+  className={`relative group px-2 py-1 transition ${
+    activeSection === "contact" ? "text-white" : "text-zinc-300"
+  }`}
+>
+  Contact
+  <span
+    className={`absolute left-0 -bottom-1 h-[1px] bg-cyan-400 transition-all ${
+      activeSection === "contact" ? "w-full" : "w-0 group-hover:w-full"
+    }`}
+  />
+</a>
 
 </div>
-</nav>
 
       {/* ================= HEADER ================= */}
-      <section id="home" className="flex flex-col md:flex-row items-center justify-between gap-10 text-center md:text-left">
-        <div className="space-y-4 flex-1">
-          <h1 className="text-6xl font-bold tracking-tight">
-            Braxton Vogel
-          </h1>
+      <section
+  id="home"
+  className="min-h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left px-6 relative gap-24 md:gap-40 scroll-mt-24"
+  style={{
+    opacity: Math.max(0.2, 1 - scrollY / 500),
+    transform: `translateY(${scrollY * 0.2}px)`,
+  }}
+>
+        <div className="space-y-6 max-w-3xl">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
+  Braxton Vogel
+</h1>
 
-          <p className="text-zinc-300 text-lg">
-            SOFTWARE ENGINEER
-          </p>
+<p className="text-zinc-300 text-lg md:text-xl font-medium mt-2">
+  Software Engineering Student
+</p>
 
-          <p className="text-zinc-300 text-lg">
-            Student
-          </p>
+<p className="text-cyan-300 text-2xl md:text-4xl font-light mt-2">
+  {displayText}
+  <span className="animate-pulse">|</span>
+</p>
+
 
           <div className="text-zinc-400 text-sm flex justify-center md:justify-start gap-6 flex-wrap">
             <p>{CONTACT_EMAIL}</p>
@@ -184,14 +393,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 mt-8 md:mt-0 md:ml-10">
           <Image
             src="/Brax_Prof_Pic.jpg"
             alt="Braxton Vogel"
             width={280}
             height={280}
             priority
-            className="rounded-2xl border border-white object-cover"
+            className="rounded-full border border-white/20 object-cover shadow-[0_0_60px_rgba(56,189,248,0.25)]"
           />
         </div>
       </section>
@@ -250,6 +459,8 @@ export default function Home() {
 )}
 
 
+<div className="relative z-10 max-w-5xl mx-auto px-6 pb-20 pt-20 space-y-20">
+
       {/* ================= OVERVIEW ================= */}
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">
@@ -277,7 +488,7 @@ export default function Home() {
       </section>
 
       {/* ================= EDUCATION ================= */}
-<section id="education" className="space-y-6">
+<section id="education" className="space-y-6 scroll-mt-24">
   <h2 className="text-2xl font-semibold">Education</h2>
 
   <details className="group border border-white rounded-xl p-8 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
@@ -356,7 +567,7 @@ export default function Home() {
       </section>
 
       {/* ================= PROJECTS ================= */}
-      <section id="projects" className="space-y-6">
+      <section id="projects" className="space-y-6 scroll-mt-24">
         <h2 className="text-2xl font-semibold">Projects</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -384,8 +595,9 @@ export default function Home() {
       {/* ================= SKILLS ================= */}
 <motion.section
   id="skills"
+  className="space-y-6 scroll-mt-24"
   initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}
+  whileInView={{ opacity: 1 }}   // ✅ FIXED
   viewport={{ once: true, amount: 0.2 }}
   transition={{ duration: 0.4 }}
   className="space-y-6"
@@ -519,7 +731,7 @@ export default function Home() {
 
 
 {/* ================= CONTACT ================= */}
-<section id="contact" className="space-y-6">
+<section id="contact" className="space-y-6 scroll-mt-24">
   <h2 className="text-2xl font-semibold">Contact</h2>
 
   <form
@@ -533,7 +745,7 @@ export default function Home() {
       const email = (form.elements.namedItem("email") as HTMLInputElement).value;
       const phone = (form.elements.namedItem("phone") as HTMLInputElement).value;
       const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value;
-
+      
       const subject = `Portfolio Contact from ${name}`;
 
       const body = [
@@ -590,6 +802,7 @@ export default function Home() {
   </form>
 </section>
 
+</div>
     </main>
   );
 }
