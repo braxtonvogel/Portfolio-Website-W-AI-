@@ -173,7 +173,7 @@ useEffect(() => {
     <main className="relative isolate overflow-hidden bg-black text-white min-h-screen">
 
 {/* ================= CINEMATIC BACKGROUND ================= */}
-<div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+<div className="fixed inset-0 min-h-[100dvh] overflow-visible pointer-events-none -z-10">
 
   {/* MOUSE LIGHT */}
   <div
@@ -229,31 +229,6 @@ useEffect(() => {
     }}
     className="absolute top-[30%] left-[40%] w-[500px] h-[500px] rounded-full bg-white/5 blur-[120px]"
   />
-  {/* CENTER RIPPLE SYSTEM (FIXED) */}
-{[0, 1, 2, 3, 4].map((i) => (
-  <motion.div
-    key={i}
-    className="absolute left-1/2 top-1/2 rounded-full border border-cyan-300/20 shadow-[0_0_40px_rgba(56,189,248,0.2)]"
-    style={{
-      x: "-50%",
-      y: "-50%",
-    }}
-    initial={{
-      scale: 0.5,
-      opacity: 0.6,
-    }}
-    animate={{
-      scale: 8,
-      opacity: 0.1,
-    }}
-    transition={{
-      duration: 4,
-      delay: i * 0.6,
-      repeat: Infinity,
-      ease: "easeOut",
-    }}
-  />
-))}
 </div>
 
 <div className="fixed top-0 left-0 w-full z-50 flex justify-center bg-black/60 backdrop-blur-md border-b border-white/10 py-3 gap-2 md:gap-6 text-xs md:text-sm flex-wrap">
@@ -333,7 +308,7 @@ useEffect(() => {
       {/* ================= HEADER ================= */}
       <section
   id="home"
-  className="min-h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left px-6 relative gap-24 md:gap-40 scroll-mt-24"
+  className="min-h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left px-6 pt-24 md:pt-0 relative gap-24 md:gap-40 scroll-mt-24"
   style={{
     opacity: Math.max(0.2, 1 - scrollY / 500),
     transform: `translateY(${scrollY * 0.2}px)`,
