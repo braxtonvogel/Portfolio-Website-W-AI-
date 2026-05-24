@@ -595,12 +595,11 @@ useEffect(() => {
       {/* ================= SKILLS ================= */}
 <motion.section
   id="skills"
-  className="space-y-6 scroll-mt-24"
+  className="space-y-6 scroll-mt-40"
   initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}   // ✅ FIXED
+  whileInView={{ opacity: 1 }}
   viewport={{ once: true, amount: 0.2 }}
   transition={{ duration: 0.4 }}
-  className="space-y-6"
 >
   <h2 className="text-2xl font-semibold">Skills</h2>
 
