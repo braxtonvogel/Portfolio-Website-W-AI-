@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import FakeAI from "@/components/FakeAI";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,12 @@ import { useState, useEffect } from "react";
 import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 
 const projects = [
+   {
+    title: "NovaOS - Context Aware AI Productivity Platform",
+    type: "Personal Project",
+    href: "/projects/novaos",
+    tech: "Currently In Development",
+  },
   {
     title: "Student Risk Prediction System (AI + ML + WEB APP)",
     type: "Personal Project",
@@ -80,18 +86,7 @@ const skills = {
   ],
 };
 
-export default function Home() {
-  const [coverOpen, setCoverOpen] = useState(false); // ✅ ADDED
-  const [resumeOpen, setResumeOpen] = useState(false);
-
-  const [status, setStatus] = useState<null | "sending" | "success" | "error">(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
-  const [activeSection, setActiveSection] = useState("home");
-
-  
- const phrases = [
+const phrases = [
   "intelligent software systems",
   "AI-powered tools",
   "modern engineering experiences",
@@ -100,27 +95,22 @@ export default function Home() {
   "data science pipelines",
 ];
 
+export default function Home() {
+  const [coverOpen, setCoverOpen] = useState(false); // ✅ ADDED
+  const [resumeOpen, setResumeOpen] = useState(false);
+
+  const [activeSection, setActiveSection] = useState("home");
+
+
 const [phraseIndex, setPhraseIndex] = useState(0);
 const [displayText, setDisplayText] = useState("");
 const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-  const handleMouseMove = (e: MouseEvent) => {
-    setMouse({ x: e.clientX, y: e.clientY });
-  };
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.2]);
+  const heroY = useTransform(scrollY, [0, 400], [0, 80]);
 
-  const handleScroll = () => {
-    setScrollY(window.scrollY);
-  };
 
-  window.addEventListener("mousemove", handleMouseMove);
-  window.addEventListener("scroll", handleScroll);
-
-  return () => {
-    window.removeEventListener("mousemove", handleMouseMove);
-    window.removeEventListener("scroll", handleScroll);
-  };
-}, []);
 useEffect(() => {
   const current = phrases[phraseIndex];
 
@@ -160,7 +150,7 @@ useEffect(() => {
       }
     }
 
-    setActiveSection(current);
+    setActiveSection((prev) => (prev === current ? prev : current));
   };
 
   window.addEventListener("scroll", handleScroll);
@@ -170,65 +160,13 @@ useEffect(() => {
 }, []);
 
   return (
-    <main className="relative isolate overflow-hidden bg-black text-white min-h-screen">
+    <main className="relative isolate overflow-x-hidden bg-black text-white min-h-[100dvh]">
 
 {/* ================= CINEMATIC BACKGROUND ================= */}
-<div className="fixed inset-0 pointer-events-none -z-10 bg-black">
-
-  {/* MOUSE LIGHT */}
-  <div
-    className="absolute inset-0 transition-opacity duration-700"
-    style={{
-      opacity: Math.max(0.15, 1 - scrollY / 700),
-      background: `radial-gradient(
-        500px circle at ${mouse.x}px ${mouse.y}px,
-        rgba(56,189,248,0.10),
-        transparent 60%
-      )`,
-    }}
-  />
-
-  {/* LARGE BACKGROUND ORBS */}
-  <motion.div
-    animate={{
-      x: [0, 60, -40, 0],
-      y: [0, -40, 30, 0],
-      scale: [1, 1.08, 0.95, 1],
-    }}
-    transition={{
-      duration: 25,
-      repeat: Infinity,
-      ease: "easeInOut",
-    }}
-    className="absolute top-[-200px] left-[-150px] w-[700px] h-[700px] rounded-full bg-cyan-500/10 blur-[140px]"
-  />
-
-  <motion.div
-    animate={{
-      x: [0, -80, 30, 0],
-      y: [0, 50, -40, 0],
-      scale: [1, 0.92, 1.05, 1],
-    }}
-    transition={{
-      duration: 30,
-      repeat: Infinity,
-      ease: "easeInOut",
-    }}
-    className="absolute bottom-[-300px] right-[-200px] w-[800px] h-[800px] rounded-full bg-blue-500/10 blur-[160px]"
-  />
-
-  <motion.div
-    animate={{
-      x: [0, 40, -30, 0],
-      y: [0, -20, 40, 0],
-    }}
-    transition={{
-      duration: 20,
-      repeat: Infinity,
-      ease: "easeInOut",
-    }}
-    className="absolute top-[30%] left-[40%] w-[500px] h-[500px] rounded-full bg-white/5 blur-[120px]"
-  />
+<div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+  <div className="absolute top-[-200px] left-[-150px] w-[700px] h-[700px] rounded-full bg-cyan-500/15 blur-[140px] animate-orb-1" />
+  <div className="absolute bottom-[-100px] right-[-200px] w-[800px] h-[800px] rounded-full bg-blue-500/15 blur-[160px] animate-orb-2" />
+  <div className="absolute top-[30%] left-[40%] w-[500px] h-[500px] rounded-full bg-cyan-300/10 blur-[120px] animate-orb-3" />
 </div>
 
 <div className="fixed top-0 left-0 w-full z-50 flex justify-center bg-black/60 backdrop-blur-md border-b border-white/10 py-3 gap-2 md:gap-6 text-xs md:text-sm flex-wrap">
@@ -306,14 +244,20 @@ useEffect(() => {
 </div>
 
       {/* ================= HEADER ================= */}
-      <section
+      <motion.section
   id="home"
+  style={{ opacity: heroOpacity, y: heroY }}
   className="min-h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left px-6 pt-24 md:pt-0 relative gap-24 md:gap-40 scroll-mt-24"
-  style={{
-    opacity: Math.max(0.2, 1 - scrollY / 500),
-    transform: `translateY(${scrollY * 0.2}px)`,
-  }}
 >
+  {/* ================= RIPPLE RINGS ================= */}
+<div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+  <div className="ripple-ring-static" />
+  <div className="ripple-ring" />
+  <div className="ripple-ring" />
+  <div className="ripple-ring" />
+  <div className="ripple-ring" />
+  <div className="ripple-ring" />
+</div>
         <div className="space-y-6 max-w-3xl">
           <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
   Braxton Vogel
@@ -378,7 +322,7 @@ useEffect(() => {
             className="rounded-full border border-white/20 object-cover shadow-[0_0_60px_rgba(56,189,248,0.25)]"
           />
         </div>
-      </section>
+      </motion.section>
 
       {/* ================= COVER LETTER MODAL ================= */}
       {coverOpen && (
@@ -588,10 +532,10 @@ useEffect(() => {
 
       <div className="flex flex-wrap gap-3">
         {skills.technical.map((skill, index) => (
+          <Link href={skill.href} key={skill.name}>
           <motion.div
-            key={skill.name}
-            initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(6px)" }}
-            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{
               duration: 0.5,
@@ -616,6 +560,7 @@ useEffect(() => {
           >
             {skill.name}
           </motion.div>
+          </Link>
         ))}
       </div>
     </div>
@@ -630,8 +575,8 @@ useEffect(() => {
         {skills.interpersonal.map((skill, index) => (
           <motion.div
             key={skill.name}
-            initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(6px)" }}
-            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{
               duration: 0.5,
@@ -670,8 +615,8 @@ useEffect(() => {
         {skills.professional.map((skill, index) => (
           <motion.div
             key={skill.name}
-            initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(6px)" }}
-            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{
               duration: 0.5,
