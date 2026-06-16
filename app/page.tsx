@@ -9,10 +9,10 @@ import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 
 const projects = [
    {
-    title: "NovaOS - Context Aware AI Productivity Platform",
+    title: "SammyOS - Context Aware AI Productivity Platform",
     type: "Personal Project",
-    href: "/projects/novaos",
-    tech: "Currently In Development",
+    href: "/projects/sammyos",
+    tech: "Tauri • Next.js • Rust • Zustand • Redis (Upstash) • Multi-LLM Routing",
   },
   {
     title: "Student Risk Prediction System (AI + ML + WEB APP)",
