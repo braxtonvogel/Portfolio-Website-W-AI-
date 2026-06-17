@@ -141,6 +141,164 @@ const TIMELINE = [
   { version: "v10", label: "Hardening + Launch", detail: "Silent VBS launcher, rate-limited auth routes, TOS/Privacy pages, vault ping pipeline, pre-GitHub hygiene checklist." },
 ];
 
+const TABS = [
+  {
+    id: "chat",
+    label: "Chat",
+    icon: "💬",
+    src: "/sammyos-chat.png",
+    alt: "SammyOS Chat Tab",
+    headline: "Talk to Sam — with full context awareness.",
+    desc: "The main chat interface where you talk to Sam. Unlike a regular chatbot, Sam has simultaneous access to whatever is on your screen, any files you've uploaded, and your live meeting audio — all surfaced in a single conversation thread. Chat history is persisted across sessions and browseable from the sidebar panel.",
+    tip: "Try asking Sam to explain what's on your screen while also referencing a file you uploaded. It handles both at once.",
+  },
+  {
+    id: "research",
+    label: "Research",
+    icon: "🔬",
+    src: "/sammyos-research.png",
+    alt: "SammyOS Research Tab",
+    headline: "Set a research question. Get back a finished report.",
+    desc: "The Research tab lets you kick off an autonomous multi-step research job. Sam breaks your question into sub-queries, searches across sources, cross-references results, and compiles everything into a structured report — then automatically saves it to your Knowledge Vault when done. A polling loop with a 5-minute timeout keeps you informed of job status without hanging the UI.",
+    tip: "Research jobs run in the background. You can keep chatting while Sam works.",
+  },
+  {
+    id: "vault",
+    label: "Vault",
+    icon: "🗄️",
+    src: "/sammyos-vault.png",
+    alt: "SammyOS Knowledge Vault",
+    headline: "Every insight Sam produces, saved and searchable.",
+    desc: "The Knowledge Vault stores every research report and file analysis Sam has ever produced for your account. Reports are cloud-persisted via Redis on Upstash and tied to your user session. Each upload pings a telemetry counter that feeds the live public dashboard at sammyos-live.vercel.app — so your vault activity is literally measurable in real time.",
+    tip: "Upload a codebase or PDF here to make it permanently available to Sam in any future chat session.",
+  },
+  {
+    id: "workspace",
+    label: "Workspace",
+    icon: "📂",
+    src: "/sammyos-workspace.png",
+    alt: "SammyOS Workspace Tab",
+    headline: "Drop in a file. Drop in a whole codebase.",
+    desc: "The Workspace tab is your upload hub. Drag in individual files or entire folder trees and Sam will parse the structure, index relationships between files, and make the full content available to every subsequent chat message. File paths and metadata are preserved so Sam always knows which file a line of code came from.",
+    tip: "Uploading a Next.js project? Sam will understand the App Router structure and answer questions spanning multiple files.",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: "⚙️",
+    src: "/sammyos-settings.png",
+    alt: "SammyOS Settings Tab",
+    headline: "Your keys. Your models. Your priority.",
+    desc: "The Settings tab lets you store your own API keys for OpenAI, Anthropic, Groq, or any OpenAI-compatible endpoint. Your key is injected first into the provider chain on every request — giving you access to faster models, higher rate limits, and no token-sharing with other users. If your key is absent, SammyOS silently falls back to the free rotation.",
+    tip: "Adding a Groq key alone unlocks Llama 3 70B at near-instant speeds for free.",
+  },
+  {
+    id: "float",
+    label: "Float Window",
+    icon: "🪟",
+    src: "/sammyos-float.png",
+    alt: "SammyOS Floating Chat Window",
+    headline: "Sam on top — without switching apps.",
+    desc: "The floating chat window is a detachable, always-on-top panel you can drag anywhere on your screen. It runs as a separate Tauri webview window with its own auth hydration and can capture a screenshot of whatever is currently visible behind it. Perfect for asking Sam about content in another app without losing your place.",
+    tip: "Click the screenshot button in the float window to instantly send Sam a capture of your current screen.",
+  },
+  {
+    id: "dashboard",
+    label: "Live Dashboard",
+    icon: "📊",
+    src: "/sammyos-dashboard.png",
+    alt: "SammyOS Live Telemetry Dashboard",
+    headline: "Real-time usage stats. Publicly visible proof of life.",
+    desc: "sammyos-live.vercel.app is a standalone Next.js dashboard that polls the nexus-analyzer telemetry API every few seconds and displays live counters for sessions started, messages sent, research jobs kicked off, and vault uploads completed. It's deployed separately so it stays up even if the main app is offline — and it's publicly accessible as a portfolio signal.",
+    tip: "Open sammyos-live.vercel.app while using SammyOS and watch your own events appear in real time.",
+  },
+];
+
+function ScreenshotBrowser() {
+  const [active, setActive] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const [displayIndex, setDisplayIndex] = useState(0);
+
+  const switchTo = (i: number) => {
+    if (i === active || animating) return;
+    setAnimating(true);
+    setTimeout(() => {
+      setDisplayIndex(i);
+      setActive(i);
+      setAnimating(false);
+    }, 180);
+  };
+
+  const tab = TABS[displayIndex];
+
+  return (
+    <div className="mt-14">
+      <h2 className="text-2xl font-semibold mb-6">App Interface</h2>
+
+      {/* TAB STRIP */}
+      <div className="flex gap-1.5 flex-wrap mb-4">
+        {TABS.map((t, i) => (
+          <button
+            key={t.id}
+            onClick={() => switchTo(i)}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+              active === i
+                ? "bg-black text-white dark:bg-white dark:text-black"
+                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+            }`}
+          >
+            <span>{t.icon}</span>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* SCREENSHOT */}
+      <div
+        className={`transition-opacity duration-180 ${animating ? "opacity-0" : "opacity-100"}`}
+      >
+        <div className="relative rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-950">
+          {/* fake window chrome */}
+          <div className="flex items-center gap-1.5 px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+            <span className="w-3 h-3 rounded-full bg-red-500/70" />
+            <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
+            <span className="w-3 h-3 rounded-full bg-green-500/70" />
+            <span className="ml-3 text-[11px] font-mono text-zinc-500">SammyOS — {tab.label}</span>
+          </div>
+          <Image
+            src={tab.src}
+            alt={tab.alt}
+            width={1280}
+            height={800}
+            className="w-full object-cover"
+            priority
+          />
+        </div>
+
+        {/* DESCRIPTION PANEL */}
+        <div className="mt-4 rounded-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+          <div className="flex items-center gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+            <span className="text-xl">{tab.icon}</span>
+            <span className="font-semibold">{tab.label} Tab</span>
+          </div>
+          <div className="px-6 py-5 bg-white dark:bg-zinc-950 grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-2">
+              <p className="font-semibold text-base text-black dark:text-white">{tab.headline}</p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-7">{tab.desc}</p>
+            </div>
+            <div className="flex flex-col justify-center">
+              <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">Pro tip</p>
+              <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-6 italic">"{tab.tip}"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SammyOSProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [backupOpen, setBackupOpen] = useState(false);
@@ -391,31 +549,9 @@ export default function SammyOSProject() {
         </div>
       </Section>
 
-      {/* VISUALS */}
+      {/* SCREENSHOT BROWSER */}
       <Section delay={270}>
-        <h2 className="text-2xl font-semibold mt-14 mb-6">Interface & Architecture</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Desktop App</p>
-            <Image
-              src="/sammyos_interface.png"
-              alt="SammyOS Desktop App"
-              width={900}
-              height={600}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-700"
-            />
-          </div>
-          <div>
-            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Live Dashboard</p>
-            <Image
-              src="/sammyos_dashboard.png"
-              alt="SammyOS Live Dashboard"
-              width={900}
-              height={600}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-700"
-            />
-          </div>
-        </div>
+        <ScreenshotBrowser />
       </Section>
 
       {/* BUILD TIMELINE */}
