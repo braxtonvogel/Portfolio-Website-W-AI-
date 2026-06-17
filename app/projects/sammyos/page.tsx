@@ -202,16 +202,6 @@ const TABS = [
     desc: "The floating chat window is a detachable, always-on-top panel you can drag anywhere on your screen. It runs as a separate Tauri webview window with its own auth hydration and can capture a screenshot of whatever is currently visible behind it. Perfect for asking Sam about content in another app without losing your place.",
     tip: "Click the screenshot button in the float window to instantly send Sam a capture of your current screen.",
   },
-  {
-    id: "dashboard",
-    label: "Live Dashboard",
-    icon: "📊",
-    src: "/sammyos-dashboard.png",
-    alt: "SammyOS Live Telemetry Dashboard",
-    headline: "Real-time usage stats. Publicly visible proof of life.",
-    desc: "sammyos-live.vercel.app is a standalone Next.js dashboard that polls the nexus-analyzer telemetry API every few seconds and displays live counters for sessions started, messages sent, research jobs kicked off, and vault uploads completed. It's deployed separately so it stays up even if the main app is offline — and it's publicly accessible as a portfolio signal.",
-    tip: "Open sammyos-live.vercel.app while using SammyOS and watch your own events appear in real time.",
-  },
 ];
 
 function ScreenshotBrowser() {
@@ -712,7 +702,13 @@ npm run tauri dev</pre>
               target="_blank"
               className="px-5 py-2.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-sm font-medium hover:scale-105 transition-transform"
             >
-              
+              Live Dashboard →
+            </a>
+            <a
+              href="https://nexus-analyzer-three.vercel.app/"
+              target="_blank"
+              className="px-5 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-600 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
               Nexus API →
             </a>
           </div>
