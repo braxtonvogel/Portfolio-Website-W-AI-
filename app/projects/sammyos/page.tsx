@@ -712,13 +712,7 @@ npm run tauri dev</pre>
               target="_blank"
               className="px-5 py-2.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-sm font-medium hover:scale-105 transition-transform"
             >
-              Live Dashboard →
-            </a>
-            <a
-              href="https://nexus-analyzer-three.vercel.app/"
-              target="_blank"
-              className="px-5 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-600 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-            >
+              
               Nexus API →
             </a>
           </div>
