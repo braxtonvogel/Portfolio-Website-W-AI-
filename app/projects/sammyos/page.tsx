@@ -53,42 +53,82 @@ const FEATURES = [
   {
     icon: "🖥️",
     title: "Screen Awareness",
-    desc: "Sam captures your active window in real time, reads its content, and answers questions about exactly what you're looking at — no copy-paste needed.",
+    color: "violet",
+    stat: "< 100ms capture latency",
+    headline: "Sam sees exactly what you see — instantly.",
+    desc: "A Rust Tauri command captures the active window on demand and ships the pixel data to the AI context. No manual screenshots, no copy-paste. Ask Sam \"what's wrong with this error?\" and it already knows — it's looking at your screen.",
+    how: "Rust screenshot command → base64 encode → injected as vision input into the LLM payload alongside your text prompt.",
+    tags: ["Tauri v2", "Rust", "Vision API", "Active Window Detection"],
   },
   {
     icon: "🎙️",
     title: "Live Audio Transcription",
-    desc: "Listens to your microphone or meeting audio and pipes the live transcript directly into the AI context window.",
+    color: "blue",
+    stat: "Real-time streaming transcript",
+    headline: "Every word in your meeting becomes AI context.",
+    desc: "SammyOS taps your microphone or system audio and streams a live rolling transcript directly into Sam's context window. Ask follow-up questions mid-meeting without stopping to type. Sam heard it too.",
+    how: "Web Audio API → chunked PCM → Whisper transcription → appended to chat context on each utterance boundary.",
+    tags: ["Web Audio API", "Whisper", "Streaming", "Real-time"],
   },
   {
     icon: "📂",
     title: "File & Codebase Reading",
-    desc: "Upload individual files or entire codebases. Sam parses the structure and answers questions across the full content tree.",
+    color: "cyan",
+    stat: "Entire repo trees supported",
+    headline: "Drop a codebase. Sam reads every file.",
+    desc: "Upload individual files or entire directory trees. Sam parses the structure, indexes relationships between files, and answers questions spanning the full codebase — not just the file you happened to open.",
+    how: "Drag-drop upload → recursive file tree flattening → chunked context injection with path metadata preserved per file.",
+    tags: ["Next.js API Routes", "File System API", "Context Chunking"],
   },
   {
     icon: "🔬",
     title: "Autonomous Deep Research",
-    desc: "Kick off a multi-step research job. Sam searches, synthesizes, and saves a polished report to your Knowledge Vault automatically.",
+    color: "emerald",
+    stat: "Multi-step • Auto-saved reports",
+    headline: "Kick it off. Come back to a finished report.",
+    desc: "Describe a research question and Sam takes over — breaking it into sub-queries, searching across sources, cross-referencing results, and synthesizing a structured report. The finished report auto-saves to your Knowledge Vault without you lifting a finger.",
+    how: "Research job queued in Redis → polling loop (max 60 attempts, 5s intervals) → multi-step LLM chain → vault write on completion.",
+    tags: ["Redis Job Queue", "LLM Chaining", "Upstash", "Polling"],
   },
   {
     icon: "🗄️",
     title: "Knowledge Vault",
-    desc: "Every research report is persisted to a personal cloud vault with full-text search, upload counters, and job-status polling.",
+    color: "amber",
+    stat: "Persistent • Searchable • Cloud-synced",
+    headline: "Every insight Sam finds, saved forever.",
+    desc: "Research reports, uploaded analyses, and key findings are persisted to a personal cloud vault backed by Redis on Upstash. Each upload increments a live counter piped to the public telemetry dashboard — so your productivity is literally measurable.",
+    how: "VaultUpload component → POST /api/vault/ping on nexus-analyzer → Redis INCR on `telemetry:total:vault_upload` → live count on sammyos-live.",
+    tags: ["Upstash Redis", "CORS", "REST API", "Telemetry"],
   },
   {
     icon: "🔑",
     title: "Bring Your Own Key",
-    desc: "Store your OpenAI, Anthropic, Groq, or custom endpoint key. It gets priority in the provider chain, with free-tier fallback if missing.",
+    color: "rose",
+    stat: "5-provider fallback chain",
+    headline: "Your API key. Your priority. Zero wasted tokens.",
+    desc: "Store your OpenAI, Anthropic, Groq, or any OpenAI-compatible key in your account. It gets inserted first in the provider chain — meaning you get faster models and no rate-sharing with other users. If your key is missing, the free rotation kicks in automatically.",
+    how: "Settings page → key stored encrypted in nexus-analyzer → key-injection.ts fetches on each chat request → Custom → Ollama → Groq → Gemini → Cerebras.",
+    tags: ["JWT", "Key Injection", "Provider Routing", "Fallback Logic"],
   },
   {
     icon: "🔒",
     title: "Hardened Auth",
-    desc: "Rate-limited login and register routes (per-IP + per-account counters), bcrypt password hashing, JWT sessions, and CORS-locked API boundaries.",
+    color: "violet",
+    stat: "10 attempts / IP / 15 min",
+    headline: "Production-grade security, not tutorial auth.",
+    desc: "Login and register routes enforce per-IP and per-account rate limits. Passwords are bcrypt-hashed server-side, sessions are JWT-signed, and every cross-origin request is validated against an allowlist. The auth layer was built to survive real abuse — not just a demo.",
+    how: "Upstash rate-limit middleware → bcrypt hash on register → JWT sign → x-sammy-token header forwarded on all subsequent API calls.",
+    tags: ["bcrypt", "JWT", "Rate Limiting", "CORS", "Upstash"],
   },
   {
     icon: "🚀",
     title: "Silent One-Click Launcher",
-    desc: "SammyOS.vbs double-click starts the app with zero terminal windows — auto-checks for GitHub updates, validates dependencies, and self-deletes its Task Scheduler entry to prevent double-launch.",
+    color: "blue",
+    stat: "0 terminal windows on launch",
+    headline: "Double-click. App opens. Nothing else.",
+    desc: "SammyOS.vbs triggers launch.py which validates Node, npm, Rust, and Tauri-CLI, pulls any GitHub updates, then fires the app via Task Scheduler — all without a single terminal window appearing. A self-deleting helper prevents double-launch, and a log file captures every run.",
+    how: "SammyOS.vbs → wscript (silent) → launch.py → launcher_helper.vbs (Task Scheduler) → self-deletes task after fire → launcher.log written.",
+    tags: ["VBScript", "Python", "Task Scheduler", "GitHub API", "wmic"],
   },
 ];
 
@@ -273,26 +313,80 @@ export default function SammyOSProject() {
       <Section delay={240}>
         <div className="mt-14">
           <h2 className="text-2xl font-semibold mb-6">Feature Explorer</h2>
-          <div className="grid md:grid-cols-3 gap-3">
+
+          {/* GRID OF BUTTONS */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
             {FEATURES.map((f, i) => (
               <button
                 key={i}
                 onClick={() => setActiveFeature(i)}
-                className={`text-left p-4 rounded-xl border transition-all duration-200 ${
+                className={`text-left p-4 rounded-xl border transition-all duration-200 group ${
                   activeFeature === i
-                    ? "border-violet-500 bg-violet-500/10 text-black dark:text-white"
-                    : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 text-zinc-600 dark:text-zinc-400"
+                    ? "border-violet-500 bg-violet-500/10"
+                    : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500"
                 }`}
               >
-                <span className="text-xl">{f.icon}</span>
-                <p className="mt-2 text-sm font-medium text-black dark:text-white">{f.title}</p>
+                <span className="text-2xl">{f.icon}</span>
+                <p className={`mt-2 text-xs font-semibold leading-snug ${
+                  activeFeature === i ? "text-violet-400" : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200"
+                }`}>
+                  {f.title}
+                </p>
               </button>
             ))}
           </div>
-          <div className="mt-4 p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 min-h-[80px] transition-all duration-300">
-            <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-7">
-              {FEATURES[activeFeature].desc}
-            </p>
+
+          {/* RICH DETAIL PANEL */}
+          <div className="mt-3 rounded-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+
+            {/* TOP BAR */}
+            <div className="flex items-center justify-between px-6 py-4 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{FEATURES[activeFeature].icon}</span>
+                <span className="font-semibold text-base">{FEATURES[activeFeature].title}</span>
+              </div>
+              <span className="text-xs font-mono text-violet-400 bg-violet-500/10 border border-violet-500/20 px-3 py-1 rounded-full">
+                {FEATURES[activeFeature].stat}
+              </span>
+            </div>
+
+            {/* BODY */}
+            <div className="p-6 bg-white dark:bg-zinc-950 grid md:grid-cols-5 gap-6">
+
+              {/* LEFT: headline + description */}
+              <div className="md:col-span-3 space-y-3">
+                <p className="text-lg font-semibold leading-snug text-black dark:text-white">
+                  {FEATURES[activeFeature].headline}
+                </p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-7">
+                  {FEATURES[activeFeature].desc}
+                </p>
+              </div>
+
+              {/* RIGHT: how it works + tech tags */}
+              <div className="md:col-span-2 space-y-4">
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">How it works</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono leading-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3">
+                    {FEATURES[activeFeature].how}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">Tech involved</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {FEATURES[activeFeature].tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-mono"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </Section>
