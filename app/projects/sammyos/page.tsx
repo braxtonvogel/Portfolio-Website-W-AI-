@@ -382,7 +382,7 @@ export default function SammyOSProject() {
           </div>
           <div className="aspect-video bg-zinc-900 rounded-2xl border border-zinc-800 flex items-center justify-center">
             <iframe
-              src=""
+              src="https://www.youtube.com/embed/wqK-W5ITnnM"
               className="w-full h-full rounded-2xl"
               allow="autoplay; encrypted-media"
               allowFullScreen
@@ -398,7 +398,7 @@ export default function SammyOSProject() {
             <button onClick={() => setBackupOpen(false)} className="absolute top-3 right-4 text-zinc-400 hover:text-white text-xl">
               x
             </button>
-            <iframe src="" className="w-full h-[500px] rounded-xl" allow="autoplay" />
+            <iframe src="https://drive.google.com/file/d/1KzIQ40AvLx2AmNKKUZ1Bcran3ZJLiHSv/preview" className="w-full h-[500px] rounded-xl" allow="autoplay" />
           </div>
         </div>
       )}
