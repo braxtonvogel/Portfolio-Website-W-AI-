@@ -7,42 +7,50 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 
+const [projectFilter, setProjectFilter] = useState<"all" | "personal" | "class">("all");
+
 const projects = [
-   {
+  {
     title: "SammyOS - Context Aware AI Productivity Platform",
     type: "Personal Project",
     href: "/projects/sammyos",
     tech: "Tauri • Next.js • Rust • Zustand • Redis (Upstash) • Multi-LLM Routing",
+    category: "personal",
   },
   {
     title: "Student Risk Prediction System (AI + ML + WEB APP)",
     type: "Personal Project",
     href: "/projects/student-risk-prediction-system",
     tech: "Python • Scikit-learn • Pandas • Streamlit • LLM (Nova / Llama 3)",
+    category: "personal",
   },
   {
     title: "D&D Character Builder",
     type: "Group Project",
     href: "/projects/dnd-builder",
     tech: "Python • Spring Boot • SQL • Database Design",
+    category: "class",
   },
   {
     title: "Stateful Browser Automation Engine",
     type: "Personal Project",
     href: "/projects/stateful-browser-automation-engine",
     tech: "Python • Playwright • Chromium • Session Automation",
+    category: "personal",
   },
   {
     title: "Chat Server",
     type: "Personal Project",
     href: "/projects/chat-server",
     tech: "Java • Sockets • Networking",
+    category: "class",
   },
   {
     title: "File Manager UI",
     type: "Partnership Project",
     href: "/projects/file-manager-ui",
     tech: "HTML • React • UI/UX • Frontend Design",
+    category: "class",
   },
 ];
 
@@ -486,26 +494,47 @@ useEffect(() => {
       </section>
 
       {/* ================= PROJECTS ================= */}
-      <section id="projects" className="space-y-6 scroll-mt-24">
-        <h2 className="text-2xl font-semibold">Projects</h2>
+<section id="projects" className="space-y-6 scroll-mt-24">
+  <div className="flex items-center justify-between flex-wrap gap-4">
+    <h2 className="text-2xl font-semibold">Projects</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {projects.map((project) => (
-            <Link key={project.href} href={project.href}>
-              <div className="group border border-white rounded-xl p-5 flex flex-col transition-all duration-300 hover:scale-[1.03] cursor-pointer">
-                <h3 className="text-lg font-semibold leading-snug">
-                  {project.title}
-                </h3>
+    <div className="flex gap-2">
+      {(["all", "personal", "class"] as const).map((filter) => (
+        <button
+          key={filter}
+          onClick={() => setProjectFilter(filter)}
+          className={`px-4 py-1.5 rounded-full text-sm border transition-all duration-200 capitalize
+            ${
+              projectFilter === filter
+                ? "bg-white text-black border-white"
+                : "border-zinc-600 text-zinc-400 hover:border-white hover:text-white"
+            }`}
+        >
+          {filter === "all" ? "All" : filter === "personal" ? "Personal" : "Class"}
+        </button>
+      ))}
+    </div>
+  </div>
 
-                <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-40 group-hover:opacity-100 transition-all duration-300 mt-0 group-hover:mt-3">
-                  <p className="text-xs text-zinc-400">{project.type}</p>
-                  <p className="text-sm text-zinc-400 mt-1">{project.tech}</p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {projects
+      .filter((p) => projectFilter === "all" || p.category === projectFilter)
+      .map((project) => (
+        <Link key={project.href} href={project.href}>
+          <div className="group border border-white rounded-xl p-5 flex flex-col transition-all duration-300 hover:scale-[1.03] cursor-pointer">
+            <h3 className="text-lg font-semibold leading-snug">
+              {project.title}
+            </h3>
+
+            <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-40 group-hover:opacity-100 transition-all duration-300 mt-0 group-hover:mt-3">
+              <p className="text-xs text-zinc-400">{project.type}</p>
+              <p className="text-sm text-zinc-400 mt-1">{project.tech}</p>
+            </div>
+          </div>
+        </Link>
+      ))}
+  </div>
+</section>
 
       <section>
         <FakeAI />
