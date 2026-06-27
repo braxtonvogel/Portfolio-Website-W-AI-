@@ -93,12 +93,12 @@ const skills = {
 };
 
 const phrases = [
-  "intelligent software systems",
-  "AI-powered tools",
-  "modern engineering experiences",
-  "full-stack applications",
-  "automation systems",
-  "data science pipelines",
+  "Intelligent Software Systems",
+  "AI-powered Tools",
+  "Modern Engineering Experiences",
+  "Full-Stack Applications",
+  "Automation Systems",
+  "Data Science Pipelines",
 ];
 
 export default function Home() {
@@ -345,13 +345,13 @@ export default function Home() {
         {/* ================= OVERVIEW ================= */}
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold">
-            START HERE - Portfolio Overview
+            About Me
           </h2>
           <p className="text-zinc-300 leading-7">
-            Hi, I'm Braxton Vogel, a Software Engineering student at Sam Houston State University.
-            I enjoy building practical systems and user-focused applications, with an interest in backend development,
-            UI design, full-stack software engineering, and data science.
-            After I finish my bachelor's degree, I want to pursue a master's in computing & data science.
+             I'm a Software Engineering student at Sam Houston State University,
+    building toward a career in backend systems, full-stack engineering, QA automation, and data science.
+    I'm drawn to projects that solve real problems, things that actually get used, not just submitted.
+    Long-term, I'm planning to pursue a master's degree in data science.
           </p>
 
           <div className="space-y-4">
@@ -360,10 +360,10 @@ export default function Home() {
               I focus on projects involving:
             </p>
             <ul className="list-disc pl-6 text-zinc-300 space-y-1">
-              <li>Systems programming (networking, CLI tools)</li>
-              <li>Database-driven applications</li>
-              <li>UI/UX prototypes</li>
-              <li>Software that solves real workflow problems</li>
+              <li>Backend systems and networking</li>
+              <li>Full-stack and database-driven applications</li>
+              <li>Machine learning and data pipelines</li>
+              <li>Automation and workflow tooling</li>
             </ul>
           </div>
         </section>
