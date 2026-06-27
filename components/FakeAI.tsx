@@ -16,6 +16,9 @@ const knowledgeBase = {
     java:
       "Yes — Braxton has Java experience from his Chat Server and D&D Character Builder projects.",
 
+    rust:
+      "Yes — Braxton has Rust experience from SammyOS, where he used it to build the backend core of a cross-platform desktop productivity platform.",
+
     html:
       "Yes — Braxton has HTML experience from his File Manager UI project.",
 
@@ -23,243 +26,285 @@ const knowledgeBase = {
       "Yes — Braxton has SQL experience from his D&D Character Builder Database System.",
   },
 
- frameworks: {
-  springboot:
-    "Yes — Braxton has Spring Boot backend experience from his D&D Character Builder Database System.",
+  frameworks: {
+    springboot:
+      "Yes — Braxton has Spring Boot backend experience from his D&D Character Builder Database System.",
 
-  react:
-    "Yes — Braxton has React frontend experience from his File Manager UI project and this portfolio site.",
+    react:
+      "Yes — Braxton has React frontend experience from his File Manager UI project and this portfolio site.",
 
-  streamlit:
-    "Yes — Braxton has Streamlit dashboard and web app experience from his Student Risk Prediction System.",
+    nextjs:
+      "Yes — Braxton has Next.js experience from SammyOS and this portfolio site.",
 
-  playwright:
-    "Yes — Braxton has Playwright browser automation experience from his Stateful Browser Automation Engine.",
+    tauri:
+      "Yes — Braxton has Tauri experience from SammyOS, where he used it to build a cross-platform desktop application combining a Rust backend with a Next.js frontend.",
 
-  chromium:
-    "Yes — Braxton has Chromium automation experience from his Stateful Browser Automation Engine.",
+    zustand:
+      "Yes — Braxton has Zustand state management experience from SammyOS.",
 
-  shap:
-    "Yes — Braxton has SHAP explainability experience from his Student Risk Prediction System.",
+    redis:
+      "Yes — Braxton has Redis experience from SammyOS, using Upstash for serverless key-value storage and caching.",
 
-  llama3:
-    "Yes — Braxton has Llama 3 integration experience from his Student Risk Prediction System.",
+    upstash:
+      "Yes — Braxton has Upstash (serverless Redis) experience from SammyOS.",
 
-  nova:
-    "Yes — Braxton has Nova LLM integration experience from his Student Risk Prediction System.",
+    streamlit:
+      "Yes — Braxton has Streamlit dashboard and web app experience from his Student Risk Prediction System.",
 
-  scikitlearn:
-    "Yes — Braxton has Scikit-learn experience from his Student Risk Prediction System.",
+    playwright:
+      "Yes — Braxton has Playwright browser automation experience from his Stateful Browser Automation Engine.",
 
-  llama:
-    "Yes — Braxton has Llama 3 LLM integration experience from his Student Risk Prediction System.",
+    chromium:
+      "Yes — Braxton has Chromium automation experience from his Stateful Browser Automation Engine.",
 
-  novallm:
-    "Yes — Braxton has Nova LLM integration experience from his Student Risk Prediction System.",
+    shap:
+      "Yes — Braxton has SHAP explainability experience from his Student Risk Prediction System.",
 
-  llmintegration:
-    "Yes — Braxton has large language model integration experience using Nova and Llama 3.",
+    llama3:
+      "Yes — Braxton has Llama 3 integration experience from his Student Risk Prediction System.",
 
-  frontenddesign:
-    "Yes — Braxton has frontend design experience from his File Manager UI project.",
-},
+    nova:
+      "Yes — Braxton has Nova LLM integration experience from his Student Risk Prediction System.",
+
+    scikitlearn:
+      "Yes — Braxton has Scikit-learn experience from his Student Risk Prediction System.",
+
+    llama:
+      "Yes — Braxton has Llama 3 LLM integration experience from his Student Risk Prediction System.",
+
+    novallm:
+      "Yes — Braxton has Nova LLM integration experience from his Student Risk Prediction System.",
+
+    llmintegration:
+      "Yes — Braxton has large language model integration experience using Nova and Llama 3.",
+
+    frontenddesign:
+      "Yes — Braxton has frontend design experience from his File Manager UI project.",
+  },
 
   concepts: {
-  machinelearning:
-    "Yes — Braxton has machine learning experience from his Student Risk Prediction System.",
+    machinelearning:
+      "Yes — Braxton has machine learning experience from his Student Risk Prediction System.",
 
-  ml:
-    "Yes — Braxton has machine learning experience from his Student Risk Prediction System.",
+    ml:
+      "Yes — Braxton has machine learning experience from his Student Risk Prediction System.",
 
-  randomforest:
-    "Yes — Braxton has Random Forest model experience from his Student Risk Prediction System.",
+    randomforest:
+      "Yes — Braxton has Random Forest model experience from his Student Risk Prediction System.",
 
-  featureengineering:
-    "Yes — Braxton has feature engineering experience from his Student Risk Prediction System.",
+    featureengineering:
+      "Yes — Braxton has feature engineering experience from his Student Risk Prediction System.",
 
-  datascience:
-    "Yes — Braxton has data science experience from his Student Risk Prediction System.",
+    datascience:
+      "Yes — Braxton has data science experience from his Student Risk Prediction System.",
 
-  datavisualization:
-    "Yes — Braxton has data visualization experience from his Student Risk Prediction System.",
+    datavisualization:
+      "Yes — Braxton has data visualization experience from his Student Risk Prediction System.",
 
-  datasets:
-    "Yes — Braxton has real-world dataset handling experience using the OULAD dataset in his Student Risk Prediction System.",
+    datasets:
+      "Yes — Braxton has real-world dataset handling experience using the OULAD dataset in his Student Risk Prediction System.",
 
-  datasetanalysis:
-    "Yes — Braxton has dataset analysis experience from his Student Risk Prediction System.",
+    datasetanalysis:
+      "Yes — Braxton has dataset analysis experience from his Student Risk Prediction System.",
 
-  ai:
-    "Yes — Braxton has AI integration experience from his Student Risk Prediction System.",
+    ai:
+      "Yes — Braxton has AI integration experience from his Student Risk Prediction System and SammyOS.",
 
-  explainability:
-    "Yes — Braxton has AI explainability and feature importance analysis experience using SHAP.",
+    explainability:
+      "Yes — Braxton has AI explainability and feature importance analysis experience using SHAP.",
 
-  featureimportance:
-    "Yes — Braxton has feature importance analysis experience using SHAP in his Student Risk Prediction System.",
+    featureimportance:
+      "Yes — Braxton has feature importance analysis experience using SHAP in his Student Risk Prediction System.",
 
-  llm:
-    "Yes — Braxton has large language model integration experience using Nova and Llama 3.",
+    llm:
+      "Yes — Braxton has large language model integration experience using Nova and Llama 3, as well as multi-LLM routing in SammyOS.",
 
-  insightgeneration:
-    "Yes — Braxton has AI-driven insight generation experience using LLM integration.",
+    multillm:
+      "Yes — Braxton has multi-LLM routing experience from SammyOS, intelligently routing tasks across multiple language models.",
 
-  backend:
-    "Yes — Braxton has backend engineering experience from projects including his D&D Character Builder and Chat Server.",
+    llmrouting:
+      "Yes — Braxton has LLM routing and orchestration experience from SammyOS.",
 
-  modularbackend:
-    "Yes — Braxton has modular backend structure experience from his Student Risk Prediction System and backend projects.",
+    contextaware:
+      "Yes — Braxton has context-aware system design experience from SammyOS, a productivity platform that adapts to user context in real time.",
 
-  frontend:
-    "Yes — Braxton has frontend development experience from his File Manager UI project.",
+    desktopapp:
+      "Yes — Braxton has cross-platform desktop application experience from SammyOS using Tauri.",
 
-  fullstack:
-    "Yes — Braxton has full-stack development experience from his D&D Character Builder Database System.",
+    systemsprogramming:
+      "Yes — Braxton has systems programming experience from SammyOS using Rust for the backend core.",
 
-  fullstackintegration:
-    "Yes — Braxton has full-stack integration experience from his D&D Character Builder Database System.",
+    statemanagement:
+      "Yes — Braxton has frontend state management experience from SammyOS using Zustand.",
 
-  mvc:
-    "Yes — Braxton has MVC architecture experience from his D&D Character Builder Database System.",
+    caching:
+      "Yes — Braxton has caching and key-value store experience from SammyOS using Redis via Upstash.",
 
-  database:
-    "Yes — Braxton has relational database design experience from his D&D Character Builder Database System.",
+    productivity:
+      "Yes — Braxton has experience building AI-powered productivity tools from SammyOS.",
 
-  relationalmodeling:
-    "Yes — Braxton has relational database modeling experience from his D&D Character Builder Database System.",
+    sammyos:
+      "SammyOS is Braxton's most ambitious personal project — a context-aware AI productivity platform built with Tauri, Next.js, Rust, Zustand, Redis (Upstash), and multi-LLM routing.",
 
-  networking:
-    "Yes — Braxton has networking experience from his Chat Server project.",
+    insightgeneration:
+      "Yes — Braxton has AI-driven insight generation experience using LLM integration.",
 
-  sockets:
-    "Yes — Braxton has socket programming experience from his Chat Server project.",
+    backend:
+      "Yes — Braxton has backend engineering experience from projects including his D&D Character Builder, Chat Server, and SammyOS.",
 
-  clientserver:
-    "Yes — Braxton has client-server architecture experience from his Chat Server project.",
+    modularbackend:
+      "Yes — Braxton has modular backend structure experience from his Student Risk Prediction System and backend projects.",
 
-  realtime:
-    "Yes — Braxton has real-time messaging system experience from his Chat Server project.",
+    frontend:
+      "Yes — Braxton has frontend development experience from his File Manager UI project and SammyOS.",
 
-  networkdesign:
-    "Yes — Braxton has network communication design experience from his Chat Server project.",
+    fullstack:
+      "Yes — Braxton has full-stack development experience from his D&D Character Builder Database System and SammyOS.",
 
-  multiclient:
-    "Yes — Braxton has multi-client handling experience from his Chat Server project.",
+    fullstackintegration:
+      "Yes — Braxton has full-stack integration experience from his D&D Character Builder Database System.",
 
-  automation:
-    "Yes — Braxton has automation workflow design experience from his Stateful Browser Automation Engine.",
+    mvc:
+      "Yes — Braxton has MVC architecture experience from his D&D Character Builder Database System.",
 
-  processautomation:
-    "Yes — Braxton has process automation experience from his Stateful Browser Automation Engine.",
+    database:
+      "Yes — Braxton has relational database design experience from his D&D Character Builder Database System.",
 
-  workflowoptimization:
-    "Yes — Braxton has workflow optimization experience from automation and frontend projects.",
+    relationalmodeling:
+      "Yes — Braxton has relational database modeling experience from his D&D Character Builder Database System.",
 
-  sessionmanagement:
-    "Yes — Braxton has persistent session management experience from his Stateful Browser Automation Engine.",
+    networking:
+      "Yes — Braxton has networking experience from his Chat Server project.",
 
-  authentication:
-    "Yes — Braxton has stateful authentication system experience from his Stateful Browser Automation Engine.",
+    sockets:
+      "Yes — Braxton has socket programming experience from his Chat Server project.",
 
-  dynamicweb:
-    "Yes — Braxton has dynamic web interaction experience from his Stateful Browser Automation Engine.",
+    clientserver:
+      "Yes — Braxton has client-server architecture experience from his Chat Server project.",
 
-  browserdebugging:
-    "Yes — Braxton has browser workflow debugging experience from Playwright automation systems.",
+    realtime:
+      "Yes — Braxton has real-time messaging system experience from his Chat Server project.",
 
-  reusablesoftware:
-    "Yes — Braxton has reusable software design experience from automation and backend projects.",
+    networkdesign:
+      "Yes — Braxton has network communication design experience from his Chat Server project.",
 
-  uiux:
-    "Yes — Braxton has UI/UX design experience from his File Manager UI project.",
+    multiclient:
+      "Yes — Braxton has multi-client handling experience from his Chat Server project.",
 
-  responsive:
-    "Yes — Braxton has responsive frontend design experience from his File Manager UI project.",
+    automation:
+      "Yes — Braxton has automation workflow design experience from his Stateful Browser Automation Engine.",
 
-  responsiveui:
-    "Yes — Braxton has responsive UI system design experience from his File Manager UI project.",
+    processautomation:
+      "Yes — Braxton has process automation experience from his Stateful Browser Automation Engine.",
 
-  componentarchitecture:
-    "Yes — Braxton has component-based architecture experience from React frontend projects.",
+    workflowoptimization:
+      "Yes — Braxton has workflow optimization experience from automation and frontend projects.",
 
-  userinterface:
-    "Yes — Braxton has user interface design experience from frontend and UI/UX projects.",
+    sessionmanagement:
+      "Yes — Braxton has persistent session management experience from his Stateful Browser Automation Engine.",
 
-  designsystems:
-    "Yes — Braxton has design consistency system experience from frontend UI/UX projects.",
+    authentication:
+      "Yes — Braxton has stateful authentication system experience from his Stateful Browser Automation Engine.",
 
-  debugging:
-    "Yes — Braxton has debugging experience across backend systems, automation tools, and frontend applications.",
+    dynamicweb:
+      "Yes — Braxton has dynamic web interaction experience from his Stateful Browser Automation Engine.",
 
-  frontenddebugging:
-    "Yes — Braxton has frontend debugging experience from React and UI development projects.",
+    browserdebugging:
+      "Yes — Braxton has browser workflow debugging experience from Playwright automation systems.",
 
-  github:
-    "Yes — Braxton has GitHub workflow and project management experience across multiple projects.",
+    reusablesoftware:
+      "Yes — Braxton has reusable software design experience from automation and backend projects.",
 
-  documentation:
-    "Yes — Braxton has software documentation experience from multiple development projects.",
+    uiux:
+      "Yes — Braxton has UI/UX design experience from his File Manager UI project.",
 
-  research:
-    "Yes — Braxton has research and technical documentation experience from multiple software projects.",
+    responsive:
+      "Yes — Braxton has responsive frontend design experience from his File Manager UI project.",
 
-  datadriven:
-    "Yes — Braxton has data-driven decision-making experience from machine learning and analytics projects.",
+    responsiveui:
+      "Yes — Braxton has responsive UI system design experience from his File Manager UI project.",
 
-  criticalthinking:
-    "Yes — Braxton has demonstrated critical thinking skills through machine learning and systems engineering projects.",
+    componentarchitecture:
+      "Yes — Braxton has component-based architecture experience from React and Next.js frontend projects.",
 
-  strategicplanning:
-    "Yes — Braxton has strategic planning experience from long-term software project development.",
+    userinterface:
+      "Yes — Braxton has user interface design experience from frontend and UI/UX projects.",
 
-  teamwork:
-    "Yes — Braxton has teamwork and collaboration experience from group software engineering projects.",
+    designsystems:
+      "Yes — Braxton has design consistency system experience from frontend UI/UX projects.",
 
-  creativity:
-    "Yes — Braxton has creative thinking experience demonstrated through UI/UX and software design projects.",
+    debugging:
+      "Yes — Braxton has debugging experience across backend systems, automation tools, and frontend applications.",
 
-  security:
-    "Yes — Braxton has basic security testing experience from his D&D Character Builder project.",
+    frontenddebugging:
+      "Yes — Braxton has frontend debugging experience from React and UI development projects.",
 
-  softwarearchitecture:
-    "Yes — Braxton has software architecture experience across backend, automation, and ML systems.",
+    github:
+      "Yes — Braxton has GitHub workflow and project management experience across multiple projects.",
 
-  systemarchitecture:
-    "Yes — Braxton has system architecture experience from backend and full-stack development projects.",
+    documentation:
+      "Yes — Braxton has software documentation experience from multiple development projects.",
 
-  problemsolving:
-    "Yes — Braxton has strong problem solving and innovation skills demonstrated through multiple engineering projects.",
+    research:
+      "Yes — Braxton has research and technical documentation experience from multiple software projects.",
 
-  javadevelopment:
-    "Yes — Braxton has Java development experience from his Chat Server and D&D Character Builder projects.",
+    datadriven:
+      "Yes — Braxton has data-driven decision-making experience from machine learning and analytics projects.",
 
-  commandline:
-    "Yes — Braxton has command-line application design experience from backend and networking projects.",
+    criticalthinking:
+      "Yes — Braxton has demonstrated critical thinking skills through machine learning and systems engineering projects.",
 
-  projectstructuring:
-    "Yes — Braxton has project structuring experience across multiple software engineering projects.",
+    strategicplanning:
+      "Yes — Braxton has strategic planning experience from long-term software project development.",
 
-  mlpipeline:
-    "Yes — Braxton has machine learning pipeline design experience from his Student Risk Prediction System.",
+    teamwork:
+      "Yes — Braxton has teamwork and collaboration experience from group software engineering projects.",
 
-  pythonarchitecture:
-    "Yes — Braxton has Python project architecture experience from multiple software engineering projects.",
+    creativity:
+      "Yes — Braxton has creative thinking experience demonstrated through UI/UX and software design projects.",
 
-  dashboards:
-    "Yes — Braxton has Streamlit dashboard development experience from his Student Risk Prediction System.",
+    security:
+      "Yes — Braxton has basic security testing experience from his D&D Character Builder project.",
 
-  webapps:
-    "Yes — Braxton has experience building interactive ML web applications using Streamlit.",
+    softwarearchitecture:
+      "Yes — Braxton has software architecture experience across backend, automation, ML systems, and SammyOS.",
 
-  predictionui:
-    "Yes — Braxton has experience designing real-time prediction user interfaces using Streamlit.",
+    systemarchitecture:
+      "Yes — Braxton has system architecture experience from backend, full-stack, and desktop development projects.",
 
-  riskprediction:
-    "Yes — Braxton has experience building risk probability prediction systems in his Student Risk Prediction System.",
+    problemsolving:
+      "Yes — Braxton has strong problem solving and innovation skills demonstrated through multiple engineering projects.",
 
-  oulad:
-    "Yes — Braxton has experience working with the real-world OULAD educational dataset.",
-},
+    javadevelopment:
+      "Yes — Braxton has Java development experience from his Chat Server and D&D Character Builder projects.",
+
+    commandline:
+      "Yes — Braxton has command-line application design experience from backend and networking projects.",
+
+    projectstructuring:
+      "Yes — Braxton has project structuring experience across multiple software engineering projects.",
+
+    mlpipeline:
+      "Yes — Braxton has machine learning pipeline design experience from his Student Risk Prediction System.",
+
+    pythonarchitecture:
+      "Yes — Braxton has Python project architecture experience from multiple software engineering projects.",
+
+    dashboards:
+      "Yes — Braxton has Streamlit dashboard development experience from his Student Risk Prediction System.",
+
+    webapps:
+      "Yes — Braxton has experience building interactive ML web applications using Streamlit.",
+
+    predictionui:
+      "Yes — Braxton has experience designing real-time prediction user interfaces using Streamlit.",
+
+    riskprediction:
+      "Yes — Braxton has experience building risk probability prediction systems in his Student Risk Prediction System.",
+
+    oulad:
+      "Yes — Braxton has experience working with the real-world OULAD educational dataset.",
+  },
 };
 
 export default function FakeAI() {
@@ -286,7 +331,7 @@ export default function FakeAI() {
             {
               role: "ai",
               content:
-                "Quick note: I may not include every detail of Braxton’s experience. For full accuracy, please review his project pages alongside using this assistant.",
+                "Quick note: I may not include every detail of Braxton's experience. For full accuracy, please review his project pages alongside using this assistant.",
             },
           ];
         }
@@ -331,7 +376,7 @@ export default function FakeAI() {
     // ================= FALLBACK =================
     if (!found) {
       response =
-        "That topic isn’t explicitly listed, but check Braxton’s project pages for related experience.";
+        "That topic isn't explicitly listed, but check Braxton's project pages for related experience.";
     }
 
     setTimeout(() => {

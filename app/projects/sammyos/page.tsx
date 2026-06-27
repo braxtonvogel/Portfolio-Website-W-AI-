@@ -51,9 +51,7 @@ const TECH_STACK = [
 
 const FEATURES = [
   {
-    icon: "🖥️",
     title: "Screen Awareness",
-    color: "violet",
     stat: "< 100ms capture latency",
     headline: "Sam sees exactly what you see — instantly.",
     desc: "A Rust Tauri command captures the active window on demand and ships the pixel data to the AI context. No manual screenshots, no copy-paste. Ask Sam \"what's wrong with this error?\" and it already knows — it's looking at your screen.",
@@ -61,9 +59,7 @@ const FEATURES = [
     tags: ["Tauri v2", "Rust", "Vision API", "Active Window Detection"],
   },
   {
-    icon: "🎙️",
     title: "Live Audio Transcription",
-    color: "blue",
     stat: "Real-time streaming transcript",
     headline: "Every word in your meeting becomes AI context.",
     desc: "SammyOS taps your microphone or system audio and streams a live rolling transcript directly into Sam's context window. Ask follow-up questions mid-meeting without stopping to type. Sam heard it too.",
@@ -71,9 +67,7 @@ const FEATURES = [
     tags: ["Web Audio API", "Whisper", "Streaming", "Real-time"],
   },
   {
-    icon: "📂",
     title: "File & Codebase Reading",
-    color: "cyan",
     stat: "Entire repo trees supported",
     headline: "Drop a codebase. Sam reads every file.",
     desc: "Upload individual files or entire directory trees. Sam parses the structure, indexes relationships between files, and answers questions spanning the full codebase — not just the file you happened to open.",
@@ -81,29 +75,23 @@ const FEATURES = [
     tags: ["Next.js API Routes", "File System API", "Context Chunking"],
   },
   {
-    icon: "🔬",
     title: "Autonomous Deep Research",
-    color: "emerald",
-    stat: "Multi-step • Auto-saved reports",
+    stat: "Multi-step · Auto-saved reports",
     headline: "Kick it off. Come back to a finished report.",
     desc: "Describe a research question and Sam takes over — breaking it into sub-queries, searching across sources, cross-referencing results, and synthesizing a structured report. The finished report auto-saves to your Knowledge Vault without you lifting a finger.",
     how: "Research job queued in Redis → polling loop (max 60 attempts, 5s intervals) → multi-step LLM chain → vault write on completion.",
     tags: ["Redis Job Queue", "LLM Chaining", "Upstash", "Polling"],
   },
   {
-    icon: "🗄️",
     title: "Knowledge Vault",
-    color: "amber",
-    stat: "Persistent • Searchable • Cloud-synced",
+    stat: "Persistent · Searchable · Cloud-synced",
     headline: "Every insight Sam finds, saved forever.",
     desc: "Research reports, uploaded analyses, and key findings are persisted to a personal cloud vault backed by Redis on Upstash. Each upload increments a live counter piped to the public telemetry dashboard — so your productivity is literally measurable.",
     how: "VaultUpload component → POST /api/vault/ping on nexus-analyzer → Redis INCR on `telemetry:total:vault_upload` → live count on sammyos-live.",
     tags: ["Upstash Redis", "CORS", "REST API", "Telemetry"],
   },
   {
-    icon: "🔑",
     title: "Bring Your Own Key",
-    color: "rose",
     stat: "5-provider fallback chain",
     headline: "Your API key. Your priority. Zero wasted tokens.",
     desc: "Store your OpenAI, Anthropic, Groq, or any OpenAI-compatible key in your account. It gets inserted first in the provider chain — meaning you get faster models and no rate-sharing with other users. If your key is missing, the free rotation kicks in automatically.",
@@ -111,9 +99,7 @@ const FEATURES = [
     tags: ["JWT", "Key Injection", "Provider Routing", "Fallback Logic"],
   },
   {
-    icon: "🔒",
     title: "Hardened Auth",
-    color: "violet",
     stat: "10 attempts / IP / 15 min",
     headline: "Production-grade security, not tutorial auth.",
     desc: "Login and register routes enforce per-IP and per-account rate limits. Passwords are bcrypt-hashed server-side, sessions are JWT-signed, and every cross-origin request is validated against an allowlist. The auth layer was built to survive real abuse — not just a demo.",
@@ -121,9 +107,7 @@ const FEATURES = [
     tags: ["bcrypt", "JWT", "Rate Limiting", "CORS", "Upstash"],
   },
   {
-    icon: "🚀",
     title: "Silent One-Click Launcher",
-    color: "blue",
     stat: "0 terminal windows on launch",
     headline: "Double-click. App opens. Nothing else.",
     desc: "SammyOS.vbs triggers launch.py which validates Node, npm, Rust, and Tauri-CLI, pulls any GitHub updates, then fires the app via Task Scheduler — all without a single terminal window appearing. A self-deleting helper prevents double-launch, and a log file captures every run.",
@@ -145,7 +129,6 @@ const TABS = [
   {
     id: "chat",
     label: "Chat",
-    icon: "💬",
     src: "/sammyos-chat.png",
     alt: "SammyOS Chat Tab",
     headline: "Talk to Sam — with full context awareness.",
@@ -153,19 +136,8 @@ const TABS = [
     tip: "Try asking Sam to explain what's on your screen while also referencing a file you uploaded. It handles both at once.",
   },
   {
-    id: "research",
-    label: "Research",
-    icon: "🔬",
-    src: "/sammyos-research.png",
-    alt: "SammyOS Research Tab",
-    headline: "Set a research question. Get back a finished report.",
-    desc: "The Research tab lets you kick off an autonomous multi-step research job. Sam breaks your question into sub-queries, searches across sources, cross-references results, and compiles everything into a structured report — then automatically saves it to your Knowledge Vault when done. A polling loop with a 5-minute timeout keeps you informed of job status without hanging the UI.",
-    tip: "Research jobs run in the background. You can keep chatting while Sam works.",
-  },
-  {
     id: "vault",
     label: "Vault",
-    icon: "🗄️",
     src: "/sammyos-vault.png",
     alt: "SammyOS Knowledge Vault",
     headline: "Every insight Sam produces, saved and searchable.",
@@ -175,7 +147,6 @@ const TABS = [
   {
     id: "workspace",
     label: "Workspace",
-    icon: "📂",
     src: "/sammyos-workspace.png",
     alt: "SammyOS Workspace Tab",
     headline: "Drop in a file. Drop in a whole codebase.",
@@ -183,24 +154,31 @@ const TABS = [
     tip: "Uploading a Next.js project? Sam will understand the App Router structure and answer questions spanning multiple files.",
   },
   {
-    id: "settings",
-    label: "Settings",
-    icon: "⚙️",
-    src: "/sammyos-settings.png",
-    alt: "SammyOS Settings Tab",
-    headline: "Your keys. Your models. Your priority.",
-    desc: "The Settings tab lets you store your own API keys for OpenAI, Anthropic, Groq, or any OpenAI-compatible endpoint. Your key is injected first into the provider chain on every request — giving you access to faster models, higher rate limits, and no token-sharing with other users. If your key is absent, SammyOS silently falls back to the free rotation.",
-    tip: "Adding a Groq key alone unlocks Llama 3 70B at near-instant speeds for free.",
+    id: "research",
+    label: "Research",
+    src: "/sammyos-research.png",
+    alt: "SammyOS Research Tab",
+    headline: "Set a research question. Get back a finished report.",
+    desc: "The Research tab lets you kick off an autonomous multi-step research job. Sam breaks your question into sub-queries, searches across sources, cross-references results, and compiles everything into a structured report — then automatically saves it to your Knowledge Vault when done. A polling loop with a 5-minute timeout keeps you informed of job status without hanging the UI.",
+    tip: "Research jobs run in the background. You can keep chatting while Sam works.",
   },
   {
     id: "float",
     label: "Float Window",
-    icon: "🪟",
     src: "/sammyos-float.png",
     alt: "SammyOS Floating Chat Window",
     headline: "Sam on top — without switching apps.",
     desc: "The floating chat window is a detachable, always-on-top panel you can drag anywhere on your screen. It runs as a separate Tauri webview window with its own auth hydration and can capture a screenshot of whatever is currently visible behind it. Perfect for asking Sam about content in another app without losing your place.",
     tip: "Click the screenshot button in the float window to instantly send Sam a capture of your current screen.",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    src: "/sammyos-settings.png",
+    alt: "SammyOS Settings Tab",
+    headline: "Your keys. Your models. Your priority.",
+    desc: "The Settings tab lets you store your own API keys for OpenAI, Anthropic, Groq, or any OpenAI-compatible endpoint. Your key is injected first into the provider chain on every request — giving you access to faster models, higher rate limits, and no token-sharing with other users. If your key is absent, SammyOS silently falls back to the free rotation.",
+    tip: "Adding a Groq key alone unlocks Llama 3 70B at near-instant speeds for free.",
   },
 ];
 
@@ -237,7 +215,6 @@ function ScreenshotBrowser() {
                 : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
             }`}
           >
-            <span>{t.icon}</span>
             {t.label}
           </button>
         ))}
@@ -268,7 +245,6 @@ function ScreenshotBrowser() {
         {/* DESCRIPTION PANEL */}
         <div className="mt-4 rounded-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
           <div className="flex items-center gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-            <span className="text-xl">{tab.icon}</span>
             <span className="font-semibold">{tab.label} Tab</span>
           </div>
           <div className="px-6 py-5 bg-white dark:bg-zinc-950 grid md:grid-cols-3 gap-6">
@@ -318,7 +294,7 @@ export default function SammyOSProject() {
       {/* BACK */}
       <Section>
         <Link href="/" className="text-sm text-zinc-400 hover:text-white transition-colors duration-200">
-          ← Back to Home
+          Back to Home
         </Link>
       </Section>
 
@@ -401,7 +377,7 @@ export default function SammyOSProject() {
               onClick={() => setBackupOpen(true)}
               className="px-4 py-1.5 text-xs border border-zinc-300 dark:border-zinc-600 rounded-full hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             >
-              Backup Video ↗
+              Backup Video
             </button>
           </div>
           <div className="aspect-video bg-zinc-900 rounded-2xl border border-zinc-800 flex items-center justify-center">
@@ -420,7 +396,7 @@ export default function SammyOSProject() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-zinc-950 border border-zinc-700 rounded-2xl w-[90%] max-w-4xl p-4 relative">
             <button onClick={() => setBackupOpen(false)} className="absolute top-3 right-4 text-zinc-400 hover:text-white text-xl">
-              ✕
+              x
             </button>
             <iframe src="" className="w-full h-[500px] rounded-xl" allow="autoplay" />
           </div>
@@ -474,8 +450,7 @@ export default function SammyOSProject() {
                     : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500"
                 }`}
               >
-                <span className="text-2xl">{f.icon}</span>
-                <p className={`mt-2 text-xs font-semibold leading-snug ${
+                <p className={`text-xs font-semibold leading-snug ${
                   activeFeature === i ? "text-violet-400" : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200"
                 }`}>
                   {f.title}
@@ -490,7 +465,6 @@ export default function SammyOSProject() {
             {/* TOP BAR */}
             <div className="flex items-center justify-between px-6 py-4 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{FEATURES[activeFeature].icon}</span>
                 <span className="font-semibold text-base">{FEATURES[activeFeature].title}</span>
               </div>
               <span className="text-xs font-mono text-violet-400 bg-violet-500/10 border border-violet-500/20 px-3 py-1 rounded-full">
@@ -702,14 +676,14 @@ npm run tauri dev</pre>
               target="_blank"
               className="px-5 py-2.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-sm font-medium hover:scale-105 transition-transform"
             >
-              Live Dashboard →
+              Live Dashboard
             </a>
             <a
               href="https://nexus-analyzer-three.vercel.app/"
               target="_blank"
               className="px-5 py-2.5 rounded-full border border-zinc-300 dark:border-zinc-600 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             >
-              Nexus API →
+              Nexus API
             </a>
           </div>
         </div>
