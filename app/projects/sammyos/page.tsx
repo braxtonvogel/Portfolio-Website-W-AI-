@@ -398,7 +398,7 @@ export default function SammyOSProject() {
             <button onClick={() => setBackupOpen(false)} className="absolute top-3 right-4 text-zinc-400 hover:text-white text-xl">
               x
             </button>
-            <iframe src="https://drive.google.com/file/d/1KzIQ40AvLx2AmNKKUZ1Bcran3ZJLiHSv/preview" className="w-full h-[500px] rounded-xl" allow="autoplay" />
+            <iframe src="https://drive.google.com/file/d/1Nob_h8jvbCKRZOm4FpKtjKutR4hh-L-A/preview" className="w-full h-[500px] rounded-xl" allow="autoplay" />
           </div>
         </div>
       )}
