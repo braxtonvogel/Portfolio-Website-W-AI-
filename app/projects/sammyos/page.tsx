@@ -382,7 +382,7 @@ export default function SammyOSProject() {
           </div>
           <div className="aspect-video bg-zinc-900 rounded-2xl border border-zinc-800 flex items-center justify-center">
             <iframe
-              src="https://www.youtube.com/embed/wqK-W5ITnnM"
+              src="https://www.youtube.com/embed/VF3SwYL1cWk"
               className="w-full h-full rounded-2xl"
               allow="autoplay; encrypted-media"
               allowFullScreen
