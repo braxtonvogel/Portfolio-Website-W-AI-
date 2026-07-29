@@ -266,15 +266,18 @@ export default function CertificationScrollExperience({
         />
       </svg>
 
-      {/* back to certifications list — always visible, top-left */}
+      {/* back to certifications list — always visible, top-left; expands to show label on hover */}
       <Link
         href="/certifications"
         aria-label="Back to Certifications"
-        className="fixed left-4 sm:left-8 top-4 sm:top-8 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-lg hover:scale-110 active:scale-95 transition-transform"
+        className="group fixed left-4 sm:left-8 top-4 sm:top-8 z-20 flex h-10 items-center gap-2 overflow-hidden rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-lg pl-2.5 pr-2.5 hover:pr-4 transition-all duration-300 ease-out"
       >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
         </svg>
+        <span className="max-w-0 group-hover:max-w-[12rem] overflow-hidden whitespace-nowrap text-sm font-medium transition-all duration-300 ease-out">
+          Back to Certifications
+        </span>
       </Link>
 
       {/* back to top + progress dots */}
@@ -318,10 +321,6 @@ export default function CertificationScrollExperience({
         className="snap-start h-screen w-full flex items-center justify-center relative z-10 px-6"
       >
         <div className="max-w-2xl mx-auto text-center">
-          <Link href="/certifications" className="text-sm underline text-zinc-600 dark:text-zinc-400">
-            ← Back to Certifications
-          </Link>
-
           <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 mt-6">
             <Image src={cert.image} alt={cert.title} fill className="object-cover" />
           </div>
@@ -407,11 +406,7 @@ export default function CertificationScrollExperience({
         className="snap-start min-h-screen w-full flex items-center relative z-10 px-6 py-20"
       >
         <div className="max-w-3xl w-full mx-auto">
-          <Link href="/certifications" className="text-sm underline text-zinc-600 dark:text-zinc-400">
-            ← Back to Certifications
-          </Link>
-
-          <h2 className="text-3xl font-bold mt-6 mb-6">Course Certificates</h2>
+          <h2 className="text-3xl font-bold mb-6">Course Certificates</h2>
 
           <div className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/50 backdrop-blur-md shadow-sm p-6">
             <div className="flex flex-wrap gap-2 mb-6">
