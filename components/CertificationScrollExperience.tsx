@@ -5,6 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Certification, CertSegment } from "@/lib/certifications";
 
+// Course completion certificates, in order — files live in /public
+const certificateFiles = [
+  { number: 1, label: "Foundations: Data, Data, Everywhere", file: "/Foundations-Data,Data,Everywhere.png" },
+  { number: 2, label: "Ask Questions to Make Data-Driven Decisions", file: "/Ask_Questions_To_MakeData-Driven_Decisions.png" },
+  { number: 3, label: "Prepare Data for Exploration", file: "/Prepare_Data_For_Exploration.png" },
+  { number: 4, label: "Process Data from Dirty to Clean", file: "/Process_Data_From_Dirty_to_Clean.png" },
+  { number: 5, label: "Analyze Data to Answer Questions", file: "/Analyze_Data_to_Answer_Questions.png" },
+  { number: 6, label: "Share Data Through the Art of Visualization", file: "/Share_Data_Through_the_Art_of_Visualization.png" },
+  { number: 7, label: "Introduction to Data Analysis Using Python", file: "/Introduction_to_Data_Analysis_Using_Python.png" },
+  { number: 8, label: "Google Data Analytics Capstone: Complete a Case Study", file: "/Google_Data_Analytics_Capstone-Complete_a_Case_Study.png" },
+  { number: 9, label: "Accelerate Your Job Search with AI", file: "/Accelerate_Your_Job_Search_with_AI.png" },
+];
+
 export default function CertificationScrollExperience({
   cert,
 }: {
@@ -20,8 +33,10 @@ export default function CertificationScrollExperience({
   const [activeIndex, setActiveIndex] = useState(0);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
+  const [activeCertTab, setActiveCertTab] = useState(1);
 
-  const total = cert.segments.length + 1; // +1 for the hero section
+  const total = cert.segments.length + 2; // +1 hero section, +1 certificate gallery section
+  const galleryIndex = total - 1;
 
   // track which section is centered, for the progress dots + subtle card highlight
   useEffect(() => {
@@ -180,6 +195,8 @@ export default function CertificationScrollExperience({
   const activeSegment: CertSegment | null =
     expandedIndex !== null ? cert.segments[expandedIndex] : null;
 
+  const activeCertificate = certificateFiles.find((c) => c.number === activeCertTab);
+
   return (
     <div
       ref={containerRef}
@@ -248,6 +265,17 @@ export default function CertificationScrollExperience({
           style={{ animation: "dashFlow 4s linear infinite" }}
         />
       </svg>
+
+      {/* back to certifications list — always visible, top-left */}
+      <Link
+        href="/certifications"
+        aria-label="Back to Certifications"
+        className="fixed left-4 sm:left-8 top-4 sm:top-8 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-lg hover:scale-110 active:scale-95 transition-transform"
+      >
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+        </svg>
+      </Link>
 
       {/* back to top + progress dots */}
       <div className="fixed right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3">
@@ -371,6 +399,57 @@ export default function CertificationScrollExperience({
           </section>
         );
       })}
+
+      {/* certificate gallery section — numbered tabs 1-9, one certificate image per tab */}
+      <section
+        ref={(el) => { sectionRefs.current[galleryIndex] = el; }}
+        data-index={galleryIndex}
+        className="snap-start min-h-screen w-full flex items-center relative z-10 px-6 py-20"
+      >
+        <div className="max-w-3xl w-full mx-auto">
+          <Link href="/certifications" className="text-sm underline text-zinc-600 dark:text-zinc-400">
+            ← Back to Certifications
+          </Link>
+
+          <h2 className="text-3xl font-bold mt-6 mb-6">Course Certificates</h2>
+
+          <div className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/50 backdrop-blur-md shadow-sm p-6">
+            <div className="flex flex-wrap gap-2 mb-6">
+              {certificateFiles.map((c) => (
+                <button
+                  key={c.number}
+                  onClick={() => setActiveCertTab(c.number)}
+                  aria-label={`View certificate ${c.number}: ${c.label}`}
+                  className={`h-9 w-9 rounded-full text-sm font-medium transition-colors ${
+                    activeCertTab === c.number
+                      ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                      : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  {c.number}
+                </button>
+              ))}
+            </div>
+
+            {activeCertificate && (
+              <>
+                <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-3">
+                  {activeCertificate.label}
+                </p>
+
+                <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                  <Image
+                    src={activeCertificate.file}
+                    alt={activeCertificate.label}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* deep-dive overlay */}
       {activeSegment && (

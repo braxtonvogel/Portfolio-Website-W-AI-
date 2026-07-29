@@ -31,7 +31,20 @@ export default function CertificationsPage() {
               </div>
 
               <div className="p-6 flex flex-col flex-1">
-                <h2 className="text-xl font-semibold">{cert.title}</h2>
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-xl font-semibold">{cert.title}</h2>
+
+                  {cert.badge && (
+                    <div className="relative h-24 w-24 sm:h-28 sm:w-28 flex-shrink-0 rounded-md overflow-hidden shadow-sm">
+                      <Image
+                        src={cert.badge}
+                        alt={`${cert.title} badge`}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  )}
+                </div>
 
                 <p className="text-zinc-600 dark:text-zinc-400 mt-2 text-sm">
                   {cert.tags.join(" • ")}

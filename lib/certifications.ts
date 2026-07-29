@@ -9,6 +9,7 @@ export interface Certification {
   slug: string;
   title: string;
   image: string;
+  badge?: string; // optional small credential badge shown on the card
   tags: string[];
   summary: string;
   segments: CertSegment[];
@@ -18,7 +19,8 @@ export const certifications: Certification[] = [
   {
     slug: "google-data-analytics",
     title: "Google Data Analytics Professional Certificate",
-    image: "/certifications/google-data-analytics.png",
+    image: "/Google_Data_Analytics_Professional_Certification.png",
+    badge: "/Data_Analytics_Certificate_Badge.png",
     tags: ["SQL", "Data Cleaning", "Visualization", "R"],
     summary:
       "A 9-course professional certificate covering the full data analytics lifecycle, from asking the right questions to communicating insights with real tools used by working analysts.",
