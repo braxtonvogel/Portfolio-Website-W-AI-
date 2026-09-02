@@ -348,10 +348,10 @@ export default function Home() {
             About Me
           </h2>
           <p className="text-zinc-300 leading-7">
-             I'm a Software Engineering student at Sam Houston State University,
+             I&apos;m a Software Engineering student at Sam Houston State University,
     building toward a career in backend systems, full-stack engineering, QA automation, and data science.
-    I'm drawn to projects that solve real problems, things that actually get used, not just submitted.
-    Long-term, I'm planning to pursue a master's degree in data science.
+    I&apos;m drawn to projects that solve real problems, things that actually get used, not just submitted.
+    Long-term, I&apos;m planning to pursue a master&apos;s degree in data science.
           </p>
 
           <div className="space-y-4">
@@ -422,6 +422,18 @@ export default function Home() {
               <h2 className="text-2xl font-semibold">Certifications</h2>
               <p className="text-zinc-400 mt-2">
                 View certifications and technical skills
+              </p>
+            </div>
+          </Link>
+        </section>
+
+        {/* ================= EARLY PERSONAL DEVELOPMENT ================= */}
+        <section>
+          <Link href="/early-development">
+            <div className="p-8 border border-white rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] cursor-pointer">
+              <h2 className="text-2xl font-semibold">Early Personal Development</h2>
+              <p className="text-zinc-400 mt-2">
+                Notes and reflections from early on in my growth as a developer
               </p>
             </div>
           </Link>

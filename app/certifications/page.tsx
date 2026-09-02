@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Image from "next/image";
+import RippleRings from "@/components/RippleRings";
 import { certifications } from "@/lib/certifications";
 
 export default function CertificationsPage() {
@@ -8,7 +9,9 @@ export default function CertificationsPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen px-6 py-16 bg-zinc-50 dark:bg-black text-black dark:text-white">
+      <main className="relative isolate overflow-hidden min-h-screen px-6 py-16 bg-zinc-50 dark:bg-black text-black dark:text-white">
+        <RippleRings top={160} height={400} />
+
         <Link href="/" className="text-sm underline text-zinc-600 dark:text-zinc-400">
           ← Back Home
         </Link>
@@ -26,6 +29,7 @@ export default function CertificationsPage() {
                   src={cert.image}
                   alt={cert.title}
                   fill
+                  sizes="(min-width: 640px) 384px, 100vw"
                   className="object-cover"
                 />
               </div>
@@ -40,6 +44,7 @@ export default function CertificationsPage() {
                         src={cert.badge}
                         alt={`${cert.title} badge`}
                         fill
+                        sizes="112px"
                         className="object-contain"
                       />
                     </div>

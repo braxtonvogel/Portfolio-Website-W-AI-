@@ -2,41 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
-
-function Section({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      }`}
-    >
-      {children}
-    </div>
-  );
-}
+import { useEffect, useState } from "react";
+import FadeInSection from "@/components/FadeInSection";
 
 const TECH_STACK = [
   { label: "Tauri v2", desc: "Native desktop runtime" },
@@ -255,7 +222,7 @@ function ScreenshotBrowser() {
             <div className="flex flex-col justify-center">
               <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">Pro tip</p>
               <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3">
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-6 italic">"{tab.tip}"</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-6 italic">&quot;{tab.tip}&quot;</p>
               </div>
             </div>
           </div>
@@ -292,14 +259,14 @@ export default function SammyOSProject() {
       </div>
 
       {/* BACK */}
-      <Section>
+      <FadeInSection trigger="view">
         <Link href="/" className="text-sm text-zinc-400 hover:text-white transition-colors duration-200">
           Back to Home
         </Link>
-      </Section>
+      </FadeInSection>
 
       {/* TITLE + TAGLINE */}
-      <Section delay={50}>
+      <FadeInSection trigger="view" delay={50}>
         <div className="mt-8 space-y-3">
           <div className="flex items-center gap-3">
             <span className="px-2.5 py-0.5 text-xs font-mono rounded-full border border-violet-500/40 text-violet-400 bg-violet-500/10">
@@ -316,10 +283,10 @@ export default function SammyOSProject() {
             A native Windows AI workspace where your assistant sees your screen, hears your audio, reads your code, and researches autonomously — all at once.
           </p>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* TECH PILLS */}
-      <Section delay={100}>
+      <FadeInSection trigger="view" delay={100}>
         <div className="flex flex-wrap gap-2 mt-6">
           {TECH_STACK.map((t) => (
             <span
@@ -334,10 +301,10 @@ export default function SammyOSProject() {
             </span>
           ))}
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* LINKS */}
-      <Section delay={130}>
+      <FadeInSection trigger="view" delay={130}>
         <div className="flex flex-wrap gap-3 mt-7">
           <a
             href="https://github.com/braxtonvogel/SammyOS-AI-Workspace"
@@ -366,10 +333,10 @@ export default function SammyOSProject() {
             Live Dashboard
           </a>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* VIDEO */}
-      <Section delay={160}>
+      <FadeInSection trigger="view" delay={160}>
         <div className="mt-12">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Project Walkthrough</h2>
@@ -389,7 +356,7 @@ export default function SammyOSProject() {
             />
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* BACKUP MODAL */}
       {backupOpen && (
@@ -404,12 +371,12 @@ export default function SammyOSProject() {
       )}
 
       {/* OVERVIEW */}
-      <Section delay={200}>
+      <FadeInSection trigger="view" delay={200}>
         <div className="mt-14 grid md:grid-cols-2 gap-8 items-start">
           <div>
             <h2 className="text-2xl font-semibold mb-4">What is SammyOS?</h2>
             <p className="text-zinc-600 dark:text-zinc-300 leading-7">
-              SammyOS is a native Windows desktop application — not a web app. It wraps a full Next.js frontend inside a Tauri v2 shell with a Rust backend, giving it low-level OS access that a browser-based tool can't touch: real-time screen capture, system audio, native window management, and a silent one-click launcher with auto-update from GitHub.
+              SammyOS is a native Windows desktop application — not a web app. It wraps a full Next.js frontend inside a Tauri v2 shell with a Rust backend, giving it low-level OS access that a browser-based tool can&apos;t touch: real-time screen capture, system audio, native window management, and a silent one-click launcher with auto-update from GitHub.
             </p>
             <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-4">
               The central assistant, <strong>Sam</strong>, maintains simultaneous awareness of your screen, microphone, uploaded files, and an autonomous research thread — and synthesizes all four into a single coherent answer.
@@ -431,10 +398,10 @@ export default function SammyOSProject() {
             ))}
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* FEATURE EXPLORER */}
-      <Section delay={240}>
+      <FadeInSection trigger="view" delay={240}>
         <div className="mt-14">
           <h2 className="text-2xl font-semibold mb-6">Feature Explorer</h2>
 
@@ -511,15 +478,15 @@ export default function SammyOSProject() {
             </div>
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* SCREENSHOT BROWSER */}
-      <Section delay={270}>
+      <FadeInSection trigger="view" delay={270}>
         <ScreenshotBrowser />
-      </Section>
+      </FadeInSection>
 
       {/* BUILD TIMELINE */}
-      <Section delay={300}>
+      <FadeInSection trigger="view" delay={300}>
         <div className="mt-14">
           <h2 className="text-2xl font-semibold mb-8">Build Timeline</h2>
           <div className="relative border-l border-zinc-300 dark:border-zinc-700 ml-3 space-y-8">
@@ -535,10 +502,10 @@ export default function SammyOSProject() {
             ))}
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* PROJECT STRUCTURE */}
-      <Section delay={330}>
+      <FadeInSection trigger="view" delay={330}>
         <h2 className="text-2xl font-semibold mt-14 mb-4">Project Structure</h2>
         <pre className="text-xs bg-zinc-950 text-zinc-300 p-5 rounded-2xl overflow-x-auto border border-zinc-800 leading-6">
 {`SammyOS/
@@ -574,10 +541,10 @@ export default function SammyOSProject() {
         ├── vault/           ← ping route + job processing
         └── telemetry/       ← stats aggregation → sammyos-live`}
         </pre>
-      </Section>
+      </FadeInSection>
 
       {/* HOW TO RUN */}
-      <Section delay={360}>
+      <FadeInSection trigger="view" delay={360}>
         <h2 className="text-2xl font-semibold mt-14">How to Run</h2>
         <div className="mt-5 space-y-5 text-sm text-zinc-600 dark:text-zinc-300">
           <div>
@@ -602,10 +569,10 @@ npm run tauri dev</pre>
             <p>Double-click <code className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs">SammyOS.vbs</code> from the repo root. The launcher checks dependencies, pulls any GitHub updates, and starts the app — no terminal window.</p>
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* SKILLS GAINED */}
-      <Section delay={400}>
+      <FadeInSection trigger="view" delay={400}>
         <div className="mt-14 pt-10 border-t border-zinc-200 dark:border-zinc-800">
           <h2 className="text-2xl font-semibold mb-6">Skills Demonstrated</h2>
           <div className="grid sm:grid-cols-2 gap-6 text-sm text-zinc-600 dark:text-zinc-300">
@@ -661,10 +628,10 @@ npm run tauri dev</pre>
             ))}
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* FOOTER CTA */}
-      <Section delay={440}>
+      <FadeInSection trigger="view" delay={440}>
         <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-violet-500/10 via-blue-500/10 to-cyan-500/10 border border-violet-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="font-semibold text-base">Want to see it live?</p>
@@ -687,7 +654,7 @@ npm run tauri dev</pre>
             </a>
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
     </main>
   );

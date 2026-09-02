@@ -3,31 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
-function Section({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  return (
-    <div
-      className={`transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-    >
-      {children}
-    </div>
-  );
-}
+import FadeInSection from "@/components/FadeInSection";
 
 export default function StatefulBrowserAutomationProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -58,17 +34,17 @@ export default function StatefulBrowserAutomationProject() {
       </div>
 
       {/* ================= BACK BUTTON ================= */}
-      <Section>
+      <FadeInSection>
         <Link
           href="/"
           className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
         >
           ← Back to Home
         </Link>
-      </Section>
+      </FadeInSection>
 
       {/* ================= TITLE ================= */}
-      <Section delay={50}>
+      <FadeInSection delay={50}>
         <h1 className="text-4xl font-bold mt-6">
           Stateful Browser Automation Engine
         </h1>
@@ -76,10 +52,10 @@ export default function StatefulBrowserAutomationProject() {
         <p className="text-zinc-500 mt-2">
           Python • Playwright • Chromium • Session Automation
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= GITHUB ================= */}
-      <Section delay={100}>
+      <FadeInSection delay={100}>
         <a
           href="https://github.com/braxtonvogel/Stateful-Browser-Automation-Engine/tree/main"
           target="_blank"
@@ -88,10 +64,10 @@ export default function StatefulBrowserAutomationProject() {
         >
           View GitHub Repository
         </a>
-      </Section>
+      </FadeInSection>
 
       {/* ================= IMAGES ================= */}
-      <Section delay={150}>
+      <FadeInSection delay={150}>
         <h2 className="text-2xl font-semibold mt-10 mb-6">
           Automation Workflow
         </h2>
@@ -125,10 +101,10 @@ export default function StatefulBrowserAutomationProject() {
             />
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* ================= OVERVIEW ================= */}
-      <Section delay={200}>
+      <FadeInSection delay={200}>
         <h2 className="text-2xl font-semibold mt-10">
           Overview
         </h2>
@@ -150,10 +126,10 @@ export default function StatefulBrowserAutomationProject() {
           It was designed as a reusable foundation for building more
           advanced browser automation systems and workflow tools.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= FEATURES ================= */}
-      <Section delay={250}>
+      <FadeInSection delay={250}>
         <h2 className="text-2xl font-semibold mt-10 mb-6">
           Key Features
         </h2>
@@ -173,10 +149,10 @@ export default function StatefulBrowserAutomationProject() {
             <li>Scalable automation system foundation</li>
           </ul>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* ================= USE CASES ================= */}
-      <Section delay={300}>
+      <FadeInSection delay={300}>
         <h2 className="text-2xl font-semibold mt-10">
           Use Case Examples
         </h2>
@@ -187,10 +163,10 @@ export default function StatefulBrowserAutomationProject() {
           repetitive browser tasks requiring login state persistence, and
           data collection from session-based websites where permitted.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= PROJECT STRUCTURE ================= */}
-      <Section delay={350}>
+      <FadeInSection delay={350}>
         <h2 className="text-2xl font-semibold mt-10">
           Project Structure
         </h2>
@@ -208,10 +184,10 @@ export default function StatefulBrowserAutomationProject() {
 └── .gitignore`}
           </pre>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* ================= CHALLENGES ================= */}
-      <Section delay={400}>
+      <FadeInSection delay={400}>
         <h2 className="text-2xl font-semibold mt-10">
           Challenges & What I Learned
         </h2>
@@ -228,10 +204,10 @@ export default function StatefulBrowserAutomationProject() {
           reusable workflows, and automate Chromium browser interactions
           using Playwright.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= SKILLS ================= */}
-      <Section delay={450}>
+      <FadeInSection delay={450}>
         <div className="mt-12 border-t pt-10">
           <h2 className="text-2xl font-semibold mb-4">
             Skills Gained
@@ -255,7 +231,7 @@ export default function StatefulBrowserAutomationProject() {
             </ul>
           </div>
         </div>
-      </Section>
+      </FadeInSection>
     </main>
   );
 }

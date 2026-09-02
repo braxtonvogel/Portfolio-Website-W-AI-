@@ -2,31 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-function Section({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  return (
-    <div
-      className={`transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-    >
-      {children}
-    </div>
-  );
-}
+import FadeInSection from "@/components/FadeInSection";
 
 export default function ChatServerProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -57,25 +33,25 @@ export default function ChatServerProject() {
       </div>
 
       {/* ================= BACK ================= */}
-      <Section>
+      <FadeInSection>
         <Link
           href="/"
           className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
         >
           ← Back to Home
         </Link>
-      </Section>
+      </FadeInSection>
 
       {/* ================= TITLE ================= */}
-      <Section delay={50}>
+      <FadeInSection delay={50}>
         <h1 className="text-4xl font-bold mt-6">Chat Server</h1>
         <p className="text-zinc-500 mt-2">
           Java • Sockets • Networking • Client-Server Architecture
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= GITHUB ================= */}
-      <Section delay={100}>
+      <FadeInSection delay={100}>
         <a
           href="https://github.com/braxtonvogel/Chatroom-Project---First-Major-Project---Braxton-Vogel-2025"
           target="_blank"
@@ -83,10 +59,10 @@ export default function ChatServerProject() {
         >
           View GitHub Repository
         </a>
-      </Section>
+      </FadeInSection>
 
       {/* ================= VIDEO ================= */}
-      <Section delay={150}>
+      <FadeInSection delay={150}>
         <div className="mt-10">
 
           {/* HEADER ROW */}
@@ -115,10 +91,10 @@ export default function ChatServerProject() {
             />
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* ================= OVERVIEW ================= */}
-      <Section delay={200}>
+      <FadeInSection delay={200}>
         <h2 className="text-2xl font-semibold mt-10">Overview</h2>
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-3">
           This is my first major software project completed at Sam Houston State University.
@@ -128,10 +104,10 @@ export default function ChatServerProject() {
           The system allows users to either join existing chat rooms or create new ones
           that others can join, forming a simple but functional multiplayer messaging environment.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= FEATURES ================= */}
-      <Section delay={250}>
+      <FadeInSection delay={250}>
         <h2 className="text-2xl font-semibold mt-10 mb-6">
           Key Features
         </h2>
@@ -142,20 +118,20 @@ export default function ChatServerProject() {
           <li>Join existing public chat rooms</li>
           <li>Multi-client communication support</li>
         </ul>
-      </Section>
+      </FadeInSection>
 
       {/* ================= USE CASES ================= */}
-      <Section delay={300}>
+      <FadeInSection delay={300}>
         <h2 className="text-2xl font-semibold mt-10">Use Cases</h2>
         <p className="text-zinc-600 dark:text-zinc-300 mt-3 leading-7">
           This project demonstrates how basic networking concepts can be used to build
           real-time communication systems. It can be extended into group messaging apps,
           multiplayer game lobbies, classroom discussion tools, or private chat systems.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= CHALLENGES ================= */}
-      <Section delay={350}>
+      <FadeInSection delay={350}>
         <h2 className="text-2xl font-semibold mt-10">
           Challenges & What I Learned
         </h2>
@@ -167,10 +143,10 @@ export default function ChatServerProject() {
           Through this project, I learned how socket programming works in Java, how servers
           handle multiple connections, and how real-time communication systems are structured.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* ================= SKILLS ================= */}
-      <Section delay={400}>
+      <FadeInSection delay={400}>
         <div className="mt-12 border-t pt-10">
           <h2 className="text-2xl font-semibold mb-4">
             Skills Gained
@@ -194,7 +170,7 @@ export default function ChatServerProject() {
             </ul>
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* ================= BACKUP VIDEO MODAL ================= */}
       {showBackup && (

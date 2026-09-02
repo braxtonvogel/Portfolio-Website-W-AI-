@@ -322,7 +322,13 @@ export default function CertificationScrollExperience({
       >
         <div className="max-w-2xl mx-auto text-center">
           <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 mt-6">
-            <Image src={cert.image} alt={cert.title} fill className="object-cover" />
+            <Image
+              src={cert.image}
+              alt={cert.title}
+              fill
+              sizes="(min-width: 672px) 672px, 100vw"
+              className="object-cover"
+            />
           </div>
 
           <h1 className="text-4xl font-bold mt-6">{cert.title}</h1>
@@ -437,6 +443,7 @@ export default function CertificationScrollExperience({
                     src={activeCertificate.file}
                     alt={activeCertificate.label}
                     fill
+                    sizes="(min-width: 768px) 768px, 100vw"
                     className="object-contain"
                   />
                 </div>

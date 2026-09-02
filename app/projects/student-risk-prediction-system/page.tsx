@@ -3,31 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
-function Section({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  return (
-    <div
-      className={`transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-    >
-      {children}
-    </div>
-  );
-}
+import FadeInSection from "@/components/FadeInSection";
 
 export default function StudentRiskProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -58,27 +34,27 @@ export default function StudentRiskProject() {
       </div>
 
       {/* BACK */}
-      <Section>
+      <FadeInSection>
         <Link
           href="/"
           className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
         >
           ← Back to Home
         </Link>
-      </Section>
+      </FadeInSection>
 
       {/* TITLE */}
-      <Section delay={50}>
+      <FadeInSection delay={50}>
         <h1 className="text-4xl font-bold mt-6">
           Student Risk Prediction System (AI + ML Web Application)
         </h1>
         <p className="text-zinc-500 mt-2">
           Python • Scikit-learn • Streamlit • SHAP • LLM (Nova / Llama 3)
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* GITHUB */}
-      <Section delay={100}>
+      <FadeInSection delay={100}>
         <a
           href="https://github.com/braxtonvogel/student-risk-prediction-system"
           target="_blank"
@@ -86,10 +62,10 @@ export default function StudentRiskProject() {
         >
           View GitHub Repository
         </a>
-      </Section>
+      </FadeInSection>
 
       {/* VIDEO + BACKUP BUTTON */}
-      <Section delay={150}>
+      <FadeInSection delay={150}>
         <div className="mt-10">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">
@@ -114,7 +90,7 @@ export default function StudentRiskProject() {
             />
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* BACKUP MODAL */}
       {backupOpen && (
@@ -137,7 +113,7 @@ export default function StudentRiskProject() {
       )}
 
       {/* OVERVIEW */}
-      <Section delay={200}>
+      <FadeInSection delay={200}>
         <h2 className="text-2xl font-semibold mt-10">Overview</h2>
 
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-3">
@@ -147,10 +123,10 @@ export default function StudentRiskProject() {
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-4">
           It outputs risk scores, generates intervention recommendations, and provides explainability using SHAP.
         </p>
-      </Section>
+      </FadeInSection>
 
       {/* VISUALS */}
-      <Section delay={250}>
+      <FadeInSection delay={250}>
         <h2 className="text-2xl font-semibold mt-10 mb-6">
           Model Explainability & Interface
         </h2>
@@ -180,10 +156,10 @@ export default function StudentRiskProject() {
           </div>
 
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* PROJECT STRUCTURE */}
-      <Section delay={280}>
+      <FadeInSection delay={280}>
         <h2 className="text-2xl font-semibold mt-10 mb-4">
           Project Structure
         </h2>
@@ -206,10 +182,10 @@ export default function StudentRiskProject() {
 ├── README.md
 └── .gitignore`}
         </pre>
-      </Section>
+      </FadeInSection>
 
       {/* HOW TO RUN */}
-      <Section delay={320}>
+      <FadeInSection delay={320}>
         <h2 className="text-2xl font-semibold mt-10">
           How to Run the Project
         </h2>
@@ -246,10 +222,10 @@ streamlit run src/app.py
 
           <p>Open: http://localhost:8501</p>
         </div>
-      </Section>
+      </FadeInSection>
 
       {/* KEY FEATURES */}
-      <Section delay={360}>
+      <FadeInSection delay={360}>
         <h2 className="text-2xl font-semibold mt-10">Key Features</h2>
 
         <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-300 mt-3">
@@ -261,10 +237,10 @@ streamlit run src/app.py
           <li>LLM assistant (Nova / Llama 3)</li>
           <li>CSV upload + live predictions</li>
         </ul>
-      </Section>
+      </FadeInSection>
 
       {/* SKILLS GAINED (FULL RESTORED) */}
-      <Section delay={400}>
+      <FadeInSection delay={400}>
         <div className="mt-12 border-t pt-10">
           <h2 className="text-2xl font-semibold">Skills Gained</h2>
 
@@ -310,7 +286,7 @@ streamlit run src/app.py
 
           </div>
         </div>
-      </Section>
+      </FadeInSection>
 
     </main>
   );
