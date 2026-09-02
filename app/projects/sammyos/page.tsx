@@ -61,17 +61,17 @@ const FEATURES = [
     title: "Bring Your Own Key",
     stat: "5-provider fallback chain",
     headline: "Your API key. Your priority. Zero wasted tokens.",
-    desc: "Store your OpenAI, Anthropic, Groq, or any OpenAI-compatible key in your account. It gets inserted first in the provider chain — meaning you get faster models and no rate-sharing with other users. If your key is missing, the free rotation kicks in automatically.",
-    how: "Settings page → key stored encrypted in nexus-analyzer → key-injection.ts fetches on each chat request → Custom → Ollama → Groq → Gemini → Cerebras.",
-    tags: ["JWT", "Key Injection", "Provider Routing", "Fallback Logic"],
+    desc: "Store your OpenAI, Anthropic, Groq, or any OpenAI-compatible key in your account. It gets inserted into the provider chain — meaning you get faster models and no rate-sharing with other users. If your key is missing, the free rotation kicks in automatically.",
+    how: "Settings page → key encrypted (AES-256-GCM) and stored in nexus-analyzer → key-injection.ts fetches on each chat request → Ollama → Custom Key → Groq → Gemini → Cerebras.",
+    tags: ["AES-256-GCM", "Key Injection", "Provider Routing", "Fallback Logic"],
   },
   {
     title: "Hardened Auth",
     stat: "10 attempts / IP / 15 min",
     headline: "Production-grade security, not tutorial auth.",
-    desc: "Login and register routes enforce per-IP and per-account rate limits. Passwords are bcrypt-hashed server-side, sessions are JWT-signed, and every cross-origin request is validated against an allowlist. The auth layer was built to survive real abuse — not just a demo.",
-    how: "Upstash rate-limit middleware → bcrypt hash on register → JWT sign → x-sammy-token header forwarded on all subsequent API calls.",
-    tags: ["bcrypt", "JWT", "Rate Limiting", "CORS", "Upstash"],
+    desc: "Login and register routes enforce real per-IP and per-account rate limits backed by Redis counters. Passwords are hashed server-side with salted PBKDF2 (100,000 iterations), sessions use cryptographically random tokens verified against Redis on every request, and every cross-origin request is checked against an explicit origin allowlist. The auth layer was built to survive real abuse — not just a demo.",
+    how: "Upstash rate-limit counters → PBKDF2 password hash on register → CSPRNG session token → x-sammy-token header verified against Redis on every subsequent request.",
+    tags: ["PBKDF2", "AES-256-GCM", "Rate Limiting", "CORS Allowlist", "Upstash"],
   },
   {
     title: "Silent One-Click Launcher",
@@ -86,10 +86,11 @@ const FEATURES = [
 const TIMELINE = [
   { version: "v1–v3", label: "Foundation", detail: "Tauri + Next.js scaffold, Rust backend commands, screen capture, active window detection." },
   { version: "v4–v6", label: "AI Core", detail: "Multi-LLM routing (Groq → Gemini → Cerebras), floating chat window, file/codebase upload pipeline, autonomous research loop." },
-  { version: "v7", label: "Auth System", detail: "Full register/login, Zustand auth store, JWT sessions, key injection, conditional shell with hydration guard." },
+  { version: "v7", label: "Auth System", detail: "Full register/login, Zustand auth store, Redis-backed session tokens, key injection, conditional shell with hydration guard." },
   { version: "v8", label: "Telemetry", detail: "Live dashboard (sammyos-live.vercel.app), 4-event telemetry pipeline, Redis stat aggregation." },
   { version: "v9", label: "Settings + Keys", detail: "User-supplied API key UI, custom endpoint support, provider priority chain updated." },
   { version: "v10", label: "Hardening + Launch", detail: "Silent VBS launcher, rate-limited auth routes, TOS/Privacy pages, vault ping pipeline, pre-GitHub hygiene checklist." },
+  { version: "v11", label: "Security Audit + Fixes", detail: "Replaced weak API-key encryption with real AES-256-GCM, fixed session-token randomness, locked CORS down to specific origins instead of a public wildcard, rotated exposed secrets, recovered a dropped production Redis database, and brought the backend's source under real git version control for the first time." },
 ];
 
 const TABS = [
@@ -270,7 +271,7 @@ export default function SammyOSProject() {
         <div className="mt-8 space-y-3">
           <div className="flex items-center gap-3">
             <span className="px-2.5 py-0.5 text-xs font-mono rounded-full border border-violet-500/40 text-violet-400 bg-violet-500/10">
-              v10 · June 2026
+              v11 · September 2026
             </span>
             <span className="px-2.5 py-0.5 text-xs font-mono rounded-full border border-emerald-500/40 text-emerald-400 bg-emerald-500/10">
               Live
@@ -385,9 +386,9 @@ export default function SammyOSProject() {
           <div className="space-y-3">
             {[
               ["Backend", "nexus-analyzer (Next.js API on Vercel)"],
-              ["Auth", "JWT · bcrypt · rate-limited routes"],
+              ["Auth", "PBKDF2 · Redis-verified session tokens · rate-limited routes"],
               ["State", "Zustand (client) + Redis (server)"],
-              ["LLM chain", "Custom → Ollama → Groq → Gemini → Cerebras"],
+              ["LLM chain", "Ollama → Custom Key → Groq → Gemini → Cerebras"],
               ["Launcher", "SammyOS.vbs → launch.py → Task Scheduler"],
               ["Telemetry", "4-event pipeline → sammyos-live.vercel.app"],
             ].map(([k, v]) => (
