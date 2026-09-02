@@ -519,28 +519,38 @@ export default function SammyOSProject() {
 │       ├── src-tauri/
 │       │   └── src/
 │       │       └── main.rs  ← Rust backend (screen capture, window detect, Tauri cmds)
+│       ├── lib/              ← Zustand stores, auth client, LLM intent/behavior logic
 │       ├── app/
 │       │   ├── login/       ← auth gate + TOS checkbox
 │       │   ├── chat/        ← main Sam chat UI
 │       │   ├── vault/       ← Knowledge Vault browser
 │       │   ├── workspace/   ← file/codebase uploader
 │       │   ├── research/    ← autonomous research launcher
+│       │   ├── education/   ← AI-guided lesson & curriculum coach
+│       │   ├── qa-lab/      ← test case, automation script & API testing generators
 │       │   ├── settings/    ← API key management
 │       │   ├── chat-float/  ← detachable floating chat window
 │       │   └── api/
-│       │       ├── chat/    ← multi-LLM routing + key injection
-│       │       ├── vault/   ← vault CRUD + ping counter
-│       │       ├── research/← job queue + polling
+│       │       ├── chat/       ← multi-LLM routing + key injection
+│       │       ├── vault/      ← vault CRUD + ping counter
+│       │       ├── research/   ← job queue + polling
+│       │       ├── education/  ← coach, curriculum, lesson generation
+│       │       ├── transcribe/ ← live audio transcription
 │       │       └── settings/
 │       └── components/
 │           ├── layout/      ← ConditionalShell (auth guard + hydration)
+│           ├── qa-lab/      ← QA tool generator components
 │           └── chat/        ← ChatHistoryPanel, VaultUpload, FloatButton
 │
 └── nexus-analyzer/          ← Vercel backend (separate repo)
+    ├── lib/                 ← AES-GCM key crypto, Redis client, CORS allowlist, LLM providers
     └── app/api/
-        ├── auth/            ← register, login, keys (rate-limited)
-        ├── vault/           ← ping route + job processing
-        └── telemetry/       ← stats aggregation → sammyos-live`}
+        ├── auth/            ← register, login, keys (rate-limited, encrypted key storage)
+        ├── vault/           ← upload-ping counter
+        ├── jobs/            ← vault analysis job queue (submit, process, poll)
+        ├── research/        ← autonomous research job queue
+        ├── telemetry/       ← usage stats aggregation → sammyos-live
+        └── health/          ← uptime check`}
         </pre>
       </FadeInSection>
 
