@@ -48,6 +48,24 @@ export default function Home() {
     return () => timers.current.forEach(clearTimeout);
   }, []);
 
+  // The world's WebGL backdrop (three.js included) lives in its own chunk that
+  // is only imported once the world mounts. Fetch it while the welcome screen
+  // sits idle so the dive never races the download - on a slow connection the
+  // reveal could otherwise start late or be partly skipped.
+  useEffect(() => {
+    if (isMobile) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number; cancelIdleCallback?: (id: number) => void };
+    const prefetch = () => {
+      import("@/components/dive/backdropRenderer").catch(() => {});
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(prefetch);
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = setTimeout(prefetch, 1500);
+    return () => clearTimeout(id);
+  }, [isMobile]);
+
   // typewriter - only runs on the welcome screen. Left ungated, this was
   // re-rendering the whole tree (World and all 6 monoliths/panels included)
   // every 40-70ms for as long as the page stayed open, including all the way

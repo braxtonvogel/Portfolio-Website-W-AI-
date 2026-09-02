@@ -1,17 +1,20 @@
 import * as THREE from "three";
-import { buildScene, halfHeightAt, FOV, MOTE_DEPTH, BUILD_DURATION, type SceneData } from "./backdropScene";
+import { buildScene, makeNoiseTexture, halfHeightAt, FOV, MOTE_DEPTH, BUILD_DURATION, type SceneData } from "./backdropScene";
 
 /**
- * Owns the WebGL side of the skyline backdrop: one canvas, four draw calls
- * (solid mesh, shard points, mast beacons, dust motes), one clock.
+ * Owns the WebGL side of the backdrop: one canvas, four draw calls (water
+ * background, dissolving city, mast beacons, marine snow), one clock.
+ *
+ * The city is revealed by a noise dissolve: every surface compares a baked
+ * noise field against a rising per-structure threshold, so it emerges as
+ * irregular patches that spread and merge, with a bright "burning" rim
+ * tracing the edge of each patch. Once the threshold passes the top of the
+ * noise range the rim is gone and only the dark structure remains.
  *
  * Loaded via a dynamic import from Backdrop.tsx so three.js only ships to the
- * desktop dive world, never to the welcome screen or the mobile fallback.
- *
- * Budget: this runs alongside the CSS 3D world on integrated graphics, so it
- * is deliberately cheap - no post-processing, no per-frame allocation, device
- * pixel ratio capped, and the loop stops entirely once the backdrop has faded
- * out behind a focused section.
+ * desktop dive world. Kept cheap for integrated graphics: no post-processing,
+ * one texture lookup or two per pixel, device pixel ratio capped, half rate
+ * once idle, and the loop stops entirely while faded out behind a section.
  */
 
 export type BackdropController = {
@@ -20,102 +23,166 @@ export type BackdropController = {
   dispose(): void;
 };
 
-const MAX_DPR = 1.5;
-// how far the camera slides (world units) at full mouse deflection
+// the backdrop is fogged, grainy and soft by design - at 1.25x it is
+// indistinguishable from native resolution and shades a third fewer pixels
+// than 1.5x on a 2x display; the CSS world on top stays fully sharp regardless
+const MAX_DPR = 1.25;
+// once the city has revealed only the snow, grain and beacons move - 24fps is
+// plenty for a slow drift and leaves the CSS compositor the headroom it needs
+const IDLE_FRAME_MS = 1000 / 24;
 const PARALLAX_X = 3.2;
 const PARALLAX_Y = 2.0;
 
-const COMMON_HEAD = /* glsl */ `
+// the water: a depth gradient (lighter toward the surface) with the soft glow
+// of light filtering down from above - shared by the background and by the
+// fog so distant structures sink into exactly the water behind them
+const WATER_GLSL = /* glsl */ `
+  uniform float uAspect;
+  vec3 water(vec2 s) {
+    vec3 deep = vec3(0.022, 0.105, 0.135);
+    vec3 shallow = vec3(0.078, 0.31, 0.355);
+    vec3 c = mix(deep, shallow, smoothstep(0.0, 1.0, s.y));
+    vec2 p = (s - vec2(0.5, 1.12)) * vec2(uAspect, 1.0);
+    c += vec3(0.55, 0.78, 0.72) * exp(-dot(p, p) * 3.2) * 0.34;
+    return c;
+  }
+  float grain(vec2 fragCoord, float t) {
+    return fract(sin(dot(fragCoord + mod(t, 10.0) * 37.0, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
+  }
+`;
+
+const BG_VERT = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = position.xy * 0.5 + 0.5;
+    gl_Position = vec4(position.xy, 0.9999, 1.0);
+  }
+`;
+const BG_FRAG = /* glsl */ `
+  uniform float uTime;
+  varying vec2 vUv;
+  ${WATER_GLSL}
+  void main() {
+    vec3 c = water(vUv);
+    c += grain(gl_FragCoord.xy, uTime) * 0.035;
+    gl_FragColor = vec4(c, 1.0);
+  }
+`;
+
+const CITY_VERT = /* glsl */ `
+  uniform float uTime;
+  attribute vec3 aColor;
+  attribute float aRel;
+  attribute vec2 aTiming;
+  attribute float aEmissive;
+  varying vec3 vWorld;
+  varying vec3 vNormal;
+  varying vec3 vColor;
+  varying float vProg;
+  varying float vRel;
+  varying float vEmis;
+  varying float vDist;
+  void main() {
+    vWorld = position;
+    vNormal = normal;
+    vColor = aColor;
+    vRel = aRel;
+    vEmis = aEmissive;
+    vProg = clamp((uTime - aTiming.x) / aTiming.y, 0.0, 1.0);
+    vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    vDist = -mv.z;
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+const CITY_FRAG = /* glsl */ `
+  uniform sampler2D uNoise;
   uniform float uTime;
   uniform float uFade;
-  varying vec4 vColor;
-`;
-
-const MESH_VERT = /* glsl */ `
-  ${COMMON_HEAD}
-  attribute vec3 aColor;
-  attribute float aAlpha;
-  attribute vec2 aSolid;
-  attribute float aFog;
+  uniform vec2 uRes;
+  varying vec3 vWorld;
+  varying vec3 vNormal;
+  varying vec3 vColor;
+  varying float vProg;
+  varying float vRel;
+  varying float vEmis;
+  varying float vDist;
+  ${WATER_GLSL}
   void main() {
-    float s = smoothstep(aSolid.x, aSolid.y, uTime);
-    vColor = vec4(aColor, aAlpha * s * aFog * uFade);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
+    if (vProg <= 0.0) discard;
+    // project the noise onto the surface along its dominant axis so patches
+    // stay coherent across the front and side faces of a box
+    vec3 an = abs(vNormal);
+    vec2 uv = an.z > 0.5 ? vWorld.xy : (an.x > 0.5 ? vWorld.zy : vWorld.xz);
+    float n = texture2D(uNoise, uv / 34.0).r;
+    // rising threshold, biased a little so the lower floors lead
+    float thr = vProg * 1.35 - 0.2 * vRel;
+    float d = thr - n;
+    if (d < 0.0) discard;
+    float rim = 1.0 - smoothstep(0.0, 0.08, d);
+    float core = 1.0 - smoothstep(0.0, 0.022, d);
 
-const FLAT_FRAG = /* glsl */ `
-  varying vec4 vColor;
-  void main() {
-    if (vColor.a < 0.004) discard;
-    gl_FragColor = vColor;
-  }
-`;
+    float light = 0.74 + 0.36 * max(vNormal.y, 0.0) + 0.12 * max(vNormal.z, 0.0);
+    float grime = texture2D(uNoise, uv / 9.0 + vec2(0.37, 0.11)).g;
+    vec3 base = vColor * mix(light * mix(0.8, 1.2, grime), 1.0, vEmis);
 
-const SHARD_VERT = /* glsl */ `
-  ${COMMON_HEAD}
-  uniform float uProj;
-  attribute vec3 aScatter;
-  attribute vec2 aTiming;
-  attribute vec2 aSolid;
-  attribute float aFog;
-  attribute float aSize;
-  attribute vec3 aColor;
-  const vec3 LIT = vec3(0.875, 0.984, 1.0);
-  void main() {
-    float fp = clamp((uTime - aTiming.x) / aTiming.y, 0.0, 1.0);
-    float e = 1.0 - pow(1.0 - fp, 3.0);
-    vec3 p = position + aScatter * (1.0 - e);
-    float solid = smoothstep(aSolid.x, aSolid.y, uTime);
-    float a = min(1.0, fp * 4.0) * (1.0 - solid * 0.92) * aFog * uFade;
-    vColor = vec4(e < 0.55 ? LIT : aColor, a);
-    vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    gl_PointSize = max(1.0, aSize * uProj / -mv.z);
-    gl_Position = projectionMatrix * mv;
+    vec2 s = gl_FragCoord.xy / uRes;
+    vec3 fogCol = water(s);
+    float fog = smoothstep(55.0, 235.0, vDist) * 0.92;
+    vec3 col = mix(base, fogCol, fog);
+    col += vec3(0.6, 0.98, 1.0) * (rim * 0.45 + core * 1.25) * (1.0 - fog * 0.6);
+    // fading out = sinking back into the water rather than going transparent
+    col = mix(fogCol, col, uFade);
+    col += grain(gl_FragCoord.xy, uTime) * 0.04;
+    gl_FragColor = vec4(col, 1.0);
   }
 `;
 
 const LIGHT_VERT = /* glsl */ `
-  ${COMMON_HEAD}
+  uniform float uTime;
+  uniform float uFade;
   uniform float uDpr;
-  attribute vec2 aSolid;
-  attribute float aFog;
+  attribute vec2 aTiming;
   attribute float aPhase;
+  varying vec4 vColor;
   void main() {
-    float s = smoothstep(aSolid.x, aSolid.y, uTime);
-    float blink = 0.35 + 0.65 * (0.5 + 0.5 * sin(uTime * 5.0 + aPhase));
-    vColor = vec4(0.875, 0.984, 1.0, s * aFog * blink * uFade);
-    gl_PointSize = 4.4 * uDpr;
+    float p = clamp((uTime - aTiming.x) / aTiming.y, 0.0, 1.0);
+    float on = smoothstep(0.85, 1.0, p);
+    float blink = 0.3 + 0.7 * (0.5 + 0.5 * sin(uTime * 4.0 + aPhase));
+    vColor = vec4(0.85, 0.98, 1.0, on * blink * uFade * 0.8);
+    gl_PointSize = 4.0 * uDpr;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
-const ROUND_FRAG = /* glsl */ `
-  varying vec4 vColor;
-  void main() {
-    vec2 d = gl_PointCoord - 0.5;
-    if (dot(d, d) > 0.25 || vColor.a < 0.004) discard;
-    gl_FragColor = vColor;
-  }
-`;
-
 const MOTE_VERT = /* glsl */ `
-  ${COMMON_HEAD}
+  uniform float uTime;
+  uniform float uFade;
   uniform float uDpr;
-  uniform vec2 uHalf;   // frustum half extents at the mote plane
+  uniform vec2 uHalf;
   uniform float uDist;
   attribute vec2 aNorm;
   attribute vec3 aA;    // r, vy, f
   attribute vec3 aB;    // p, a, tw
+  varying vec4 vColor;
   void main() {
-    float appear = clamp((uTime - 0.4) / 1.2, 0.0, 1.0);
+    float appear = clamp((uTime - 0.2) / 1.5, 0.0, 1.0);
     float y = fract(aNorm.y - uTime * aA.y);
-    float x = aNorm.x + sin(uTime * aA.z + aB.x) * 0.012;
+    float x = aNorm.x + sin(uTime * aA.z + aB.x) * 0.01;
     vec3 p = vec3((x - 0.5) * 2.0 * uHalf.x, (0.5 - y) * 2.0 * uHalf.y, -uDist);
-    float a = clamp(appear * aB.y * (0.6 + 0.4 * sin(uTime * aB.z + aB.x)), 0.0, 1.0);
-    vColor = vec4(0.647, 0.953, 0.988, a * uFade);
-    gl_PointSize = aA.x * 2.0 * uDpr;
+    float a = clamp(appear * aB.y * (0.65 + 0.35 * sin(uTime * aB.z + aB.x)), 0.0, 1.0);
+    vColor = vec4(0.72, 0.93, 0.93, a * uFade);
+    gl_PointSize = aA.x * 2.2 * uDpr;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+  }
+`;
+
+const SOFT_FRAG = /* glsl */ `
+  varying vec4 vColor;
+  void main() {
+    float r = length(gl_PointCoord - 0.5);
+    float a = vColor.a * smoothstep(0.5, 0.12, r);
+    if (a < 0.004) discard;
+    gl_FragColor = vec4(vColor.rgb, a);
   }
 `;
 
@@ -141,41 +208,36 @@ export function mountBackdrop(
   const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 400);
   camera.position.set(0, 0, 0);
 
+  const noise = new THREE.DataTexture(makeNoiseTexture(256), 256, 256, THREE.RGBAFormat);
+  noise.wrapS = noise.wrapT = THREE.RepeatWrapping;
+  noise.minFilter = THREE.LinearFilter;
+  noise.magFilter = THREE.LinearFilter;
+  noise.needsUpdate = true;
+
   const uniforms = {
     uTime: { value: -1 },
     uFade: { value: 1 },
-    uProj: { value: 1 },
     uDpr: { value: 1 },
+    uAspect: { value: 1 },
+    uRes: { value: new THREE.Vector2(1, 1) },
     uHalf: { value: new THREE.Vector2(1, 1) },
     uDist: { value: MOTE_DEPTH },
+    uNoise: { value: noise },
   };
 
-  const meshMat = new THREE.ShaderMaterial({
-    uniforms,
-    vertexShader: MESH_VERT,
-    fragmentShader: FLAT_FRAG,
-    transparent: true,
-    // painter's order within the one draw call decides what covers what; the
-    // depth it leaves behind is what keeps far shards from bleeding through
-    // near facades
-    depthTest: true,
-    depthFunc: THREE.AlwaysDepth,
-    depthWrite: true,
-    side: THREE.DoubleSide,
-  });
-  const shardMat = new THREE.ShaderMaterial({
-    uniforms,
-    vertexShader: SHARD_VERT,
-    fragmentShader: FLAT_FRAG,
-    transparent: true,
-    depthTest: true,
-    depthWrite: false,
-  });
-  const lightMat = new THREE.ShaderMaterial({ uniforms, vertexShader: LIGHT_VERT, fragmentShader: ROUND_FRAG, transparent: true, depthTest: false, depthWrite: false });
-  const moteMat = new THREE.ShaderMaterial({ uniforms, vertexShader: MOTE_VERT, fragmentShader: ROUND_FRAG, transparent: true, depthTest: false, depthWrite: false });
+  const bgMat = new THREE.ShaderMaterial({ uniforms, vertexShader: BG_VERT, fragmentShader: BG_FRAG, depthTest: false, depthWrite: false });
+  const cityMat = new THREE.ShaderMaterial({ uniforms, vertexShader: CITY_VERT, fragmentShader: CITY_FRAG, side: THREE.FrontSide, depthTest: true, depthWrite: true });
+  const lightMat = new THREE.ShaderMaterial({ uniforms, vertexShader: LIGHT_VERT, fragmentShader: SOFT_FRAG, transparent: true, depthTest: false, depthWrite: false });
+  const moteMat = new THREE.ShaderMaterial({ uniforms, vertexShader: MOTE_VERT, fragmentShader: SOFT_FRAG, transparent: true, depthTest: false, depthWrite: false });
+
+  const bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
+  bg.frustumCulled = false;
+  bg.renderOrder = -1;
+  scene.add(bg);
 
   let objects: THREE.Object3D[] = [];
   let geometries: THREE.BufferGeometry[] = [];
+  let city: THREE.Mesh | null = null;
 
   function build(data: SceneData) {
     for (const o of objects) scene.remove(o);
@@ -183,34 +245,23 @@ export function mountBackdrop(
     objects = [];
     geometries = [];
 
-    const mg = new THREE.BufferGeometry();
-    mg.setAttribute("position", attr(data.mesh.position, 3));
-    mg.setAttribute("aColor", attr(data.mesh.color, 3));
-    mg.setAttribute("aAlpha", attr(data.mesh.alpha, 1));
-    mg.setAttribute("aSolid", attr(data.mesh.solid, 2));
-    mg.setAttribute("aFog", attr(data.mesh.fog, 1));
-    mg.setIndex(new THREE.BufferAttribute(data.mesh.index, 1));
-    const mesh = new THREE.Mesh(mg, meshMat);
-    mesh.renderOrder = 0;
-
-    const sg = new THREE.BufferGeometry();
-    sg.setAttribute("position", attr(data.shards.position, 3));
-    sg.setAttribute("aScatter", attr(data.shards.scatter, 3));
-    sg.setAttribute("aTiming", attr(data.shards.timing, 2));
-    sg.setAttribute("aSolid", attr(data.shards.solid, 2));
-    sg.setAttribute("aFog", attr(data.shards.fog, 1));
-    sg.setAttribute("aSize", attr(data.shards.size, 1));
-    sg.setAttribute("aColor", attr(data.shards.color, 3));
-    const shards = new THREE.Points(sg, shardMat);
-    shards.renderOrder = 1;
+    const cg = new THREE.BufferGeometry();
+    cg.setAttribute("position", attr(data.mesh.position, 3));
+    cg.setAttribute("normal", attr(data.mesh.normal, 3));
+    cg.setAttribute("aColor", attr(data.mesh.color, 3));
+    cg.setAttribute("aRel", attr(data.mesh.rel, 1));
+    cg.setAttribute("aTiming", attr(data.mesh.timing, 2));
+    cg.setAttribute("aEmissive", attr(data.mesh.emissive, 1));
+    cg.setIndex(new THREE.BufferAttribute(data.mesh.index, 1));
+    city = new THREE.Mesh(cg, cityMat);
+    city.renderOrder = 0;
 
     const lg = new THREE.BufferGeometry();
     lg.setAttribute("position", attr(data.lights.position, 3));
-    lg.setAttribute("aSolid", attr(data.lights.solid, 2));
-    lg.setAttribute("aFog", attr(data.lights.fog, 1));
+    lg.setAttribute("aTiming", attr(data.lights.timing, 2));
     lg.setAttribute("aPhase", attr(data.lights.phase, 1));
     const lights = new THREE.Points(lg, lightMat);
-    lights.renderOrder = 2;
+    lights.renderOrder = 1;
 
     const og = new THREE.BufferGeometry();
     // the vertex shader positions motes itself - this only sizes the draw
@@ -219,14 +270,33 @@ export function mountBackdrop(
     og.setAttribute("aA", attr(data.motes.a, 3));
     og.setAttribute("aB", attr(data.motes.b, 3));
     const motes = new THREE.Points(og, moteMat);
-    motes.renderOrder = 3;
+    motes.renderOrder = 2;
 
-    for (const o of [mesh, shards, lights, motes]) {
+    for (const o of [city, lights, motes]) {
       o.frustumCulled = false;
       scene.add(o);
       objects.push(o);
     }
-    geometries.push(mg, sg, lg, og);
+    geometries.push(cg, lg, og);
+    warmUp();
+  }
+
+  // Compiles every shader and pushes one real draw through the pipeline
+  // while the loading screen is still up, so the first visible frame of the
+  // reveal doesn't stall on shader compilation (a 50-200ms hitch on
+  // integrated graphics, landing right as the floor grid starts to grow).
+  // The draw is confined to a single pixel and cleared straight after, so
+  // nothing of it is ever seen.
+  function warmUp() {
+    if (t0 !== null) return; // already running for real - nothing to hide
+    renderer.compile(scene, camera);
+    renderer.setScissorTest(true);
+    renderer.setScissor(0, 0, 1, 1);
+    uniforms.uTime.value = 0.01;
+    renderer.render(scene, camera);
+    renderer.setScissorTest(false);
+    uniforms.uTime.value = -1;
+    renderer.clear();
   }
 
   // ---- sizing ----
@@ -240,8 +310,9 @@ export function mountBackdrop(
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    uniforms.uProj.value = (h * dpr) / 2 / Math.tan((FOV / 2) * (Math.PI / 180));
     uniforms.uDpr.value = dpr;
+    uniforms.uAspect.value = camera.aspect;
+    uniforms.uRes.value.set(w * dpr, h * dpr);
     const hh = halfHeightAt(MOTE_DEPTH);
     uniforms.uHalf.value.set(hh * camera.aspect, hh);
 
@@ -267,7 +338,7 @@ export function mountBackdrop(
 
   // ---- clock / fade / parallax state ----
   const { reducedMotion } = opts;
-  let t0: number | null = null;
+  let t0: number | null = null; // declared ahead of build()/warmUp() which read it
   let fade = opts.dimmed ? 0 : 1,
     fadeTarget = fade;
   let px = 0,
@@ -287,6 +358,7 @@ export function mountBackdrop(
     const t = currentTime(now);
     uniforms.uTime.value = t;
     uniforms.uFade.value = fade;
+    if (city) city.visible = fade > 0.002;
     camera.position.set(px, py, 0);
     renderer.render(scene, camera);
     lastRender = now;
@@ -297,8 +369,7 @@ export function mountBackdrop(
     if (disposed) return;
     const t = currentTime(now);
 
-    // ease the fade and the parallax toward their targets
-    fade += (fadeTarget - fade) * 0.12;
+    fade += (fadeTarget - fade) * 0.1;
     if (Math.abs(fadeTarget - fade) < 0.002) fade = fadeTarget;
     px += (tx - px) * 0.08;
     py += (ty - py) * 0.08;
@@ -310,13 +381,12 @@ export function mountBackdrop(
 
     const building = t >= 0 && t < BUILD_DURATION + 0.3;
     const fading = fade !== fadeTarget;
-    // once the scene has locked in and nothing is easing, only the mast
-    // beacons and dust motes are moving - half rate is plenty for those and
-    // leaves more headroom for the CSS world's own compositing
+    // once revealed and settled only the beacons, the snow and the grain are
+    // moving - half rate is plenty for those and leaves headroom for the CSS
+    // world's own compositing
     const idle = !building && !fading && parallaxSettled;
-    if (!idle || now - lastRender >= 32) render(now);
+    if (!idle || now - lastRender >= IDLE_FRAME_MS) render(now);
 
-    if (fade === 0 && fadeTarget === 0) return; // fully faded out - sleep until un-dimmed
     if (reducedMotion && !fading && parallaxSettled) return; // static image - nothing to animate
     raf = requestAnimationFrame(frame);
   }
@@ -324,7 +394,7 @@ export function mountBackdrop(
   function requestRender() {
     if (disposed || raf) return;
     if (t0 === null && !reducedMotion) {
-      // nothing on screen yet - just keep the canvas clear
+      // nothing on screen yet - keep the canvas clear so the CSS stars show
       renderer.clear();
       return;
     }
@@ -367,10 +437,12 @@ export function mountBackdrop(
       ro.disconnect();
       window.removeEventListener("mousemove", onMove);
       for (const g of geometries) g.dispose();
-      meshMat.dispose();
-      shardMat.dispose();
+      bg.geometry.dispose();
+      bgMat.dispose();
+      cityMat.dispose();
       lightMat.dispose();
       moteMat.dispose();
+      noise.dispose();
       renderer.dispose();
     },
   };
