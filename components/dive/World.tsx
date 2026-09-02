@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./dive.module.css";
 import { MONO_PLACE, SEC_PLACE, worldTransform, type Section } from "./sections";
 import { getSectionContent } from "./sectionContent";
+import Backdrop from "./Backdrop";
 
 const CENTERED_SECTIONS: Section[] = ["education", "certifications"];
 const ALL_SECTIONS = Object.keys(MONO_PLACE) as Section[];
@@ -116,6 +117,7 @@ export default function World({
     >
       <div className={styles.stars} />
       <div className={styles.horizon} />
+      <Backdrop start={start} dimmed={active !== null} reducedMotion={reducedMotion} />
       <div className={styles.stage}>
         <div className={styles.tilt} style={{ transform: tilt, ...worldTransition }}>
           <div className={styles.rig} style={worldTransition}>

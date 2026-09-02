@@ -93,6 +93,10 @@
 }
 .assembled .horizon { opacity: 1; }
 
+/* the Three.js skyline - sits between the stars and the CSS 3D stage, so the
+   monoliths, floor grid and panels all render on top of it */
+.backdrop { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+
 .stage { position: absolute; inset: 0; perspective: 900px; perspective-origin: 50% 46%; }
 .tilt { position: absolute; left: 50%; top: 50%; width: 0px; height: 0px; transform-style: preserve-3d; transition: transform 400ms ease-out; }
 .rig {
@@ -190,10 +194,14 @@
    actual depth removes the ambiguity outright instead of just hiding it. */
 .mono.active { transform: var(--place) translateZ(-650px); opacity: 0.18; pointer-events: none; }
 
+/* The monoliths stand in front of the Three.js skyline, so they need to read
+   as solid objects rather than one more line drawing: an opaque dark body
+   under the cyan glass (the city can't show through), a crisp edge, and a
+   wide dark halo that pushes the wireframes away around each one. */
 .slab {
-  position: absolute; inset: 0; border-radius: 6px; border: 1px solid rgba(56,189,248,0.55);
-  background: linear-gradient(to top, rgba(56,189,248,0.30), rgba(56,189,248,0.05));
-  box-shadow: 0 0 28px rgba(56,189,248,0.25);
+  position: absolute; inset: 0; border-radius: 6px; border: 1px solid rgba(103,232,249,0.9);
+  background: linear-gradient(to top, rgba(56,189,248,0.38), rgba(56,189,248,0.12)), linear-gradient(#08131c, #08131c);
+  box-shadow: 0 0 32px rgba(56,189,248,0.42), 0 0 110px 52px rgba(3,8,13,0.9);
   transition: border-color 500ms ease, box-shadow 500ms ease, background 500ms ease;
 }
 .slab::after {
@@ -225,7 +233,9 @@
 .lbl {
   position: absolute; left: -120px; width: 360px; top: -46px; text-align: center;
   font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #a5f3fc;
-  text-shadow: 0 0 14px rgba(56,189,248,0.6); opacity: 0; white-space: nowrap;
+  /* cyan glow plus a dark halo so the label stays legible over the skyline */
+  text-shadow: 0 0 14px rgba(56,189,248,0.6), 0 0 10px rgba(3,8,13,1), 0 0 26px rgba(3,8,13,1), 0 0 44px rgba(3,8,13,0.9);
+  opacity: 0; white-space: nowrap;
   transform: translateY(14px);
   transition: opacity 450ms ease, transform 450ms ease;
   will-change: opacity, transform;
