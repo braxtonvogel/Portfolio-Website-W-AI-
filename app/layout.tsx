@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import FakeAI from "@/components/FakeAI";
 
 export const metadata: Metadata = {
   title: "Braxton Vogel Portfolio",
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-white text-black dark:bg-black dark:text-white">
         {children}
+        <FakeAI />
       </body>
     </html>
   );

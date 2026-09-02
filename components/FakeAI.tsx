@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { certifications } from "@/lib/certifications";
+import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 
 type Message = {
   role: "user" | "ai";
@@ -305,7 +307,113 @@ const knowledgeBase = {
     oulad:
       "Yes — Braxton has experience working with the real-world OULAD educational dataset.",
   },
+
+  about: {
+    contact: `You can reach Braxton directly at ${CONTACT_EMAIL} or ${CONTACT_PHONE}, or use the contact form on this site.`,
+    touch: `You can reach Braxton directly at ${CONTACT_EMAIL} or ${CONTACT_PHONE}, or use the contact form on this site.`,
+    reach: `You can reach Braxton directly at ${CONTACT_EMAIL} or ${CONTACT_PHONE}, or use the contact form on this site.`,
+    email: `Braxton's email is ${CONTACT_EMAIL}.`,
+    phone: `Braxton's phone number is ${CONTACT_PHONE}.`,
+    hire: `Reach out at ${CONTACT_EMAIL} or ${CONTACT_PHONE} — he'd be glad to talk.`,
+
+    gpa: "Braxton has a 3.4 general GPA and a 3.6 major GPA, pursuing a B.S. in Software Engineering.",
+    education:
+      "Braxton is pursuing a B.S. in Software Engineering at Sam Houston State University (SHSU) in Huntsville, Texas, 2024 - present.",
+    university: "Braxton attends Sam Houston State University (SHSU) in Huntsville, Texas.",
+    shsu: "Braxton attends Sam Houston State University (SHSU) in Huntsville, Texas.",
+    degree: "Braxton is pursuing a Bachelor of Science in Software Engineering.",
+
+    certification: `Yes — Braxton holds the ${certifications.map((c) => c.title).join(", ")}. You can view it on the Certifications page.`,
+    certifications: `Yes — Braxton holds the ${certifications.map((c) => c.title).join(", ")}. You can view it on the Certifications page.`,
+    certificate: `Yes — Braxton holds the ${certifications.map((c) => c.title).join(", ")}. You can view it on the Certifications page.`,
+  },
 };
+
+const FALLBACK =
+  "That topic isn't explicitly listed, but I can help with his skills, projects, education, certifications, or how to get in touch.";
+
+/* ================= MATCHING ================= */
+// Case/punctuation-insensitive: lowercase, and every non-alphanumeric character
+// (spaces, periods, slashes, question marks...) becomes a word break. This is
+// what lets "Next.js", "next js", and "nextjs" all resolve the same way, and -
+// combined with matching whole *phrases* rather than raw substrings - is what
+// stops "java" from firing inside "javascript", or "ai" from firing inside
+// "email": neither is a standalone word/phrase in the message.
+function normalize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+// Small, dependency-free edit distance - just enough to forgive a single
+// typo/transposition ("pyhton", "reactjs" -> "react") without getting loose
+// enough to match unrelated short words.
+function editDistance(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      // count a swapped adjacent pair ("pyhton" -> "python") as a single edit,
+      // not two - it's one of the most common typing slips there is, and
+      // plain Levenshtein would otherwise price it the same as two unrelated
+      // substitutions and miss it under a strict threshold.
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        dp[i][j] = Math.min(dp[i][j], dp[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+const MAX_PHRASE_WORDS = 3;
+const MAX_MATCHES = 3;
+
+/** Finds up to MAX_MATCHES knowledge-base answers for a user message: exact
+ * phrase matches first (checked as contiguous 1-3 word runs, squashed, so
+ * multi-word keys like "springboot" match "spring boot" typed either way),
+ * then a light typo-tolerant pass over single words for anything still
+ * unmatched. Longer keywords get a little more spelling leeway since a
+ * one-character slip matters less on a long word than a short one. */
+function findMatches(input: string): string[] {
+  const words = normalize(input);
+  if (words.length === 0) return [];
+
+  const phrases = new Set<string>();
+  for (let n = 1; n <= MAX_PHRASE_WORDS; n++) {
+    for (let i = 0; i + n <= words.length; i++) {
+      phrases.add(words.slice(i, i + n).join(""));
+    }
+  }
+
+  const matches: string[] = [];
+  const seen = new Set<string>();
+
+  outer: for (const group of Object.values(knowledgeBase)) {
+    for (const [key, answer] of Object.entries(group)) {
+      if (seen.has(answer)) continue;
+
+      const exact = phrases.has(key);
+      const fuzzy =
+        !exact &&
+        key.length >= 4 &&
+        words.some((w) => w.length >= 4 && editDistance(w, key) <= (key.length >= 8 ? 2 : 1));
+
+      if (exact || fuzzy) {
+        matches.push(answer);
+        seen.add(answer);
+        if (matches.length >= MAX_MATCHES) break outer;
+      }
+    }
+  }
+
+  return matches;
+}
 
 export default function FakeAI() {
   const [open, setOpen] = useState(false);
@@ -320,70 +428,32 @@ export default function FakeAI() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
-  // Auto-focus + disclaimer
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-
-      setMessages((prev) => {
-        if (prev.length === 0) {
-          return [
+  const openChat = () => {
+    setOpen(true);
+    setMessages((prev) =>
+      prev.length === 0
+        ? [
             {
               role: "ai",
               content:
                 "Quick note: I may not include every detail of Braxton's experience. For full accuracy, please review his project pages alongside using this assistant.",
             },
-          ];
-        }
-
-        return prev;
-      });
-    }
-  }, [open]);
-
-  // Normalize input
-  function normalize(text: string) {
-    return text.toLowerCase().replace(/\s+/g, "").trim();
-  }
+          ]
+        : prev
+    );
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
 
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const q = normalize(input);
+    const matches = findMatches(input);
+    const response = matches.length > 0 ? matches.join("\n\n") : FALLBACK;
 
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", content: input },
-    ]);
-
-    let response = "";
-
-    // ================= SEARCH KNOWLEDGE BASE =================
-    let found = false;
-
-    for (const group of Object.values(knowledgeBase)) {
-      for (const key in group) {
-        if (q.includes(key)) {
-          response = group[key as keyof typeof group];
-          found = true;
-          break;
-        }
-      }
-
-      if (found) break;
-    }
-
-    // ================= FALLBACK =================
-    if (!found) {
-      response =
-        "That topic isn't explicitly listed, but check Braxton's project pages for related experience.";
-    }
+    setMessages((prev) => [...prev, { role: "user", content: input }]);
 
     setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "ai", content: response },
-      ]);
+      setMessages((prev) => [...prev, { role: "ai", content: response }]);
     }, 300);
 
     setInput("");
@@ -394,7 +464,7 @@ export default function FakeAI() {
       {/* ================= FLOATING BUBBLE ================= */}
       {!open && (
         <button
-          onClick={() => setOpen(true)}
+          onClick={openChat}
           className="
             fixed bottom-6 right-6
             w-14 h-14 rounded-full
@@ -442,7 +512,7 @@ export default function FakeAI() {
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`text-sm p-2 rounded-lg max-w-[85%] ${
+                className={`text-sm p-2 rounded-lg max-w-[85%] whitespace-pre-line ${
                   m.role === "user"
                     ? "ml-auto bg-white text-black"
                     : "mr-auto bg-zinc-800 text-white"

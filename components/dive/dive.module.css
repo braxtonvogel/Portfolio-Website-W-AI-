@@ -1,0 +1,314 @@
+@keyframes wOut {
+  0% { transform: scale(1); filter: blur(0px); opacity: 1; }
+  100% { transform: scale(1.45); filter: blur(10px); opacity: 0; }
+}
+@keyframes wIn {
+  0% { transform: scale(1.3); filter: blur(8px); opacity: 0; }
+  100% { transform: scale(1); filter: blur(0px); opacity: 1; }
+}
+@keyframes sIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes sOut {
+  0% { transform: scale(1); filter: blur(0px); opacity: 1; }
+  100% { transform: scale(1.15); filter: blur(6px); opacity: 0; }
+}
+.wOut { animation: wOut 700ms ease-in both; }
+.wIn { animation: wIn 600ms ease-out both; }
+.sIn { animation: sIn 500ms ease-out both; }
+.sOut { animation: sOut 700ms ease-in both; }
+
+/* prefers-reduced-motion: a plain opacity crossfade, no scale/blur/parallax */
+.fadeOut { opacity: 0; transition: opacity 200ms ease; }
+.fadeIn { opacity: 1; transition: opacity 200ms ease; }
+
+@keyframes burst {
+  0% { transform: scale(0.4); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: scale(6); opacity: 0; }
+}
+.burst {
+  position: absolute; top: 50%; left: 50%; width: 400px; height: 400px; margin: -200px 0 0 -200px;
+  border-radius: 50%; border: 1px solid rgba(56, 189, 248, 0.85);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.5);
+  animation: burst 900ms ease-in both;
+  will-change: transform, opacity;
+}
+.b1 { animation-delay: 50ms; }
+.b2 { animation-delay: 100ms; }
+.b3 { animation-delay: 150ms; }
+.b4 { animation-delay: 200ms; }
+.b5 { animation-delay: 250ms; }
+
+@keyframes flash {
+  0%, 50% { opacity: 0; }
+  60%, 74% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.flash {
+  position: absolute; inset: 0; background: #dff7ff; opacity: 0;
+  animation: flash 1100ms ease-in-out both;
+}
+.pulseRings { opacity: 0.4; }
+
+.stars {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  transition: opacity 550ms ease-out 450ms;
+  background-image:
+    radial-gradient(1px 1px at 8% 18%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 22% 62%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 37% 22%, rgba(186,230,253,0.8), transparent),
+    radial-gradient(1px 1px at 51% 44%, rgba(255,255,255,0.45), transparent),
+    radial-gradient(1px 1px at 64% 12%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 77% 38%, rgba(186,230,253,0.7), transparent),
+    radial-gradient(1px 1px at 88% 26%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 93% 58%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 14% 46%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 45% 8%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 30% 34%, rgba(186,230,253,0.5), transparent),
+    radial-gradient(1px 1px at 58% 30%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.45), transparent);
+}
+/* the dive flash covers the screen until ~420ms after the world mounts - nothing
+   here starts appearing until after that, so the grid is actually seen forming
+   rather than being hidden behind the flash.
+   The whole entrance choreography below is driven by React toggling
+   `.assembled`/`.revealed` classes off a timer, not by self-scheduled CSS
+   `animation-delay`: on integrated graphics, `@keyframes` animations several
+   levels deep inside nested `transform-style: preserve-3d` contexts were
+   intermittently never starting at all (confirmed via the Web Animations API
+   reporting them permanently stuck at currentTime 0), leaving monoliths
+   stuck fully black. A `transition` triggered by an actual class/style change
+   degrades gracefully instead - worst case it snaps instantly to the correct
+   end state rather than getting stuck on the start state forever. */
+.assembled .stars { opacity: 1; }
+
+.horizon {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 70% 40% at 50% 62%, rgba(56,189,248,0.10), rgba(56,189,248,0) 70%);
+  opacity: 0;
+  transition: opacity 600ms ease-out 500ms;
+}
+.assembled .horizon { opacity: 1; }
+
+.stage { position: absolute; inset: 0; perspective: 900px; perspective-origin: 50% 46%; }
+.tilt { position: absolute; left: 50%; top: 50%; width: 0px; height: 0px; transform-style: preserve-3d; transition: transform 400ms ease-out; }
+.rig {
+  position: absolute; left: 0px; top: 0px; width: 0px; height: 0px; transform-style: preserve-3d;
+  transform: translate3d(0, -90px, 640px) rotateX(10deg);
+  transition: transform 1400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+.assembled .rig { transform: translate3d(0, 0, 0) rotateX(0deg); }
+
+.world { position: absolute; left: 0px; top: 0px; width: 0px; height: 0px; transform-style: preserve-3d; transition: transform 1100ms cubic-bezier(0.7, 0, 0.3, 1); will-change: transform; }
+
+.floor {
+  position: absolute; left: -1500px; top: 200px; width: 3000px; height: 2400px;
+  /* pivot at the near edge (closest to camera) - growing is a scaleY off this
+     edge, so the far edge is what visibly extends outward toward the horizon
+     rather than the whole plane growing from its center */
+  transform-origin: 50% 0%;
+  transform: rotateX(-90deg) scaleY(0.001);
+  opacity: 0;
+  background-image: linear-gradient(rgba(103,232,249,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,0.35) 1px, transparent 1px);
+  background-size: 120px 120px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 75% at 50% 0%, #000 0%, transparent 90%);
+  mask-image: radial-gradient(ellipse 65% 75% at 50% 0%, #000 0%, transparent 90%);
+  /* a CSS mask hides pixels visually but never removes them from hit-testing -
+     this huge rotated plane would otherwise sit in front of (in true 3D depth)
+     and swallow clicks meant for panel links/buttons floating above it */
+  pointer-events: none;
+  /* NOTE: deliberately only opacity/transform here, nothing else. A previous
+     version animated `filter: brightness()` alongside this for a "powering
+     on" glow effect - filter is one of the most expensive things a browser
+     can animate (it can't be composited for free like opacity/transform, it
+     has to re-render the actual pixels nearly every frame), and doing that
+     for 1.5s on the single largest, most complex element in the scene
+     reintroduced the exact stutter/rendering-glitch problem this whole
+     entrance sequence was rebuilt to avoid. Don't add it back. */
+  transition: opacity 200ms ease-out, transform 1500ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+/* the grid floor grows out from the near edge toward the horizon first,
+   slowly and deliberately - the rest of the scene (monoliths) doesn't
+   appear until this finishes */
+.assembled .floor { opacity: 1; transform: rotateX(-90deg) scaleY(1); }
+
+.pad {
+  position: absolute; left: -180px; top: 20px; width: 360px; height: 360px; border-radius: 50%;
+  border: 1px solid rgba(56,189,248,0.55);
+  box-shadow: 0 0 24px rgba(56,189,248,0.3);
+  transform: translateZ(-320px) rotateX(-90deg) scale(0);
+  pointer-events: none;
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 950ms;
+  will-change: transform;
+}
+.assembled .pad { transform: translateZ(-320px) rotateX(-90deg) scale(1); }
+
+.mono {
+  position: absolute; left: -60px; top: -130px; width: 120px; height: 260px;
+  opacity: 0; cursor: pointer;
+  /* deliberately NOT transform-style: preserve-3d - none of this element's own
+     children (slab/slabDim/lbl) need independent depth relative to each
+     other, they're all flat inset/absolute overlays. Without preserve-3d the
+     browser can flatten the whole monolith into a single rasterized layer,
+     so revealing/dimming it is a pure GPU composite (move/fade a texture)
+     instead of having to re-rasterize its box-shadows every single frame of
+     the transition - on integrated graphics, 6 of these repainting at once
+     during the entrance was very likely what made the reveal unreliable.
+     translateZ still works correctly here: it's this element's OWN transform,
+     positioned by its preserve-3d ancestor (.world) same as any 3D child. */
+  /* every monolith starts at this same shared center point - all six spawn
+     in stacked on top of each other here before bursting out to .distributed */
+  transform: translate3d(0px, 70px, -700px);
+  transition: opacity 450ms ease, transform 550ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+.mono.revealed { opacity: var(--fog); }
+/* the burst outward to each monolith's real arc position - kept as its own
+   class (rather than folding straight into .active below) so the two stay
+   independent: distributed always wins for the resting/idle formation, but
+   the later .active rule (same specificity, declared after) still overrides
+   it once a section is focused. */
+.mono.distributed { transform: var(--place); }
+.world.focused .mono:not(.active) { opacity: 0.12; }
+.world.focused .mono:not(.active) .lbl { opacity: 0; color: transparent; text-shadow: none; }
+.world.focused .mono:not(.active) .slab { border-color: rgba(56,189,248,0.10); background: linear-gradient(to top, rgba(56,189,248,0.05), rgba(56,189,248,0.01)); box-shadow: none; }
+.world.focused .mono:not(.active) .slab::after { opacity: 0.1; }
+/* the active monolith's own floating label would otherwise sit right on top of
+   its content panel's title once focused - hide it once the panel takes over */
+.world.focused .mono.active .lbl { opacity: 0; }
+/* the content panel's grid of cards (Projects especially) can spatially
+   overlap this monolith's own footprint once the panel is wide and full of
+   content - fading opacity alone left the two surfaces at near-identical true
+   3D depth, which the browser has to resolve per pixel every repaint (e.g. a
+   card's hover transition), causing a visible flicker as it re-decides which
+   one is "in front". Pushing the monolith hundreds of pixels further back in
+   actual depth removes the ambiguity outright instead of just hiding it. */
+.mono.active { transform: var(--place) translateZ(-650px); opacity: 0.18; pointer-events: none; }
+
+.slab {
+  position: absolute; inset: 0; border-radius: 6px; border: 1px solid rgba(56,189,248,0.55);
+  background: linear-gradient(to top, rgba(56,189,248,0.30), rgba(56,189,248,0.05));
+  box-shadow: 0 0 28px rgba(56,189,248,0.25);
+  transition: border-color 500ms ease, box-shadow 500ms ease, background 500ms ease;
+}
+.slab::after {
+  content: ""; position: absolute; left: 50%; top: 14px; bottom: 14px; width: 1px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(186,230,253,0.9), rgba(255,255,255,0));
+}
+.mono.active .slab {
+  border-color: rgba(103,232,249,0.95);
+  box-shadow: 0 0 46px rgba(56,189,248,0.45);
+  background: linear-gradient(to top, rgba(56,189,248,0.45), rgba(56,189,248,0.10));
+}
+
+/* "power on": the slab itself never animates its own glow (box-shadow/gradient
+   fades are expensive to repaint and were the likely cause of monoliths
+   sometimes failing to render under load). Instead a solid dark cover sits over
+   it and fades away via a plain opacity animation - cheap, GPU-composited,
+   reliable - revealing the already-fully-lit slab underneath. */
+.slabDim {
+  position: absolute; inset: 0; border-radius: 6px; background: #05070a; opacity: 1; pointer-events: none;
+  transition: opacity 450ms ease-out;
+  will-change: opacity;
+}
+/* each monolith's own React-driven reveal timer (see World.tsx) adds this
+   class in sequence, staggered the same way the old animation-delay chain
+   was: grid floor first, then the arc of monoliths as dim wireframes, then
+   each one powers on in turn - "grid, then everything lights up". */
+.mono.revealed .slabDim { opacity: 0; }
+
+.lbl {
+  position: absolute; left: -120px; width: 360px; top: -46px; text-align: center;
+  font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase; color: #a5f3fc;
+  text-shadow: 0 0 14px rgba(56,189,248,0.6); opacity: 0; white-space: nowrap;
+  transform: translateY(14px);
+  transition: opacity 450ms ease, transform 450ms ease;
+  will-change: opacity, transform;
+}
+.mono.revealed .lbl { opacity: 1; transform: translateY(0); }
+
+.secwrap {
+  position: absolute; left: -370px; top: -270px; width: 740px; height: 540px;
+  transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;
+}
+.sec {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 14px;
+  padding: 8px 4px; overflow-y: auto; overscroll-behavior: contain;
+  opacity: 0; transform: translateZ(-200px) translateY(24px);
+  transition: opacity 600ms ease 350ms, transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 350ms;
+  background: radial-gradient(ellipse 75% 90% at 50% 40%, rgba(0,0,0,0.62), rgba(0,0,0,0) 82%);
+  will-change: opacity, transform;
+}
+.sec.active { opacity: 1; transform: translateZ(0px) translateY(0px); pointer-events: auto; }
+/* short panels (education, certifications) use the full box height just for
+   centering rather than top-anchoring + scroll, so their title lines up with
+   the vertical middle of the monolith beside them instead of hugging the top */
+.sec.centered { justify-content: center; }
+.secTitle { margin: 0; font-size: clamp(32px, 6vw, 56px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; text-shadow: 0 0 24px rgba(56,189,248,0.4); }
+.lead { margin: 0; font-size: 24px; font-weight: 600; color: #ffffff; }
+.secBody { margin: 0; font-size: 17px; color: #d4d4d8; line-height: 1.5; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { display: inline-block; padding: 6px 14px; border-radius: 999px; border: 1px solid #52525b; color: #d4d4d8; font-size: 15px; background: rgba(255,255,255,0.06); }
+
+.proj { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.proj > a, .proj > div { padding: 9px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 15px; background: rgba(0,0,0,0.45); color: #ffffff; text-decoration: none; display: block; transition: border-color 200ms ease, background 200ms ease; }
+.proj > a:hover { border-color: rgba(56,189,248,0.6); background: rgba(0,0,0,0.6); }
+.proj span { display: block; color: #a1a1aa; font-size: 11px; margin-top: 2px; }
+
+/* skills: the three groups from the live site, kept distinct instead of one bunch */
+.skillGroups { display: flex; flex-wrap: wrap; gap: 24px; }
+.skillGroup { flex: 1 1 180px; min-width: 180px; }
+.skillGroupTitle { margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #a5f3fc; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* early dev: text on the left, the actual PDF on the right - stacked instead on
+   narrow screens (mobile fallback), where there isn't room for both side by side */
+.pdfRow { display: flex; gap: 20px; align-items: flex-start; }
+.pdfCol { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.pdfFrame { flex: 0 0 260px; width: 260px; height: 340px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); background: #ffffff; }
+.pdfFrame iframe { width: 100%; height: 100%; border: 0; }
+@media (max-width: 767px) {
+  .pdfRow { flex-direction: column; }
+  .pdfFrame { width: 100%; flex-basis: auto; height: 300px; }
+}
+
+/* contact: the real form, styled to match the rest of the panels */
+.field { width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid #3f3f46; color: #ffffff; font-size: 15px; }
+.field::placeholder { color: #a1a1aa; }
+
+.boot {
+  position: absolute; inset: 0; z-index: 25; display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 1; transition: opacity 260ms ease;
+}
+.bootLeaving { opacity: 0; }
+.bootPanel {
+  /* no backdrop-filter: it's one of the most GPU-expensive CSS properties
+     there is (a full backdrop capture + blur pass, every frame it's on
+     screen) - not worth paying for a panel that's only up for ~1-3s, and
+     definitely not worth paying for during the exact window the world
+     underneath is trying to assemble. A solid-enough background reads the
+     same without the cost. */
+  min-width: 280px; padding: 18px 22px; border-radius: 10px;
+  border: 1px solid rgba(56,189,248,0.35); background: rgba(4,9,14,0.88);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  box-shadow: 0 0 28px rgba(56,189,248,0.12);
+}
+.bootHeader { margin: 0 0 10px 0; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #a5f3fc; }
+.bootLine { margin: 0 0 12px 0; font-size: 14px; color: #67e8f9; min-height: 18px; }
+.bootBar { width: 100%; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); overflow: hidden; }
+.bootBarFill {
+  height: 100%; width: 100%; background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  transform-origin: left; transform: scaleX(0); transition: transform linear;
+}
+.bootBarFilled { transform: scaleX(1); }
+
+.hint {
+  position: absolute; left: 0; right: 0; bottom: 34px; text-align: center;
+  font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(165,243,252,0.55);
+  opacity: 0; pointer-events: none; transition: opacity 500ms ease;
+}
+.show { opacity: 1; }
