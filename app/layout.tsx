@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import FakeAI from "@/components/FakeAI";
+import CustomCursor from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
   title: "Braxton Vogel Portfolio",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="bg-white text-black dark:bg-black dark:text-white">
         {children}
         <FakeAI />
+        <CustomCursor />
       </body>
     </html>
   );

@@ -14,3 +14,6 @@ export function useMediaQuery(query: string): boolean {
 
 export const useIsMobile = () => useMediaQuery("(max-width: 767px)");
 export const usePrefersReducedMotion = () => useMediaQuery("(prefers-reduced-motion: reduce)");
+/** True on devices with a precise pointer (mouse/trackpad) - false on touch,
+ * where there's no persistent cursor to replace. */
+export const useHasFinePointer = () => useMediaQuery("(pointer: fine)");

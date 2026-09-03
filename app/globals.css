@@ -19,6 +19,14 @@
   }
 }
 
+/* Set only once CustomCursor.tsx has actually mounted and confirmed a real
+   mouse is present - never blind-hides the cursor from a plain CSS media
+   query, which would leave nothing visible if JS were slow or failed. */
+html.customCursorActive,
+html.customCursorActive * {
+  cursor: none !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
