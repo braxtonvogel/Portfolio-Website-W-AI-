@@ -26,9 +26,31 @@ export default function CustomCursor() {
 
     document.documentElement.classList.add("customCursorActive");
 
+    // Batched to at most one style write per animation frame. mousemove can
+    // fire well past 60/sec on a high-polling-rate mouse, and this page
+    // already has other mousemove listeners doing real work of their own
+    // (the dive world's parallax tilt, the WebGL backdrop's own parallax) -
+    // writing to the DOM straight from the raw event, on top of that, was
+    // extra main-thread work squeezed between frames rather than lined up
+    // with them, which is what read as lag.
+    let raf = 0;
+    let x = 0;
+    let y = 0;
+    let seen = false;
+
+    const applyPosition = () => {
+      raf = 0;
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
+
     const onMove = (e: MouseEvent) => {
-      dot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-      dot.classList.add(styles.visible);
+      x = e.clientX;
+      y = e.clientY;
+      if (!seen) {
+        seen = true;
+        dot.classList.add(styles.visible);
+      }
+      if (!raf) raf = requestAnimationFrame(applyPosition);
     };
     const onDown = () => dot.classList.add(styles.down);
     const onUp = () => dot.classList.remove(styles.down);
@@ -43,6 +65,7 @@ export default function CustomCursor() {
 
     return () => {
       document.documentElement.classList.remove("customCursorActive");
+      if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("mouseup", onUp);
