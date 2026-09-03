@@ -47,7 +47,7 @@ export default function FileManagerProject() {
       <FadeInSection delay={50}>
         <h1 className="text-4xl font-bold mt-6">File Manager UI</h1>
         <p className="text-zinc-500 mt-2">
-          HTML • React • UI/UX • Frontend Design • Workflow Optimization
+          HTML • CSS • JavaScript • UI/UX Design • Workflow Optimization
         </p>
       </FadeInSection>
 
@@ -98,13 +98,14 @@ export default function FileManagerProject() {
       <FadeInSection delay={200}>
         <h2 className="text-2xl font-semibold mt-10">Overview</h2>
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-3">
-          Designed a modern file management interface focused on reducing navigation
-          complexity and improving usability for everyday PC users.
+          Designed and built a desktop-style file manager simulation from scratch in
+          vanilla HTML, CSS, and JavaScript — no framework, no build step — modeling an
+          in-memory virtual filesystem with nested folders, search, and sorting.
         </p>
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-4">
-          Collaborated in a small development team to create intuitive workflows,
+          Built with a partner for a class project, focused on intuitive workflows,
           customizable navigation, file organization tools, search/sort functionality,
-          and accessible UI features.
+          and accessible UI features — all running entirely client-side.
         </p>
       </FadeInSection>
 
@@ -129,12 +130,16 @@ export default function FileManagerProject() {
           Challenges & What I Learned
         </h2>
         <p className="text-zinc-600 dark:text-zinc-300 mt-3 leading-7">
-          One of the biggest challenges was designing an interface that balances
-          simplicity with powerful functionality.
+          The biggest challenge was building a working virtual filesystem entirely in
+          JavaScript — a nested object tree with recursive path resolution, cut/copy/paste,
+          automatic name-collision handling (&quot;file (1).txt&quot;), and a soft-delete
+          Trash that relocates nodes instead of destroying data.
         </p>
         <p className="text-zinc-600 dark:text-zinc-300 mt-4 leading-7">
-          This project strengthened my understanding of UI/UX design principles,
-          frontend layout systems, and workflow optimization.
+          Keeping five different UI regions — the breadcrumb bar, sidebar, file grid,
+          inspector panel, and toolbar — all in sync from a single render() call, with no
+          framework managing state for me, taught me a lot about designing a UI around one
+          predictable source of truth.
         </p>
       </FadeInSection>
 
@@ -147,9 +152,9 @@ export default function FileManagerProject() {
 
           <div className="grid sm:grid-cols-2 gap-4 text-zinc-600 dark:text-zinc-300">
             <ul className="list-disc pl-6 space-y-2">
-              <li>React frontend development</li>
+              <li>Vanilla JavaScript & DOM manipulation</li>
               <li>UI/UX design principles</li>
-              <li>Component-based architecture</li>
+              <li>State-driven UI rendering</li>
               <li>Responsive design</li>
             </ul>
 

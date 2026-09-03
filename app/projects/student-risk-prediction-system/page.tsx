@@ -50,7 +50,7 @@ export default function StudentRiskProject() {
           Student Risk Prediction System (AI + ML Web Application)
         </h1>
         <p className="text-zinc-500 mt-2">
-          Python • Scikit-learn • Streamlit • SHAP • LLM (Nova / Llama 3)
+          Python • Scikit-learn • Pandas • Streamlit • SHAP • LLM (Nova / Llama 3)
         </p>
       </FadeInSection>
 
@@ -118,11 +118,11 @@ export default function StudentRiskProject() {
         <h2 className="text-2xl font-semibold mt-10">Overview</h2>
 
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-3">
-          This project is a full-stack machine learning system that predicts student academic risk using behavioral and academic data from the Open University Learning Analytics Dataset (OULAD).
+          This project is a full-stack machine learning system that predicts student academic risk using behavioral and academic data from the Open University Learning Analytics Dataset (OULAD), one-hot encoding categorical features like module, region, and education level before training a Random Forest classifier that reaches ~83% accuracy (ROC-AUC 0.834) on held-out data.
         </p>
 
         <p className="text-zinc-600 dark:text-zinc-300 leading-7 mt-4">
-          It outputs risk scores, generates intervention recommendations, and provides explainability using SHAP.
+          The deployed app outputs live risk scores and rule-based intervention suggestions; a companion analysis notebook goes further, using SHAP to break down each student&apos;s individual top risk factors.
         </p>
       </FadeInSection>
 
@@ -232,8 +232,8 @@ streamlit run src/app.py
         <ul className="list-disc pl-6 space-y-2 text-zinc-600 dark:text-zinc-300 mt-3">
           <li>Random Forest-based prediction model</li>
           <li>Risk probability scoring system</li>
-          <li>SHAP explainability analysis</li>
-          <li>AI-powered intervention suggestions</li>
+          <li>SHAP-based explainability (analysis notebook)</li>
+          <li>Rule-based intervention suggestions</li>
           <li>Streamlit dashboard interface</li>
           <li>LLM assistant (Nova / Llama 3)</li>
           <li>CSV upload + live predictions</li>

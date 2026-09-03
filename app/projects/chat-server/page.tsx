@@ -136,12 +136,17 @@ export default function ChatServerProject() {
           Challenges & What I Learned
         </h2>
         <p className="text-zinc-600 dark:text-zinc-300 mt-3 leading-7">
-          The biggest challenge was managing multiple clients at the same time while
-          keeping message delivery stable and synchronized across all connected users.
+          The server spins up a new thread per connected client and tracks chat-room
+          membership in a shared, in-memory map — which surfaced a real concurrency issue:
+          because the client list per room isn&apos;t synchronized, simultaneous joins,
+          leaves, and broadcasts from different threads can race against each other. It&apos;s
+          the kind of bug that only shows up under real concurrent load, and fixing it
+          properly (with a thread-safe collection) is the top item on my list for a v2.
         </p>
         <p className="text-zinc-600 dark:text-zinc-300 mt-4 leading-7">
-          Through this project, I learned how socket programming works in Java, how servers
-          handle multiple connections, and how real-time communication systems are structured.
+          Building it taught me how thread-per-client servers actually work under the hood —
+          accepting a socket, handing it off to its own thread, and coordinating shared state
+          across threads without a framework doing it for me.
         </p>
       </FadeInSection>
 
@@ -206,7 +211,7 @@ export default function ChatServerProject() {
 /* ================= METADATA ================= */
 export const projectMeta = {
   title: "Chat Server",
-  type: "Personal Project",
+  type: "Solo Class Project",
   tech: "Java • Sockets • Networking • Client-Server Architecture",
   skills: [
     "Java development",

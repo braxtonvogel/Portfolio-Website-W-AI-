@@ -21,7 +21,7 @@ export const projects: Project[] = [
     short: "Student Risk Prediction System",
     type: "Personal Project",
     href: "/projects/student-risk-prediction-system",
-    tech: "Python • Scikit-learn • Pandas • Streamlit • LLM (Nova / Llama 3)",
+    tech: "Python • Scikit-learn • Pandas • SHAP • Streamlit • LLM (Nova / Llama 3)",
     category: "personal",
   },
   {
@@ -43,7 +43,7 @@ export const projects: Project[] = [
   {
     title: "Chat Server",
     short: "Chat Server",
-    type: "Personal Project",
+    type: "Solo Class Project",
     href: "/projects/chat-server",
     tech: "Java • Sockets • Networking",
     category: "class",
@@ -53,7 +53,7 @@ export const projects: Project[] = [
     short: "File Manager UI",
     type: "Partnership Project",
     href: "/projects/file-manager-ui",
-    tech: "HTML • React • UI/UX • Frontend Design",
+    tech: "HTML • CSS • JavaScript • UI/UX Design",
     category: "class",
   },
 ];
@@ -74,7 +74,7 @@ export const skills: { technical: Skill[]; interpersonal: Skill[]; professional:
     { name: "Data Analysis", href: "/projects/student-risk-prediction-system" },
     { name: "Feature Engineering", href: "/projects/student-risk-prediction-system" },
     { name: "Playwright Automation", href: "/projects/stateful-browser-automation-engine" },
-    { name: "React / UI Development", href: "/projects/file-manager-ui" },
+    { name: "UI Development", href: "/projects/file-manager-ui" },
     { name: "Streamlit Web Apps", href: "/projects/student-risk-prediction-system" },
     { name: "Chromium Automation", href: "/projects/stateful-browser-automation-engine" },
     { name: "Database Design", href: "/projects/dnd-builder" },

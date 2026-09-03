@@ -29,6 +29,9 @@ const knowledgeBase = {
 
     sql:
       "Yes — Braxton has SQL experience from his D&D Character Builder Database System.",
+
+    javascript:
+      "Yes — Braxton has vanilla JavaScript and DOM manipulation experience from his File Manager UI project — a framework-free build with its own hand-rolled virtual filesystem.",
   },
 
   frameworks: {
@@ -36,7 +39,7 @@ const knowledgeBase = {
       "Yes — Braxton has Spring Boot backend experience from his D&D Character Builder Database System.",
 
     react:
-      "Yes — Braxton has React frontend experience from his File Manager UI project and this portfolio site.",
+      "Yes — Braxton has React experience from this portfolio site (built with Next.js and React) and SammyOS's Next.js frontend.",
 
     nextjs:
       "Yes — Braxton has Next.js experience from SammyOS and this portfolio site.",
@@ -63,7 +66,7 @@ const knowledgeBase = {
       "Yes — Braxton has Chromium automation experience from his Stateful Browser Automation Engine.",
 
     shap:
-      "Yes — Braxton has SHAP explainability experience from his Student Risk Prediction System.",
+      "Yes — Braxton has SHAP explainability experience from his Student Risk Prediction System's analysis notebook, identifying each student's top individual risk factors.",
 
     llama3:
       "Yes — Braxton has Llama 3 integration experience from his Student Risk Prediction System.",
@@ -382,10 +385,10 @@ const SKILL_PHRASES: { phrase: string; skillName: string }[] = [
   { phrase: "Random Forest", skillName: "Machine Learning (Random Forest)" },
   { phrase: "Feature Engineering", skillName: "Feature Engineering" },
   { phrase: "Playwright", skillName: "Playwright Automation" },
-  { phrase: "React", skillName: "React / UI Development" },
   { phrase: "Streamlit", skillName: "Streamlit Web Apps" },
   { phrase: "Chromium", skillName: "Chromium Automation" },
   { phrase: "Database Design", skillName: "Database Design" },
+  { phrase: "UI/UX", skillName: "UI Development" },
   { phrase: "Data Visualization", skillName: "Data Visualization" },
   { phrase: "Software Architecture", skillName: "Software Architecture" },
   { phrase: "Teamwork", skillName: "Teamwork & Collaboration" },
