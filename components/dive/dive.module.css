@@ -102,10 +102,12 @@
 .moonIsBlue .moonBlueLayer { opacity: 1; }
 .moonIsBlue .moonHalo { opacity: 0; }
 .moonRings { position: absolute; left: var(--moonX); top: var(--moonY); width: 0; height: 0; }
-/* a somewhat smaller moon on phones - same place on the horizon */
-.nightMobile .moonDisc { left: -60px; top: -60px; width: 120px; height: 120px; }
-.nightMobile .moonBlueLayer { left: -62px; top: -62px; width: 124px; height: 124px; box-shadow: 0 0 44px rgba(96,165,250,0.95), 0 0 110px 26px rgba(56,189,248,0.45); }
-.nightMobile .moonHalo { left: -190px; top: -190px; width: 380px; height: 380px; }
+/* a smaller moon on phones, same place on the horizon - sized down further
+   than just "smaller" so the About Me/GitHub/etc. row (pushed below it, see
+   Welcome.tsx) can clear it without an enormous gap */
+.nightMobile .moonDisc { left: -46px; top: -46px; width: 92px; height: 92px; }
+.nightMobile .moonBlueLayer { left: -48px; top: -48px; width: 96px; height: 96px; box-shadow: 0 0 34px rgba(96,165,250,0.95), 0 0 85px 20px rgba(56,189,248,0.45); }
+.nightMobile .moonHalo { left: -150px; top: -150px; width: 300px; height: 300px; }
 
 .stars {
   position: absolute; inset: 0; pointer-events: none; opacity: 0;

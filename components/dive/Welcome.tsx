@@ -44,7 +44,10 @@ export default function Welcome({
               <p>{CONTACT_PHONE}</p>
             </div>
 
-            <div className="flex justify-center md:justify-start flex-wrap gap-4 pt-4">
+            {/* on a phone the moon sits behind this row (it's centered on the
+                horizon around mid-screen) - push the buttons down clear of it
+                without touching the desktop layout, where there's no overlap */}
+            <div className="flex justify-center md:justify-start flex-wrap gap-4 mt-44 md:mt-0 pt-4">
               <button
                 onClick={() => setAboutOpen(true)}
                 className="px-4 py-2 border border-cyan-400/60 text-cyan-300 rounded-full hover:bg-cyan-500/10 transition"
