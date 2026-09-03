@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import FadeInSection from "@/components/FadeInSection";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 export default function StatefulBrowserAutomationProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -167,12 +168,10 @@ export default function StatefulBrowserAutomationProject() {
 
       {/* ================= PROJECT STRUCTURE ================= */}
       <FadeInSection delay={350}>
-        <h2 className="text-2xl font-semibold mt-10">
-          Project Structure
-        </h2>
-
-        <div className="mt-4 rounded-xl border p-6 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 overflow-x-auto">
-          <pre className="whitespace-pre-wrap text-sm">
+        <div className="mt-10">
+          <CollapsibleSection title="Project Structure">
+            <div className="rounded-xl border p-6 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 overflow-x-auto">
+              <pre className="whitespace-pre-wrap text-sm">
 {`Stateful-Browser-Automation-Engine/
 │
 ├── main.py
@@ -182,7 +181,9 @@ export default function StatefulBrowserAutomationProject() {
 │   ├── finished.png
 │   └── in_action.png
 └── .gitignore`}
-          </pre>
+              </pre>
+            </div>
+          </CollapsibleSection>
         </div>
       </FadeInSection>
 

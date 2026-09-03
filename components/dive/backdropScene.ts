@@ -35,6 +35,10 @@ function groundLineAt(dist: number) {
 // the markup's clock had ~0.5s of "void" before anything began - the site
 // already spends that beat on the loading screen, so pull every start earlier
 const T_OFF = -0.5;
+// every grounded structure continues this far below the ground line (world
+// units), so its base is always off the bottom of the frame - even after the
+// camera has sunk the full descent - and nothing ever reads as floating
+const GROUND_EXT = 70;
 const TAU = Math.PI * 2;
 
 function mulberry(a: number) {
@@ -171,17 +175,28 @@ export function buildScene(aspect: number): SceneData {
   const em = new MeshEmitter();
   const li = { pos: [] as number[], tim: [] as number[], pha: [] as number[] };
 
-  type Plane = { toW: (nx: number, ny: number) => [number, number]; S: number; D: number };
+  // The layout is authored for a landscape frame. Mapped straight onto a
+  // portrait phone every structure would be squeezed into a tall sliver, so
+  // portrait keeps square proportions instead: the layout spans a wider world
+  // than the screen shows (the middle ~46% is visible) and the near towers
+  // and facades are moved inward into that window.
+  const portrait = aspect < 1;
+  const layoutAspect = portrait ? 1 : aspect;
+
+  type Plane = { toW: (nx: number, ny: number) => [number, number]; S: number; D: number; extN: number };
   // sets up the mapping from normalized layout space onto a depth plane whose
-  // authored `base` line sits on the ground
+  // authored `base` line sits on the ground. `extN` is GROUND_EXT expressed in
+  // this plane's normalized units, so detail loops can continue below the
+  // ground line by the same distance the structures do.
   function plane(depth: number, base: number): Plane {
     const D = depthDist(depth);
     const halfH = halfHeightAt(D),
-      halfW = halfH * aspect;
+      halfW = halfH * layoutAspect;
     const lift = groundLineAt(D) - base;
     return {
       D,
       S: 2 * halfW,
+      extN: GROUND_EXT / (2 * halfH),
       toW: (nx, ny) => [(nx - 0.5) * 2 * halfW, (0.5 - (ny + lift)) * 2 * halfH],
     };
   }
@@ -208,10 +223,11 @@ export function buildScene(aspect: number): SceneData {
     const [wx0, wy1] = p.toW(x1, top);
     const [wx1, wy0] = p.toW(x2, HZ);
     const depth = (wx1 - wx0) * 0.6;
-    em.box(wx0, wx1, wy0, wy1, -p.D, -p.D - depth, C_CONCRETE, scale(C_CONCRETE, 0.8), scale(C_CONCRETE, 1.15));
+    em.box(wx0, wx1, wy0 - GROUND_EXT, wy1, -p.D, -p.D - depth, C_CONCRETE, scale(C_CONCRETE, 0.8), scale(C_CONCRETE, 1.15));
     const cols = Math.max(1, Math.floor((x2 - x1 - 0.012) / 0.013)),
       cw = 0.007;
-    for (let fy = top + floorH; fy < HZ - 0.006; fy += floorH) {
+    // windows continue down the extension below the ground line
+    for (let fy = top + floorH; fy < HZ + p.extN - 0.006; fy += floorH) {
       for (let c = 0; c < cols; c++) {
         const wx = x1 + 0.008 + c * 0.013;
         const lit = hash2(Math.round(wx * 1000), Math.round(fy * 1000)) > 0.86;
@@ -255,10 +271,16 @@ export function buildScene(aspect: number): SceneData {
   }
 
   // ---------- mid scaffold towers ----------
-  for (const [x1, start] of [
-    [0.2, 1.35],
-    [0.73, 1.45],
-  ] as [number, number][]) {
+  const towerXs: [number, number][] = portrait
+    ? [
+        [0.3, 1.35],
+        [0.63, 1.45],
+      ]
+    : [
+        [0.2, 1.35],
+        [0.73, 1.45],
+      ];
+  for (const [x1, start] of towerXs) {
     const p = plane(0.65, 0.36);
     const top = 0.1,
       bot = 0.36,
@@ -272,53 +294,60 @@ export function buildScene(aspect: number): SceneData {
     const bw = (wx1 - wx0) / bays,
       lh = (wy1 - wy0) / lifts;
     const depth = 5;
+    // the lattice keeps its rhythm all the way down the extension
+    const extLifts = Math.ceil(GROUND_EXT / lh);
     for (const z of [-p.D, -p.D - depth]) {
       const col = z > -p.D - 1 ? C_STEEL : scale(C_STEEL, 0.7);
       for (let b = 0; b <= bays; b++) {
         const x = wx0 + bw * b;
-        em.flat(x - 0.004 * unit, x + 0.004 * unit, wy0, wy1, z, col);
+        em.flat(x - 0.004 * unit, x + 0.004 * unit, wy0 - GROUND_EXT, wy1, z, col);
       }
-      for (let l = 0; l <= lifts; l++) {
+      for (let l = -extLifts; l <= lifts; l++) {
         const y = wy0 + lh * l;
         em.flat(wx0, wx1, y - 0.0025 * unit, y + 0.0025 * unit, z, col);
       }
       for (let b = 0; b < bays; b++)
-        for (let l = 0; l < lifts; l++) {
+        for (let l = -extLifts; l < lifts; l++) {
           const xa = wx0 + bw * b,
             xb = xa + bw,
             ya = wy0 + lh * l,
             yb = ya + lh;
-          if ((b + l) % 2) em.bar(xa, ya, xb, yb, 0.004 * unit, z, col);
+          if ((((b + l) % 2) + 2) % 2) em.bar(xa, ya, xb, yb, 0.004 * unit, z, col);
           else em.bar(xb, ya, xa, yb, 0.004 * unit, z, col);
         }
     }
-    // planks every other lift, spanning the depth
-    for (let l = 2; l < lifts; l += 2) {
+    // planks every other lift, spanning the depth (none on the ground line)
+    for (let l = -extLifts + (extLifts % 2); l < lifts; l += 2) {
+      if (l === 0) continue;
       const y = wy0 + lh * l;
       em.face([[wx0, y, -p.D], [wx1, y, -p.D], [wx1, y, -p.D - depth], [wx0, y, -p.D - depth]], [0, 1, 0], scale(C_SLAB, 0.8));
     }
     // corner posts joining front and back frames
     for (const x of [wx0, wx1]) {
-      em.face([[x, wy0, -p.D], [x, wy0, -p.D - depth], [x, wy1, -p.D - depth], [x, wy1, -p.D]], [x < 0 ? -1 : 1, 0, 0], scale(C_STEEL, 0.85));
+      const yb = wy0 - GROUND_EXT;
+      em.face([[x, yb, -p.D], [x, yb, -p.D - depth], [x, wy1, -p.D - depth], [x, wy1, -p.D]], [x < 0 ? -1 : 1, 0, 0], scale(C_STEEL, 0.85));
     }
   }
 
   // ---------- near high-detail facades ----------
+  // in portrait the two edge facades slide inward so they frame the visible
+  // window instead of sitting outside it
+  const fx = portrait ? 0.22 : 0;
   const facades: { boxes: Box[]; mastX: number; start: number }[] = [
     {
       boxes: [
-        { x1: 0.0, x2: 0.1, top: 0.03, bot: 0.245, fh: 0.028, mu: 0.014 },
-        { x1: -0.02, x2: 0.12, top: 0.245, bot: 0.47, fh: 0.028, mu: 0.014, lobby: true },
+        { x1: 0.0 + fx, x2: 0.1 + fx, top: 0.03, bot: 0.245, fh: 0.028, mu: 0.014 },
+        { x1: -0.02 + fx, x2: 0.12 + fx, top: 0.245, bot: 0.47, fh: 0.028, mu: 0.014, lobby: true },
       ],
-      mastX: 0.03,
+      mastX: 0.03 + fx,
       start: 1.55,
     },
     {
       boxes: [
-        { x1: 0.9, x2: 1.0, top: 0.06, bot: 0.26, fh: 0.028, mu: 0.014 },
-        { x1: 0.88, x2: 1.02, top: 0.26, bot: 0.47, fh: 0.028, mu: 0.014, lobby: true },
+        { x1: 0.9 - fx, x2: 1.0 - fx, top: 0.06, bot: 0.26, fh: 0.028, mu: 0.014 },
+        { x1: 0.88 - fx, x2: 1.02 - fx, top: 0.26, bot: 0.47, fh: 0.028, mu: 0.014, lobby: true },
       ],
-      mastX: 0.97,
+      mastX: 0.97 - fx,
       start: 1.65,
     },
   ];
@@ -331,19 +360,26 @@ export function buildScene(aspect: number): SceneData {
     for (const b of f.boxes) {
       const [wx0, wy1] = p.toW(b.x1, b.top);
       const [wx1, wy0] = p.toW(b.x2, b.bot);
-      em.box(wx0, wx1, wy0, wy1, -p.D, -p.D - depth, C_CONCRETE_NEAR, scale(C_CONCRETE_NEAR, 0.78), scale(C_CONCRETE_NEAR, 1.2));
+      // the ground-floor box continues below the frame
+      const yBase = b.bot >= 0.469 ? wy0 - GROUND_EXT : wy0;
+      em.box(wx0, wx1, yBase, wy1, -p.D, -p.D - depth, C_CONCRETE_NEAR, scale(C_CONCRETE_NEAR, 0.78), scale(C_CONCRETE_NEAR, 1.2));
       const lobby = b.lobby ? b.fh * 1.6 : 0;
+      // the ground-floor box continues below the frame - its floors, mullions
+      // and panes keep going down with it
+      const grounded = b.bot >= 0.469;
+      const bottom = grounded ? b.bot + p.extN : b.bot;
       // floor slabs
       const floors: number[] = [];
       let y = b.bot - lobby;
       if (lobby) floors.push(y);
       for (y = y - b.fh; y > b.top + b.fh * 0.6; y -= b.fh) floors.push(y);
+      if (grounded) for (y = b.bot; y < bottom; y += b.fh) floors.push(y);
       for (const fy of floors) {
         const [, ya] = p.toW(0, fy - 0.0025);
         const [, yb] = p.toW(0, fy + 0.0025);
         em.flat(wx0, wx1, yb, ya, -p.D + 0.35, C_SLAB);
       }
-      // mullions
+      // mullions: above the lobby, and again below the ground line
       const muls: number[] = [];
       for (let x = b.x1 + b.mu; x < b.x2 - b.mu * 0.5; x += b.mu) {
         muls.push(x);
@@ -352,14 +388,20 @@ export function buildScene(aspect: number): SceneData {
         const [, yt] = p.toW(0, b.top);
         const [, yl] = p.toW(0, b.bot - lobby);
         em.flat(xa, xb, yl, yt, -p.D + 0.3, C_MULLION);
+        if (grounded) {
+          const [, yg] = p.toW(0, b.bot);
+          const [, ye] = p.toW(0, bottom);
+          em.flat(xa, xb, ye, yg, -p.D + 0.3, C_MULLION);
+        }
       }
-      // panes
+      // panes: between consecutive floor lines, skipping the lobby's own span
       const xs = [b.x1, ...muls, b.x2];
-      const ys = [b.top, ...floors.slice().reverse()];
+      const ys = [b.top, ...floors].sort((a, c) => a - c);
       for (let i = 0; i < ys.length - 1; i++) {
         const y0 = Math.min(ys[i], ys[i + 1]) + 0.0018,
           y1 = Math.max(ys[i], ys[i + 1]) - 0.0018;
         if (y1 - y0 < 0.002) continue;
+        if (lobby && y0 >= b.bot - lobby - 1e-6 && y1 <= b.bot + 1e-6) continue;
         for (let j = 0; j < xs.length - 1; j++) {
           const x0 = xs[j] + 0.0018,
             x1 = xs[j + 1] - 0.0018;

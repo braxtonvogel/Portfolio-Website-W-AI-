@@ -3,14 +3,20 @@
 import Image from "next/image";
 import { useState } from "react";
 import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
+import NightSea from "./NightSea";
 
 export default function Welcome({
   typed,
   welcomeClass,
+  diving,
+  reducedMotion,
   onDive,
 }: {
   typed: string;
   welcomeClass: string;
+  /** True from the moment Dive is pressed: the moon goes blue and the rings burst. */
+  diving: boolean;
+  reducedMotion: boolean;
   onDive: () => void;
 }) {
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -20,14 +26,7 @@ export default function Welcome({
   return (
     <>
       <div className={`${welcomeClass} absolute inset-0`} style={{ transformOrigin: "50% 50%" }}>
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="ripple-ring-static" />
-          <div className="ripple-ring" />
-          <div className="ripple-ring" />
-          <div className="ripple-ring" />
-          <div className="ripple-ring" />
-          <div className="ripple-ring" />
-        </div>
+        <NightSea moonBlue={diving} rings={diving && !reducedMotion} reducedMotion={reducedMotion} />
 
         <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-start md:justify-center text-center md:text-left px-6 pt-16 md:pt-0 gap-8 md:gap-32 overflow-y-auto">
           <div className="space-y-6 max-w-3xl">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Certification, CertSegment } from "@/lib/certifications";
@@ -130,6 +130,11 @@ export default function CertificationScrollExperience({
     container.style.overflow = expandedIndex !== null ? "hidden" : "";
   }, [expandedIndex]);
 
+  const closeOverlay = useCallback(() => {
+    setOverlayVisible(false);
+    setTimeout(() => setExpandedIndex(null), 300);
+  }, []);
+
   // trigger the overlay's enter transition a tick after mount, and close on Escape
   useEffect(() => {
     if (expandedIndex === null) return;
@@ -142,13 +147,7 @@ export default function CertificationScrollExperience({
       cancelAnimationFrame(id);
       window.removeEventListener("keydown", onKey);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expandedIndex]);
-
-  const closeOverlay = () => {
-    setOverlayVisible(false);
-    setTimeout(() => setExpandedIndex(null), 300);
-  };
+  }, [expandedIndex, closeOverlay]);
 
   const scrollToSection = (index: number) => {
     sectionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" });

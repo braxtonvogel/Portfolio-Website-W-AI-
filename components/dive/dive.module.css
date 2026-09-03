@@ -29,7 +29,7 @@
   100% { transform: scale(6); opacity: 0; }
 }
 .burst {
-  position: absolute; top: 50%; left: 50%; width: 400px; height: 400px; margin: -200px 0 0 -200px;
+  position: absolute; top: var(--oy, 50%); left: var(--ox, 50%); width: 400px; height: 400px; margin: -200px 0 0 -200px;
   border-radius: 50%; border: 1px solid rgba(56, 189, 248, 0.85);
   box-shadow: 0 0 18px rgba(56, 189, 248, 0.5);
   animation: burst 900ms ease-in both;
@@ -41,16 +41,71 @@
 .b4 { animation-delay: 200ms; }
 .b5 { animation-delay: 250ms; }
 
-@keyframes flash {
-  0%, 50% { opacity: 0; }
-  60%, 74% { opacity: 1; }
-  100% { opacity: 0; }
+
+
+/* ---------- the welcome screen's night sea ---------- */
+.night { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.nightSky {
+  position: absolute; left: 0; right: 0; top: 0; height: 58%;
+  background: linear-gradient(to bottom, #01030b 0%, #030a1c 40%, #071a36 85%, #0d2a4d 100%);
 }
-.flash {
-  position: absolute; inset: 0; background: #dff7ff; opacity: 0;
-  animation: flash 1100ms ease-in-out both;
+.nightStars {
+  position: absolute; left: 0; right: 0; top: 0; height: 58%;
+  background-image:
+    radial-gradient(1px 1px at 8% 18%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 22% 62%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 37% 22%, rgba(214,230,255,0.9), transparent),
+    radial-gradient(1px 1px at 51% 44%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 64% 12%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 12% 40%, rgba(214,230,255,0.8), transparent),
+    radial-gradient(1px 1px at 88% 56%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 93% 8%, rgba(255,255,255,0.45), transparent),
+    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 45% 8%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 58% 70%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1.5px 1.5px at 82% 34%, rgba(214,230,255,0.7), transparent),
+    radial-gradient(1px 1px at 4% 72%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 96% 30%, rgba(255,255,255,0.5), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
 }
-.pulseRings { opacity: 0.4; }
+.nightSea {
+  position: absolute; left: 0; right: 0; top: 58%; bottom: 0;
+  background: linear-gradient(to bottom, #0b2a4a 0%, #061a33 18%, #03101f 55%, #01060d 100%);
+}
+.glitter { position: absolute; inset: 0; width: 100%; height: 100%; }
+.horizonGlow {
+  position: absolute; left: 0; right: 0; top: 58%; height: 2px; margin-top: -1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(160,190,235,0.25) 35%, rgba(215,230,255,0.75) 78%, rgba(160,190,235,0.25) 92%, transparent 100%);
+}
+/* the moon: a 0x0 anchor at --moonX/--moonY, disc + halo centered on it. The
+   blue moon is a second disc crossfaded in on top (opacity only - no
+   box-shadow animation). */
+.moon { position: absolute; left: var(--moonX); top: var(--moonY); width: 0; height: 0; }
+.moonHalo {
+  position: absolute; left: -280px; top: -280px; width: 560px; height: 560px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,250,232,0.26), rgba(255,250,232,0.08) 38%, rgba(255,250,232,0) 70%);
+  transition: opacity 450ms ease;
+}
+.moonDisc {
+  position: absolute; left: -85px; top: -85px; width: 170px; height: 170px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fffdf4, #ebe8da 55%, #c7c5b8 100%);
+  box-shadow: 0 0 56px rgba(255,250,230,0.55);
+}
+.moonBlueLayer {
+  position: absolute; left: -87px; top: -87px; width: 174px; height: 174px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #eaf8ff, #7cc4ff 50%, #2f7ce8 100%);
+  box-shadow: 0 0 60px rgba(96,165,250,0.95), 0 0 160px 40px rgba(56,189,248,0.45);
+  opacity: 0; transition: opacity 420ms ease;
+}
+.moonIsBlue .moonBlueLayer { opacity: 1; }
+.moonIsBlue .moonHalo { opacity: 0; }
+.moonRings { position: absolute; left: var(--moonX); top: var(--moonY); width: 0; height: 0; }
+/* a somewhat smaller moon on phones - same place on the horizon */
+.nightMobile .moonDisc { left: -60px; top: -60px; width: 120px; height: 120px; }
+.nightMobile .moonBlueLayer { left: -62px; top: -62px; width: 124px; height: 124px; box-shadow: 0 0 44px rgba(96,165,250,0.95), 0 0 110px 26px rgba(56,189,248,0.45); }
+.nightMobile .moonHalo { left: -190px; top: -190px; width: 380px; height: 380px; }
 
 .stars {
   position: absolute; inset: 0; pointer-events: none; opacity: 0;
@@ -71,9 +126,8 @@
     radial-gradient(1px 1px at 58% 30%, rgba(255,255,255,0.35), transparent),
     radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.45), transparent);
 }
-/* the dive flash covers the screen until ~420ms after the world mounts - nothing
-   here starts appearing until after that, so the grid is actually seen forming
-   rather than being hidden behind the flash.
+/* the boot screen sits over the world until it hands off - nothing here
+   starts appearing until after that, so the entrance is actually seen.
    The whole entrance choreography below is driven by React toggling
    `.assembled`/`.revealed` classes off a timer, not by self-scheduled CSS
    `animation-delay`: on integrated graphics, `@keyframes` animations several
@@ -107,50 +161,71 @@
 }
 .assembled .rig { transform: translate3d(0, 0, 0) rotateX(0deg); }
 
-.world { position: absolute; left: 0px; top: 0px; width: 0px; height: 0px; transform-style: preserve-3d; transition: transform 1100ms cubic-bezier(0.7, 0, 0.3, 1); will-change: transform; }
+/* the camera. No transition here on purpose: the descent (useDescent.ts)
+   writes this transform every animation frame, so the easing lives in JS and
+   scroll input can scrub it directly. */
+.world { position: absolute; left: 0px; top: 0px; width: 0px; height: 0px; transform-style: preserve-3d; will-change: transform; }
 
-.floor {
-  position: absolute; left: -1500px; top: 200px; width: 3000px; height: 2400px;
-  /* pivot at the near edge (closest to camera) - growing is a scaleY off this
-     edge, so the far edge is what visibly extends outward toward the horizon
-     rather than the whole plane growing from its center */
-  transform-origin: 50% 0%;
-  transform: rotateX(-90deg) scaleY(0.001);
-  opacity: 0;
-  background-image: linear-gradient(rgba(103,232,249,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,0.35) 1px, transparent 1px);
+
+
+
+/* the two grid walls flanking the column - the floor's look stood on its
+   side, fading into the fog away from the camera, so the descent reads as a
+   shaft rather than open water. Static: only ever composited. */
+.shaftWall {
+  position: absolute; left: 0px; top: -800px; width: 760px; height: 4200px;
+  transform-origin: 0% 50%;
+  background-image: linear-gradient(rgba(103,232,249,0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,0.22) 1px, transparent 1px);
   background-size: 120px 120px;
-  -webkit-mask-image: radial-gradient(ellipse 65% 75% at 50% 0%, #000 0%, transparent 90%);
-  mask-image: radial-gradient(ellipse 65% 75% at 50% 0%, #000 0%, transparent 90%);
-  /* a CSS mask hides pixels visually but never removes them from hit-testing -
-     this huge rotated plane would otherwise sit in front of (in true 3D depth)
-     and swallow clicks meant for panel links/buttons floating above it */
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.85), transparent 80%);
+  mask-image: linear-gradient(to right, rgba(0,0,0,0.85), transparent 80%);
   pointer-events: none;
-  /* NOTE: deliberately only opacity/transform here, nothing else. A previous
-     version animated `filter: brightness()` alongside this for a "powering
-     on" glow effect - filter is one of the most expensive things a browser
-     can animate (it can't be composited for free like opacity/transform, it
-     has to re-render the actual pixels nearly every frame), and doing that
-     for 1.5s on the single largest, most complex element in the scene
-     reintroduced the exact stutter/rendering-glitch problem this whole
-     entrance sequence was rebuilt to avoid. Don't add it back. */
-  transition: opacity 200ms ease-out, transform 1500ms cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  opacity: 0;
+  transition: opacity 900ms ease-out 900ms;
 }
-/* the grid floor grows out from the near edge toward the horizon first,
-   slowly and deliberately - the rest of the scene (monoliths) doesn't
-   appear until this finishes */
-.assembled .floor { opacity: 1; transform: rotateX(-90deg) scaleY(1); }
+.assembled .shaftWall { opacity: 1; }
 
-.pad {
-  position: absolute; left: -180px; top: 20px; width: 360px; height: 360px; border-radius: 50%;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* one landing ring on the floor line under every monolith */
+.ring {
+  position: absolute; left: -180px; top: -180px; width: 360px; height: 360px; border-radius: 50%;
   border: 1px solid rgba(56,189,248,0.55);
   box-shadow: 0 0 24px rgba(56,189,248,0.3);
-  transform: translateZ(-320px) rotateX(-90deg) scale(0);
+  transform: var(--ringPlace) rotateX(-90deg) scale(0);
   pointer-events: none;
   transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 950ms;
   will-change: transform;
 }
-.assembled .pad { transform: translateZ(-320px) rotateX(-90deg) scale(1); }
+.assembled .ring { transform: var(--ringPlace) rotateX(-90deg) scale(1); }
+
+/* the big faint floor number standing behind each panel, like a depth
+   marker painted on the shaft wall */
+.depthMark {
+  position: absolute; left: -400px; top: -110px; width: 800px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  pointer-events: none; white-space: nowrap;
+  opacity: 0; transition: opacity 900ms ease 1400ms;
+}
+.assembled .depthMark { opacity: 1; }
+.markNum { font-size: 220px; line-height: 0.9; font-weight: 800; letter-spacing: -0.04em; color: rgba(165,243,252,0.055); }
+.markLbl { font-size: 18px; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(165,243,252,0.22); padding-left: 10px; }
 
 .mono {
   position: absolute; left: -60px; top: -130px; width: 120px; height: 260px;
@@ -171,28 +246,17 @@
   transition: opacity 450ms ease, transform 550ms cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: opacity, transform;
 }
+/* --fog is written every frame by the descent (World.tsx) from the camera's
+   distance to this floor, so the column fades into the water above and below
+   the floor in focus. It goes through the variable rather than an inline
+   opacity so the reveal fade below (0 -> var) still plays on entrance. */
 .mono.revealed { opacity: var(--fog); }
-/* the burst outward to each monolith's real arc position - kept as its own
-   class (rather than folding straight into .active below) so the two stay
-   independent: distributed always wins for the resting/idle formation, but
-   the later .active rule (same specificity, declared after) still overrides
-   it once a section is focused. */
+/* the burst down the shaft to each monolith's real floor */
 .mono.distributed { transform: var(--place); }
-.world.focused .mono:not(.active) { opacity: 0.12; }
-.world.focused .mono:not(.active) .lbl { opacity: 0; color: transparent; text-shadow: none; }
-.world.focused .mono:not(.active) .slab { border-color: rgba(56,189,248,0.10); background: linear-gradient(to top, rgba(56,189,248,0.05), rgba(56,189,248,0.01)); box-shadow: none; }
-.world.focused .mono:not(.active) .slab::after { opacity: 0.1; }
-/* the active monolith's own floating label would otherwise sit right on top of
-   its content panel's title once focused - hide it once the panel takes over */
-.world.focused .mono.active .lbl { opacity: 0; }
-/* the content panel's grid of cards (Projects especially) can spatially
-   overlap this monolith's own footprint once the panel is wide and full of
-   content - fading opacity alone left the two surfaces at near-identical true
-   3D depth, which the browser has to resolve per pixel every repaint (e.g. a
-   card's hover transition), causing a visible flicker as it re-decides which
-   one is "in front". Pushing the monolith hundreds of pixels further back in
-   actual depth removes the ambiguity outright instead of just hiding it. */
-.mono.active { transform: var(--place) translateZ(-650px); opacity: 0.18; pointer-events: none; }
+/* once the burst has landed, opacity is scroll-driven - drop its transition
+   so the fog tracks the camera instead of trailing it */
+.mono.distributed.revealed { transition: transform 550ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.mono.active { cursor: default; }
 
 /* The monoliths stand in front of the Three.js skyline, so they need to read
    as solid objects rather than one more line drawing: an opaque dark body
@@ -246,15 +310,15 @@
   position: absolute; left: -370px; top: -270px; width: 740px; height: 540px;
   transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;
 }
+/* opacity, translateY and pointer-events are all written per frame by the
+   descent from the camera's distance to this floor - no transition here */
 .sec {
   position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 14px;
   padding: 8px 4px; overflow-y: auto; overscroll-behavior: contain;
-  opacity: 0; transform: translateZ(-200px) translateY(24px);
-  transition: opacity 600ms ease 350ms, transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 350ms;
+  opacity: 0; pointer-events: none;
   background: radial-gradient(ellipse 75% 90% at 50% 40%, rgba(0,0,0,0.62), rgba(0,0,0,0) 82%);
   will-change: opacity, transform;
 }
-.sec.active { opacity: 1; transform: translateZ(0px) translateY(0px); pointer-events: auto; }
 /* short panels (education, certifications) use the full box height just for
    centering rather than top-anchoring + scroll, so their title lines up with
    the vertical middle of the monolith beside them instead of hugging the top */
@@ -262,11 +326,11 @@
 .secTitle { margin: 0; font-size: clamp(32px, 6vw, 56px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; text-shadow: 0 0 24px rgba(56,189,248,0.4); }
 .lead { margin: 0; font-size: 24px; font-weight: 600; color: #ffffff; }
 .secBody { margin: 0; font-size: 17px; color: #d4d4d8; line-height: 1.5; }
-.pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.pill { display: inline-block; padding: 6px 14px; border-radius: 999px; border: 1px solid #52525b; color: #d4d4d8; font-size: 15px; background: rgba(255,255,255,0.06); }
+.pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill { display: inline-block; padding: 8px 16px; border-radius: 999px; border: 1px solid #52525b; color: #d4d4d8; font-size: 15px; background: rgba(255,255,255,0.06); }
 
-.proj { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.proj > a, .proj > div { padding: 9px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 15px; background: rgba(0,0,0,0.45); color: #ffffff; text-decoration: none; display: block; transition: border-color 200ms ease, background 200ms ease; }
+.proj { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.proj > a, .proj > div { padding: 14px 16px; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 15px; background: rgba(0,0,0,0.45); color: #ffffff; text-decoration: none; display: block; transition: border-color 200ms ease, background 200ms ease; }
 .proj > a:hover { border-color: rgba(56,189,248,0.6); background: rgba(0,0,0,0.6); }
 .proj span { display: block; color: #a1a1aa; font-size: 11px; margin-top: 2px; }
 
@@ -322,3 +386,53 @@
   opacity: 0; pointer-events: none; transition: opacity 500ms ease;
 }
 .show { opacity: 1; }
+
+/* the floor indicator down the right edge - one dot per floor, clickable */
+.floorDots {
+  position: absolute; right: 28px; top: 50%; transform: translateY(-50%); z-index: 15;
+  display: flex; flex-direction: column; gap: 16px;
+  opacity: 0; transition: opacity 600ms ease 1800ms;
+}
+.assembled .floorDots { opacity: 1; }
+.dot {
+  width: 10px; height: 10px; border-radius: 50%; padding: 0; cursor: pointer;
+  border: 1px solid rgba(165,243,252,0.55); background: transparent;
+  box-shadow: 0 0 10px rgba(56,189,248,0);
+  transition: transform 250ms ease, background 250ms ease, box-shadow 250ms ease;
+}
+.dot:hover { background: rgba(103,232,249,0.4); }
+/* the square at the top of the column: back up to the overview */
+.dotTop { border-radius: 2px; width: 12px; height: 12px; margin-bottom: 6px; }
+.dotActive { background: #67e8f9; transform: scale(1.4); box-shadow: 0 0 12px rgba(56,189,248,0.8); }
+
+/* the depth readout, bottom-left - ticks as the camera sinks */
+.gauge {
+  position: absolute; left: 30px; bottom: 32px; z-index: 15;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(165,243,252,0.6);
+  opacity: 0; transition: opacity 600ms ease 1800ms; pointer-events: none;
+}
+.gauge span { color: #a5f3fc; margin-left: 10px; font-variant-numeric: tabular-nums; }
+.assembled .gauge { opacity: 1; }
+
+/* ---------- phone composition ----------
+   The same world, laid out down the center line: the panel is sized in
+   viewport units (it sits at z=0 there, so 1vw really is 1vw), the monolith
+   and its label shrink, the project grid drops to two columns, and the
+   overlays tuck into the corners. Panels keep native touch scrolling; the
+   world itself owns every other gesture (touch-action: none on the root). */
+@media (max-width: 767px) {
+  .secwrap { left: -46vw; top: -25vh; width: 92vw; height: 50vh; }
+  .sec { touch-action: pan-y; padding: 10px 6px; gap: 12px; }
+  .secTitle { font-size: clamp(28px, 9vw, 40px); }
+  .lead { font-size: 19px; }
+  .secBody { font-size: 15px; }
+  .lbl { font-size: 18px; letter-spacing: 0.14em; top: -40px; }
+  .proj { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .depthMark { align-items: center; left: -50vw; width: 100vw; }
+  .markNum { font-size: 150px; }
+  .markLbl { font-size: 13px; letter-spacing: 0.22em; padding-left: 0; }
+  .floorDots { right: 12px; gap: 12px; }
+  .gauge { left: 14px; bottom: 16px; font-size: 11px; }
+  .hint { bottom: 16px; font-size: 10px; letter-spacing: 0.1em; padding: 0 70px 0 110px; }
+}

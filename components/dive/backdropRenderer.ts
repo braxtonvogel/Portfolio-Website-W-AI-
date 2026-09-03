@@ -20,8 +20,17 @@ import { buildScene, makeNoiseTexture, halfHeightAt, FOV, MOTE_DEPTH, BUILD_DURA
 export type BackdropController = {
   setStart(v: boolean): void;
   setDimmed(v: boolean): void;
+  /** 0 = overview, 1 = deepest floor. */
+  setDescent(t: number): void;
   dispose(): void;
 };
+
+// how far the camera sinks over the whole descent (world units) - the city
+// rises past the viewer as they go down
+const DESCENT_Y = 14;
+// a floor in focus sinks the city part-way back into the water rather than
+// all the way out: the panel stays legible, the descent stays visible
+const DIM_LEVEL = 0.3;
 
 // the backdrop is fogged, grainy and soft by design - at 1.25x it is
 // indistinguishable from native resolution and shades a third fewer pixels
@@ -38,12 +47,35 @@ const PARALLAX_Y = 2.0;
 // fog so distant structures sink into exactly the water behind them
 const WATER_GLSL = /* glsl */ `
   uniform float uAspect;
+  uniform float uDepth;
+  uniform float uTime;
+  // volumetric light: three shafts fanning down from above the frame, slowly
+  // swaying and breathing, brightest near the top and fading toward the floor
+  // and with depth. Screen-space, so they fall over the city as well as the
+  // water behind it.
+  float rays(vec2 s) {
+    float t = max(uTime, 0.0);
+    float r = 0.0;
+    for (int i = 0; i < 3; i++) {
+      float fi = float(i);
+      float x0 = 0.24 + fi * 0.26 + sin(t * (0.11 + fi * 0.03) + fi * 2.1) * 0.05;
+      float slope = (fi - 1.0) * 0.16;
+      float cx = x0 + (1.0 - s.y) * slope;
+      float wdt = 0.04 + fi * 0.012 + (1.0 - s.y) * 0.035;
+      float d = (s.x - cx) / wdt;
+      r += exp(-d * d) * (0.6 + 0.4 * sin(t * 0.6 + fi * 1.9));
+    }
+    r *= smoothstep(0.0, 0.8, s.y);
+    return r * (1.0 - 0.65 * uDepth);
+  }
   vec3 water(vec2 s) {
-    vec3 deep = vec3(0.022, 0.105, 0.135);
-    vec3 shallow = vec3(0.078, 0.31, 0.355);
+    // the deeper the descent, the darker the water and the fainter the light
+    // filtering down from the surface
+    vec3 deep = mix(vec3(0.022, 0.105, 0.135), vec3(0.006, 0.028, 0.042), uDepth);
+    vec3 shallow = mix(vec3(0.078, 0.31, 0.355), vec3(0.024, 0.11, 0.14), uDepth);
     vec3 c = mix(deep, shallow, smoothstep(0.0, 1.0, s.y));
     vec2 p = (s - vec2(0.5, 1.12)) * vec2(uAspect, 1.0);
-    c += vec3(0.55, 0.78, 0.72) * exp(-dot(p, p) * 3.2) * 0.34;
+    c += vec3(0.55, 0.78, 0.72) * exp(-dot(p, p) * 3.2) * 0.34 * (1.0 - 0.75 * uDepth);
     return c;
   }
   float grain(vec2 fragCoord, float t) {
@@ -59,11 +91,11 @@ const BG_VERT = /* glsl */ `
   }
 `;
 const BG_FRAG = /* glsl */ `
-  uniform float uTime;
   varying vec2 vUv;
   ${WATER_GLSL}
   void main() {
     vec3 c = water(vUv);
+    c += vec3(0.5, 0.86, 0.92) * rays(vUv) * 0.3;
     c += grain(gl_FragCoord.xy, uTime) * 0.035;
     gl_FragColor = vec4(c, 1.0);
   }
@@ -96,7 +128,6 @@ const CITY_VERT = /* glsl */ `
 `;
 const CITY_FRAG = /* glsl */ `
   uniform sampler2D uNoise;
-  uniform float uTime;
   uniform float uFade;
   uniform vec2 uRes;
   varying vec3 vWorld;
@@ -123,13 +154,22 @@ const CITY_FRAG = /* glsl */ `
 
     float light = 0.74 + 0.36 * max(vNormal.y, 0.0) + 0.12 * max(vNormal.z, 0.0);
     float grime = texture2D(uNoise, uv / 9.0 + vec2(0.37, 0.11)).g;
-    vec3 base = vColor * mix(light * mix(0.8, 1.2, grime), 1.0, vEmis);
+    // caustic light dancing on the upward faces: two drifting noise reads,
+    // sharpened, so the rooftops and ledges flicker like a pool floor
+    float t = max(uTime, 0.0);
+    float ca = texture2D(uNoise, uv * 0.045 + vec2(t * 0.02, t * 0.013)).r;
+    float cb = texture2D(uNoise, uv * 0.03 - vec2(t * 0.017, t * 0.006)).g;
+    float caustic = smoothstep(0.52, 0.9, ca * 0.55 + cb * 0.55) * max(vNormal.y, 0.0) * (1.0 - 0.6 * uDepth);
+    vec3 base = vColor * mix(light * mix(0.8, 1.2, grime), 1.0, vEmis) * (1.0 + caustic * 1.4);
 
     vec2 s = gl_FragCoord.xy / uRes;
     vec3 fogCol = water(s);
-    float fog = smoothstep(55.0, 235.0, vDist) * 0.92;
+    // fog closes in with depth so distant structures sink away as you go down
+    float fog = smoothstep(55.0 - 20.0 * uDepth, 235.0 - 80.0 * uDepth, vDist) * 0.92;
     vec3 col = mix(base, fogCol, fog);
     col += vec3(0.6, 0.98, 1.0) * (rim * 0.45 + core * 1.25) * (1.0 - fog * 0.6);
+    // the light shafts fall over the buildings too, fainter where they're near
+    col += vec3(0.5, 0.86, 0.92) * rays(s) * 0.22 * (0.5 + 0.5 * fog);
     // fading out = sinking back into the water rather than going transparent
     col = mix(fogCol, col, uFade);
     col += grain(gl_FragCoord.xy, uTime) * 0.04;
@@ -192,7 +232,7 @@ function attr(arr: Float32Array, size: number) {
 
 export function mountBackdrop(
   canvas: HTMLCanvasElement,
-  opts: { reducedMotion: boolean; start: boolean; dimmed: boolean }
+  opts: { reducedMotion: boolean; start: boolean; dimmed: boolean; descent: number }
 ): BackdropController | null {
   let renderer: THREE.WebGLRenderer;
   try {
@@ -219,6 +259,7 @@ export function mountBackdrop(
     uFade: { value: 1 },
     uDpr: { value: 1 },
     uAspect: { value: 1 },
+    uDepth: { value: opts.descent },
     uRes: { value: new THREE.Vector2(1, 1) },
     uHalf: { value: new THREE.Vector2(1, 1) },
     uDist: { value: MOTE_DEPTH },
@@ -234,6 +275,7 @@ export function mountBackdrop(
   bg.frustumCulled = false;
   bg.renderOrder = -1;
   scene.add(bg);
+
 
   let objects: THREE.Object3D[] = [];
   let geometries: THREE.BufferGeometry[] = [];
@@ -305,7 +347,8 @@ export function mountBackdrop(
   function fit() {
     const w = canvas.clientWidth || 1,
       h = canvas.clientHeight || 1;
-    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    // phones render at 1x: their screens are dense and their GPUs are not
+    const dpr = Math.min(window.devicePixelRatio || 1, (window.innerWidth || 1) < 768 ? 1 : MAX_DPR);
     renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
@@ -333,18 +376,21 @@ export function mountBackdrop(
     }
     requestRender();
   }
-  const ro = new ResizeObserver(fit);
+  const ro = new ResizeObserver(() => fit());
   ro.observe(canvas);
 
   // ---- clock / fade / parallax state ----
   const { reducedMotion } = opts;
   let t0: number | null = null; // declared ahead of build()/warmUp() which read it
-  let fade = opts.dimmed ? 0 : 1,
+  let fade = opts.dimmed ? DIM_LEVEL : 1,
     fadeTarget = fade;
   let px = 0,
     py = 0,
     tx = 0,
     ty = 0;
+  // descent: the eased value lags the target the same way the parallax does
+  let descent = opts.descent,
+    descentTarget = descent;
   let raf = 0;
   let lastRender = 0;
   let disposed = false;
@@ -358,8 +404,9 @@ export function mountBackdrop(
     const t = currentTime(now);
     uniforms.uTime.value = t;
     uniforms.uFade.value = fade;
+    uniforms.uDepth.value = descent;
     if (city) city.visible = fade > 0.002;
-    camera.position.set(px, py, 0);
+    camera.position.set(px, py - descent * DESCENT_Y, 0);
     renderer.render(scene, camera);
     lastRender = now;
   }
@@ -373,7 +420,10 @@ export function mountBackdrop(
     if (Math.abs(fadeTarget - fade) < 0.002) fade = fadeTarget;
     px += (tx - px) * 0.08;
     py += (ty - py) * 0.08;
-    const parallaxSettled = Math.abs(tx - px) < 0.002 && Math.abs(ty - py) < 0.002;
+    descent += (descentTarget - descent) * 0.12;
+    const descentSettled = Math.abs(descentTarget - descent) < 0.0015;
+    if (descentSettled) descent = descentTarget;
+    const parallaxSettled = Math.abs(tx - px) < 0.002 && Math.abs(ty - py) < 0.002 && descentSettled;
     if (parallaxSettled) {
       px = tx;
       py = ty;
@@ -402,7 +452,7 @@ export function mountBackdrop(
   }
 
   function onMove(e: MouseEvent) {
-    if (reducedMotion || fadeTarget === 0) return;
+    if (reducedMotion || fadeTarget < 1) return;
     const w = window.innerWidth || 1,
       h = window.innerHeight || 1;
     tx = (e.clientX / w - 0.5) * PARALLAX_X;
@@ -421,13 +471,18 @@ export function mountBackdrop(
       }
     },
     setDimmed(v) {
-      fadeTarget = v ? 0 : 1;
+      fadeTarget = v ? DIM_LEVEL : 1;
       if (v) {
-        // the CSS camera snaps back to center when a section is focused -
-        // bring the backdrop's parallax home with it
+        // the CSS camera holds still while a floor is in focus - bring the
+        // backdrop's parallax home with it
         tx = 0;
         ty = 0;
       }
+      requestRender();
+    },
+    setDescent(t) {
+      descentTarget = Math.min(1, Math.max(0, t));
+      if (reducedMotion) descent = descentTarget;
       requestRender();
     },
     dispose() {

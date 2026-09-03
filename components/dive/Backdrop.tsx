@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import styles from "./dive.module.css";
 import type { BackdropController } from "./backdropRenderer";
 
+export type BackdropHandle = {
+  /** 0 at the overview, 1 at the deepest floor - drives the city's rise and the water darkening. */
+  setDescent(t: number): void;
+};
+
 /**
- * The Three.js skyline that materializes behind the dive world.
+ * The Three.js sunken city that materializes behind the dive world.
  *
  * Sits between the star field and the CSS 3D stage, purely decorative
  * (`pointer-events: none`), and never blocks the rest of the page: the WebGL
@@ -14,16 +19,32 @@ import type { BackdropController } from "./backdropRenderer";
  * canvas and the existing CSS scene carries on unchanged.
  *
  * `start` kicks off the build-in (it plays once, after the loading screen
- * hands over - same moment the grid floor begins to grow). `dimmed` fades the
- * whole backdrop out while a section is focused and back in when it closes.
+ * hands over - same moment the grid floor begins to grow). `dimmed` sinks the
+ * city partly back into the water while a floor is in focus so the panel
+ * stays legible. `setDescent` (via ref) is fed every frame by the descent.
  */
-export default function Backdrop({ start, dimmed, reducedMotion }: { start: boolean; dimmed: boolean; reducedMotion: boolean }) {
+const Backdrop = forwardRef<BackdropHandle, { start: boolean; dimmed: boolean; reducedMotion: boolean }>(function Backdrop(
+  { start, dimmed, reducedMotion },
+  ref
+) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctrl = useRef<BackdropController | null>(null);
-  // the renderer is mounted asynchronously - remember the latest prop values
-  // so it starts in the right state whenever it does land
+  // the renderer is mounted asynchronously - remember the latest values so it
+  // starts in the right state whenever it does land
   const startRef = useRef(start);
   const dimmedRef = useRef(dimmed);
+  const descentRef = useRef(0);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      setDescent(t: number) {
+        descentRef.current = t;
+        ctrl.current?.setDescent(t);
+      },
+    }),
+    []
+  );
 
   useEffect(() => {
     startRef.current = start;
@@ -43,7 +64,12 @@ export default function Backdrop({ start, dimmed, reducedMotion }: { start: bool
     import("./backdropRenderer")
       .then(({ mountBackdrop }) => {
         if (cancelled) return;
-        ctrl.current = mountBackdrop(canvas, { reducedMotion, start: startRef.current, dimmed: dimmedRef.current });
+        ctrl.current = mountBackdrop(canvas, {
+          reducedMotion,
+          start: startRef.current,
+          dimmed: dimmedRef.current,
+          descent: descentRef.current,
+        });
       })
       .catch(() => {
         // chunk failed to load (offline, blocked) - nothing to do, the CSS
@@ -58,4 +84,6 @@ export default function Backdrop({ start, dimmed, reducedMotion }: { start: bool
   }, [reducedMotion]);
 
   return <canvas ref={canvasRef} className={styles.backdrop} aria-hidden="true" />;
-}
+});
+
+export default Backdrop;

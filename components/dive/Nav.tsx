@@ -1,18 +1,10 @@
 "use client";
 
-import type { Section } from "./sections";
-
-const LINKS: { label: string; section: Section }[] = [
-  { label: "Education", section: "education" },
-  { label: "Certifications", section: "certifications" },
-  { label: "Early Dev", section: "early" },
-  { label: "Projects", section: "projects" },
-  { label: "Skills", section: "skills" },
-  { label: "Contact", section: "contact" },
-];
+import { SECTION_LABELS, SECTION_ORDER, type Section } from "./sections";
 
 /** Only rendered once the dive-in has landed in the space - there's nothing to
- * navigate to from the welcome page, so it stays hidden until then. */
+ * navigate to from the welcome page, so it stays hidden until then. Links come
+ * straight from SECTION_ORDER so a new floor shows up here automatically. */
 export default function Nav({
   active,
   onHome,
@@ -32,9 +24,9 @@ export default function Nav({
       <button onClick={onHome} className={linkStyle(false)}>
         Home
       </button>
-      {LINKS.map(({ label, section }) => (
+      {SECTION_ORDER.map((section) => (
         <button key={section} onClick={() => onGo(section)} className={linkStyle(active === section)}>
-          {label}
+          {SECTION_LABELS[section]}
         </button>
       ))}
     </div>

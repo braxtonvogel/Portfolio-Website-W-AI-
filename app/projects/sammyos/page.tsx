@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import FadeInSection from "@/components/FadeInSection";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 const TECH_STACK = [
   { label: "Tauri v2", desc: "Native desktop runtime" },
@@ -489,26 +490,28 @@ export default function SammyOSProject() {
       {/* BUILD TIMELINE */}
       <FadeInSection trigger="view" delay={300}>
         <div className="mt-14">
-          <h2 className="text-2xl font-semibold mb-8">Build Timeline</h2>
-          <div className="relative border-l border-zinc-300 dark:border-zinc-700 ml-3 space-y-8">
-            {TIMELINE.map((item, i) => (
-              <div key={i} className="pl-8 relative">
-                <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-violet-500 bg-white dark:bg-black" />
-                <div className="flex items-baseline gap-3 mb-1">
-                  <span className="font-mono text-xs text-violet-400">{item.version}</span>
-                  <span className="font-semibold text-sm">{item.label}</span>
+          <CollapsibleSection title="Build Timeline">
+            <div className="relative border-l border-zinc-300 dark:border-zinc-700 ml-3 space-y-8">
+              {TIMELINE.map((item, i) => (
+                <div key={i} className="pl-8 relative">
+                  <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-violet-500 bg-white dark:bg-black" />
+                  <div className="flex items-baseline gap-3 mb-1">
+                    <span className="font-mono text-xs text-violet-400">{item.version}</span>
+                    <span className="font-semibold text-sm">{item.label}</span>
+                  </div>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-6">{item.detail}</p>
                 </div>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-6">{item.detail}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </CollapsibleSection>
         </div>
       </FadeInSection>
 
       {/* PROJECT STRUCTURE */}
       <FadeInSection trigger="view" delay={330}>
-        <h2 className="text-2xl font-semibold mt-14 mb-4">Project Structure</h2>
-        <pre className="text-xs bg-zinc-950 text-zinc-300 p-5 rounded-2xl overflow-x-auto border border-zinc-800 leading-6">
+        <div className="mt-6">
+          <CollapsibleSection title="Project Structure">
+            <pre className="text-xs bg-zinc-950 text-zinc-300 p-5 rounded-2xl overflow-x-auto border border-zinc-800 leading-6">
 {`SammyOS/
 │
 ├── SammyOS.vbs              ← silent Windows launcher (no cmd window)
@@ -551,34 +554,39 @@ export default function SammyOSProject() {
         ├── research/        ← autonomous research job queue
         ├── telemetry/       ← usage stats aggregation → sammyos-live
         └── health/          ← uptime check`}
-        </pre>
+            </pre>
+          </CollapsibleSection>
+        </div>
       </FadeInSection>
 
       {/* HOW TO RUN */}
       <FadeInSection trigger="view" delay={360}>
-        <h2 className="text-2xl font-semibold mt-14">How to Run</h2>
-        <div className="mt-5 space-y-5 text-sm text-zinc-600 dark:text-zinc-300">
-          <div>
-            <p className="font-semibold text-black dark:text-white mb-2">1 · Clone the repo</p>
-            <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono">
+        <div className="mt-6">
+          <CollapsibleSection title="How to Run">
+            <div className="space-y-5 text-sm text-zinc-600 dark:text-zinc-300">
+              <div>
+                <p className="font-semibold text-black dark:text-white mb-2">1 · Clone the repo</p>
+                <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono">
 git clone https://github.com/braxtonvogel/SammyOS-AI-Workspace.git
 cd SammyOS-AI-Workspace</pre>
-          </div>
-          <div>
-            <p className="font-semibold text-black dark:text-white mb-2">2 · Install dependencies</p>
-            <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono">
+              </div>
+              <div>
+                <p className="font-semibold text-black dark:text-white mb-2">2 · Install dependencies</p>
+                <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono">
 cd apps/desktop
 npm install</pre>
-          </div>
-          <div>
-            <p className="font-semibold text-black dark:text-white mb-2">3 · Run in dev mode (Tauri)</p>
-            <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono">
+              </div>
+              <div>
+                <p className="font-semibold text-black dark:text-white mb-2">3 · Run in dev mode (Tauri)</p>
+                <pre className="bg-zinc-950 text-zinc-200 p-4 rounded-xl font-mono">
 npm run tauri dev</pre>
-          </div>
-          <div>
-            <p className="font-semibold text-black dark:text-white mb-2">4 · Or launch silently on Windows</p>
-            <p>Double-click <code className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs">SammyOS.vbs</code> from the repo root. The launcher checks dependencies, pulls any GitHub updates, and starts the app — no terminal window.</p>
-          </div>
+              </div>
+              <div>
+                <p className="font-semibold text-black dark:text-white mb-2">4 · Or launch silently on Windows</p>
+                <p>Double-click <code className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs">SammyOS.vbs</code> from the repo root. The launcher checks dependencies, pulls any GitHub updates, and starts the app — no terminal window.</p>
+              </div>
+            </div>
+          </CollapsibleSection>
         </div>
       </FadeInSection>
 

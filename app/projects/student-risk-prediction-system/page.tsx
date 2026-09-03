@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import FadeInSection from "@/components/FadeInSection";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 export default function StudentRiskProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -160,11 +161,9 @@ export default function StudentRiskProject() {
 
       {/* PROJECT STRUCTURE */}
       <FadeInSection delay={280}>
-        <h2 className="text-2xl font-semibold mt-10 mb-4">
-          Project Structure
-        </h2>
-
-        <pre className="text-xs bg-zinc-900 text-zinc-200 p-4 rounded-xl overflow-x-auto border">
+        <div className="mt-10">
+          <CollapsibleSection title="Project Structure">
+            <pre className="text-xs bg-zinc-900 text-zinc-200 p-4 rounded-xl overflow-x-auto border">
 {`Student Risk Prediction System/
 │
 ├── data/
@@ -181,46 +180,48 @@ export default function StudentRiskProject() {
 ├── requirements.txt
 ├── README.md
 └── .gitignore`}
-        </pre>
+            </pre>
+          </CollapsibleSection>
+        </div>
       </FadeInSection>
 
       {/* HOW TO RUN */}
       <FadeInSection delay={320}>
-        <h2 className="text-2xl font-semibold mt-10">
-          How to Run the Project
-        </h2>
+        <div className="mt-6">
+          <CollapsibleSection title="How to Run the Project">
+            <div className="space-y-4 text-zinc-600 dark:text-zinc-300">
 
-        <div className="mt-4 space-y-4 text-zinc-600 dark:text-zinc-300">
-
-          <p><b>1. Clone repository</b></p>
-          <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
+              <p><b>1. Clone repository</b></p>
+              <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
 git clone https://github.com/braxtonvogel/student-risk-prediction-system.git
 cd student-risk-prediction-system
-          </pre>
+              </pre>
 
-          <p><b>2. Create virtual environment</b></p>
-          <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
+              <p><b>2. Create virtual environment</b></p>
+              <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
 python -m venv venv
 venv\Scripts\activate
-          </pre>
+              </pre>
 
-          <p><b>3. Install dependencies</b></p>
-          <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
+              <p><b>3. Install dependencies</b></p>
+              <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
 pip install -r requirements.txt
-          </pre>
+              </pre>
 
-          <p><b>4. Install Ollama</b></p>
-          <p>https://ollama.com/download</p>
-          <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
+              <p><b>4. Install Ollama</b></p>
+              <p>https://ollama.com/download</p>
+              <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
 ollama run llama3
-          </pre>
+              </pre>
 
-          <p><b>5. Run app</b></p>
-          <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
+              <p><b>5. Run app</b></p>
+              <pre className="bg-zinc-900 text-zinc-200 p-3 rounded-xl">
 streamlit run src/app.py
-          </pre>
+              </pre>
 
-          <p>Open: http://localhost:8501</p>
+              <p>Open: http://localhost:8501</p>
+            </div>
+          </CollapsibleSection>
         </div>
       </FadeInSection>
 
