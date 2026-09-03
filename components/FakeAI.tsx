@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { certifications } from "@/lib/certifications";
+import { projects, skills } from "@/lib/portfolioData";
 import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 
 type Message = {
@@ -332,6 +335,125 @@ const knowledgeBase = {
 const FALLBACK =
   "That topic isn't explicitly listed, but I can help with his skills, projects, education, certifications, or how to get in touch.";
 
+/* ================= LINKIFYING PROJECT/CERT/SKILL MENTIONS =================
+ * The chat only ever says one of a small, fixed set of sentences (the
+ * knowledgeBase strings above, plus FALLBACK and the opening note) - never
+ * arbitrary text - so it's safe to scan those sentences for literal mentions
+ * of a project, certification, or skill and turn just that word/phrase into
+ * a real link, without needing an LLM in the loop.
+ *
+ * Projects and certifications get colored + underlined (obviously
+ * clickable); skills stay visually identical to plain text - just
+ * clickable - per how the Skills panel already treats them elsewhere. */
+type LinkKind = "project" | "cert" | "skill";
+type LinkTerm = { phrase: string; href: string; kind: LinkKind };
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const PROJECT_TERMS: LinkTerm[] = projects.flatMap((p) =>
+  Array.from(new Set([p.title, p.short])).map((phrase) => ({ phrase, href: p.href, kind: "project" as const }))
+);
+
+const CERT_TERMS: LinkTerm[] = certifications.map((c) => ({
+  phrase: c.title,
+  href: `/certifications/${c.slug}`,
+  kind: "cert" as const,
+}));
+
+function skillHref(name: string): string | undefined {
+  return [...skills.technical, ...skills.interpersonal, ...skills.professional].find((s) => s.name === name)?.href;
+}
+
+// The shorter phrase actually used in the knowledgeBase prose above, mapped
+// to the full skill name it represents (so its href can't drift out of sync
+// with the Skills panel's own data). Deliberately not exhaustive: a skill
+// with no confident, unambiguous match here just stays plain text, same as
+// before - the only downside of an omission is a missed convenience, not a
+// wrong link.
+const SKILL_PHRASES: { phrase: string; skillName: string }[] = [
+  { phrase: "Python", skillName: "Python" },
+  { phrase: "Java", skillName: "Java" },
+  { phrase: "SQL", skillName: "SQL / MySQL Workshop" },
+  { phrase: "Client-Server Architecture", skillName: "Client-Server Architecture" },
+  { phrase: "Networking", skillName: "Basic Networking Concepts" },
+  { phrase: "Machine Learning", skillName: "Machine Learning (Random Forest)" },
+  { phrase: "Random Forest", skillName: "Machine Learning (Random Forest)" },
+  { phrase: "Feature Engineering", skillName: "Feature Engineering" },
+  { phrase: "Playwright", skillName: "Playwright Automation" },
+  { phrase: "React", skillName: "React / UI Development" },
+  { phrase: "Streamlit", skillName: "Streamlit Web Apps" },
+  { phrase: "Chromium", skillName: "Chromium Automation" },
+  { phrase: "Database Design", skillName: "Database Design" },
+  { phrase: "Data Visualization", skillName: "Data Visualization" },
+  { phrase: "Software Architecture", skillName: "Software Architecture" },
+  { phrase: "Teamwork", skillName: "Teamwork & Collaboration" },
+  { phrase: "Critical Thinking", skillName: "Critical Thinking" },
+  { phrase: "Problem Solving", skillName: "Problem Solving & Innovation" },
+  { phrase: "Research", skillName: "Research & Documentation" },
+  { phrase: "Creative Thinking", skillName: "Creative Thinking" },
+  { phrase: "Data-Driven", skillName: "Data-Driven Decision Making" },
+  { phrase: "GitHub Workflow", skillName: "GitHub Workflow" },
+  { phrase: "Process Automation", skillName: "Process Automation" },
+  { phrase: "Strategic Planning", skillName: "Strategic Planning" },
+  { phrase: "Workflow Optimization", skillName: "Workflow Optimization" },
+  { phrase: "MVC Architecture", skillName: "MVC Architecture" },
+];
+
+const SKILL_TERMS: LinkTerm[] = SKILL_PHRASES.flatMap(({ phrase, skillName }) => {
+  const href = skillHref(skillName);
+  return href ? [{ phrase, href, kind: "skill" as const }] : [];
+});
+
+// Longest phrase first, so e.g. the full "Stateful Browser Automation
+// Engine" title wins over any shorter alternative that could also start
+// matching at the same position.
+const ALL_TERMS: LinkTerm[] = [...PROJECT_TERMS, ...CERT_TERMS, ...SKILL_TERMS].sort(
+  (a, b) => b.phrase.length - a.phrase.length
+);
+
+const LINK_PATTERN = ALL_TERMS.length
+  ? new RegExp(`\\b(${ALL_TERMS.map((t) => escapeRegExp(t.phrase)).join("|")})\\b`, "gi")
+  : null;
+
+function findTerm(matchedText: string): LinkTerm | undefined {
+  const lower = matchedText.toLowerCase();
+  return ALL_TERMS.find((t) => t.phrase.toLowerCase() === lower);
+}
+
+/** Splits an AI message into plain text and clickable Link nodes wherever it
+ * names a project, certification, or skill. */
+function linkifyMessage(text: string, onNavigate: () => void): React.ReactNode {
+  if (!LINK_PATTERN) return text;
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let key = 0;
+  LINK_PATTERN.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = LINK_PATTERN.exec(text))) {
+    if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index));
+    const term = findTerm(match[0]);
+    if (term) {
+      nodes.push(
+        <Link
+          key={key++}
+          href={term.href}
+          onClick={onNavigate}
+          className={term.kind === "skill" ? "cursor-pointer" : "text-blue-400 underline hover:text-blue-300"}
+        >
+          {match[0]}
+        </Link>
+      );
+    } else {
+      nodes.push(match[0]);
+    }
+    lastIndex = LINK_PATTERN.lastIndex;
+  }
+  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
+  return nodes;
+}
+
 /* ================= MATCHING ================= */
 // Case/punctuation-insensitive: lowercase, and every non-alphanumeric character
 // (spaces, periods, slashes, question marks...) becomes a word break. This is
@@ -459,94 +581,115 @@ export default function FakeAI() {
     setInput("");
   };
 
+  // Clicking a linked project/cert/skill inside a message navigates there -
+  // close the chat first so it doesn't sit on top of the page just loaded.
+  const closeOnNavigate = () => setOpen(false);
+
   return (
     <>
       {/* ================= FLOATING BUBBLE ================= */}
-      {!open && (
-        <button
-          onClick={openChat}
-          className="
-            fixed bottom-6 right-6
-            w-14 h-14 rounded-full
-            bg-zinc-700 text-white
-            font-bold
-            shadow-lg shadow-black/40
-            hover:bg-zinc-600 hover:scale-110 transition
-            z-50
-          "
-        >
-          AI
-        </button>
-      )}
+      <AnimatePresence>
+        {!open && (
+          <motion.button
+            key="bubble"
+            onClick={openChat}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="
+              fixed bottom-6 right-6
+              w-14 h-14 rounded-full
+              bg-zinc-700 text-white
+              font-bold
+              shadow-lg shadow-black/40
+              hover:bg-zinc-600 transition-colors
+              z-50
+            "
+          >
+            AI
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* ================= CHAT WINDOW ================= */}
-      {open && (
-        <div
-          className="
-            fixed bottom-6 right-6
-            w-80 h-96
-            bg-black text-white
-            border border-white
-            rounded-xl
-            flex flex-col
-            z-50
-            shadow-2xl
-          "
-        >
-          {/* HEADER */}
-          <div className="flex justify-between items-center p-3 border-b border-white">
-            <h2 className="text-sm font-semibold">
-              Portfolio Assistant
-            </h2>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="chat"
+            initial={{ opacity: 0, scale: 0.85, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.85, y: 24 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            style={{ transformOrigin: "bottom right" }}
+            className="
+              fixed bottom-6 right-6
+              w-80 h-96
+              bg-black text-white
+              border border-white
+              rounded-xl
+              flex flex-col
+              z-50
+              shadow-2xl
+            "
+          >
+            {/* HEADER */}
+            <div className="flex justify-between items-center p-3 border-b border-white">
+              <h2 className="text-sm font-semibold">
+                Portfolio Assistant
+              </h2>
 
-            <button
-              onClick={() => setOpen(false)}
-              className="text-xl font-bold hover:scale-125 transition"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* MESSAGES */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`text-sm p-2 rounded-lg max-w-[85%] whitespace-pre-line ${
-                  m.role === "user"
-                    ? "ml-auto bg-white text-black"
-                    : "mr-auto bg-zinc-800 text-white"
-                }`}
+              <button
+                onClick={() => setOpen(false)}
+                className="text-xl font-bold hover:scale-125 transition"
               >
-                {m.content}
-              </div>
-            ))}
+                ✕
+              </button>
+            </div>
 
-            <div ref={chatEndRef} />
-          </div>
+            {/* MESSAGES */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {messages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`text-sm p-2 rounded-lg max-w-[85%] whitespace-pre-line ${
+                    m.role === "user"
+                      ? "ml-auto bg-white text-black"
+                      : "mr-auto bg-zinc-800 text-white"
+                  }`}
+                >
+                  {m.role === "ai" ? linkifyMessage(m.content, closeOnNavigate) : m.content}
+                </div>
+              ))}
 
-          {/* INPUT */}
-          <div className="p-2 border-t border-white flex gap-2">
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSend();
-              }}
-              className="flex-1 p-2 bg-black border border-white text-white rounded"
-              placeholder="Ask about skills..."
-            />
+              <div ref={chatEndRef} />
+            </div>
 
-            <button
-              onClick={handleSend}
-              className="px-3 border border-white rounded hover:bg-white hover:text-black"
-            >
-              Send
-            </button>
-          </div>
-        </div>
-      )}
+            {/* INPUT */}
+            <div className="p-2 border-t border-white flex gap-2">
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSend();
+                }}
+                className="flex-1 p-2 bg-black border border-white text-white rounded"
+                placeholder="Ask about skills..."
+              />
+
+              <button
+                onClick={handleSend}
+                className="px-3 border border-white rounded hover:bg-white hover:text-black"
+              >
+                Send
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
