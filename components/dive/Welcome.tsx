@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
+import { CONTACT_EMAIL, CONTACT_PHONE, COVER_LETTER_PATH, GITHUB_URL, LINKEDIN_URL, RESUME_PATH } from "@/lib/contact";
 import NightSea from "./NightSea";
 
 export default function Welcome({
@@ -53,7 +53,7 @@ export default function Welcome({
               </button>
 
               <a
-                href="https://github.com/braxtonvogel"
+                href={GITHUB_URL}
                 target="_blank"
                 className="px-4 py-2 border border-white rounded-full hover:bg-white hover:text-black transition"
               >
@@ -61,7 +61,7 @@ export default function Welcome({
               </a>
 
               <a
-                href="https://www.linkedin.com/in/braxton-vogel-ba2547391/"
+                href={LINKEDIN_URL}
                 target="_blank"
                 className="px-4 py-2 border border-white rounded-full hover:bg-white hover:text-black transition"
               >
@@ -157,7 +157,7 @@ export default function Welcome({
             <button onClick={() => setCoverOpen(false)} className="absolute top-3 right-3 text-black text-2xl font-bold z-10">
               &#10005;
             </button>
-            <iframe src="/cover-letter.pdf" className="w-full h-full" />
+            <iframe src={COVER_LETTER_PATH} className="w-full h-full" />
           </div>
         </div>
       )}
@@ -168,7 +168,7 @@ export default function Welcome({
             <button onClick={() => setResumeOpen(false)} className="absolute top-3 right-3 text-black text-2xl font-bold z-10">
               &#10005;
             </button>
-            <iframe src="/Braxton_Vogel_Resume.pdf" className="w-full h-full" />
+            <iframe src={RESUME_PATH} className="w-full h-full" />
           </div>
         </div>
       )}
