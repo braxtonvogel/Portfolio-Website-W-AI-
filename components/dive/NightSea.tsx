@@ -6,9 +6,11 @@ import { useIsMobile } from "@/lib/useMediaQuery";
 
 /** Where the moon hangs on the welcome screen - dead center, sitting on the
  * horizon so its lower part is behind the sea, and the blue moon and the dive
- * warp burst from the middle of the screen. Same spot on a phone, just a
- * smaller disc (see .nightMobile). */
+ * warp burst from the middle of the screen. */
 export const MOON = { x: 0.5, y: 0.555 };
+/** Same spot as desktop, on the horizon - just a smaller disc (see
+ * .nightMobile), with the rest of the page's spacing tightened to make room
+ * for everything that stacks below it. */
 export const MOON_MOBILE = { x: 0.5, y: 0.555 };
 export const moonOrigin = (mobile: boolean) => {
   const m = mobile ? MOON_MOBILE : MOON;

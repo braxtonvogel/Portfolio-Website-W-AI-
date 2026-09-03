@@ -28,7 +28,7 @@ export default function Welcome({
       <div className={`${welcomeClass} absolute inset-0`} style={{ transformOrigin: "50% 50%" }}>
         <NightSea moonBlue={diving} rings={diving && !reducedMotion} reducedMotion={reducedMotion} />
 
-        <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-start md:justify-center text-center md:text-left px-6 pt-16 md:pt-0 gap-8 md:gap-32 overflow-y-auto">
+        <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-start md:justify-center text-center md:text-left px-6 pt-16 md:pt-0 gap-4 md:gap-32 overflow-y-auto">
           <div className="space-y-6 max-w-3xl">
             <h1 className="text-6xl md:text-8xl font-bold tracking-tight">Braxton Vogel</h1>
 
@@ -44,10 +44,7 @@ export default function Welcome({
               <p>{CONTACT_PHONE}</p>
             </div>
 
-            {/* on a phone the moon sits behind this row (it's centered on the
-                horizon around mid-screen) - push the buttons down clear of it
-                without touching the desktop layout, where there's no overlap */}
-            <div className="flex justify-center md:justify-start flex-wrap gap-4 mt-40 md:mt-0 pt-4">
+            <div className="flex justify-center md:justify-start flex-wrap gap-4 mt-[153px] md:mt-0 pt-4">
               <button
                 onClick={() => setAboutOpen(true)}
                 className="px-4 py-2 border border-cyan-400/60 text-cyan-300 rounded-full hover:bg-cyan-500/10 transition"
@@ -86,7 +83,7 @@ export default function Welcome({
               </button>
             </div>
 
-            <div className="flex justify-center md:justify-start pt-2">
+            <div className="flex justify-center md:justify-start pt-0 md:pt-2">
               <button
                 onClick={onDive}
                 className="px-6 py-3 border border-cyan-400 rounded-full bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition shadow-[0_0_28px_rgba(56,189,248,0.35)]"
@@ -96,14 +93,14 @@ export default function Welcome({
             </div>
           </div>
 
-          <div className="flex-shrink-0 pb-8 md:pb-0">
+          <div className="flex-shrink-0 pb-0 md:pb-0">
             <Image
               src="/Brax_Prof_Pic.jpg"
               alt="Braxton Vogel"
               width={280}
               height={280}
               priority
-              className="w-[180px] h-[180px] md:w-[280px] md:h-[280px] rounded-full border border-white/20 object-cover shadow-[0_0_60px_rgba(56,189,248,0.25)]"
+              className="w-[112px] h-[112px] md:w-[280px] md:h-[280px] rounded-full border border-white/20 object-cover shadow-[0_0_60px_rgba(56,189,248,0.25)]"
             />
           </div>
         </div>
