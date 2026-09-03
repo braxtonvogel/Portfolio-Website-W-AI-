@@ -104,9 +104,10 @@
 .moonRings { position: absolute; left: var(--moonX); top: var(--moonY); width: 0; height: 0; }
 /* the phone moon - small enough that the rest of the page still fits below
    it without scrolling once that spacing is tightened up (see Welcome.tsx) */
-.nightMobile .moonDisc { left: -35px; top: -35px; width: 70px; height: 70px; }
-.nightMobile .moonBlueLayer { left: -37px; top: -37px; width: 74px; height: 74px; box-shadow: 0 0 24px rgba(96,165,250,0.95), 0 0 55px 12px rgba(56,189,248,0.45); }
-.nightMobile .moonHalo { left: -120px; top: -120px; width: 240px; height: 240px; }
+.nightMobile .moonDisc { left: -30px; top: -30px; width: 60px; height: 60px; }
+.nightMobile .moonBlueLayer { left: -32px; top: -32px; width: 64px; height: 64px; box-shadow: 0 0 22px rgba(96,165,250,0.95), 0 0 48px 10px rgba(56,189,248,0.45); }
+.nightMobile .moonHalo { left: -105px; top: -105px; width: 210px; height: 210px; }
+
 
 .stars {
   position: absolute; inset: 0; pointer-events: none; opacity: 0;
@@ -349,6 +350,20 @@
 @media (max-width: 767px) {
   .pdfRow { flex-direction: column; }
   .pdfFrame { width: 100%; flex-basis: auto; height: 300px; }
+
+  /* The clearance the About Me/GitHub/etc. row needs below the moon. The
+     moon sits at 55.5% of the viewport's height (see MOON_MOBILE in
+     NightSea.tsx); a fixed pixel margin tuned against one assumed viewport
+     height badly overshoots on a shorter real one (a phone's on-screen
+     address bar/toolbar eat into the visible height on first load) -
+     shoving this row, and the photo below it, far past the bottom of the
+     actually-visible screen. This scales with the same 55.5vh the moon
+     uses, so it stays correct at any real viewport height instead of just
+     the one it happened to be tuned against. 296px = (name/tagline/contact
+     block's own height) - (moon radius + a small buffer) - i.e. how far
+     short the natural layout falls of the moon's bottom edge, given
+     everything above it scales with real content, not vh. */
+  .mobileClearMoon { margin-top: max(0px, calc(55.5vh - 301px)); }
 }
 
 /* contact: the real form, styled to match the rest of the panels */
