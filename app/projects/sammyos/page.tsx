@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import ViewTransitionLink from "@/components/ViewTransitionLink";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import FadeInSection from "@/components/FadeInSection";
@@ -262,9 +262,9 @@ export default function SammyOSProject() {
 
       {/* BACK */}
       <FadeInSection trigger="view">
-        <Link href="/" className="text-sm text-zinc-400 hover:text-white transition-colors duration-200">
+        <ViewTransitionLink href="/" className="text-sm text-zinc-400 hover:text-white transition-colors duration-200">
           Back to Home
-        </Link>
+        </ViewTransitionLink>
       </FadeInSection>
 
       {/* TITLE + TAGLINE */}

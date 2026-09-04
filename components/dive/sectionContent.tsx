@@ -1,4 +1,4 @@
-import Link from "next/link";
+import ViewTransitionLink from "@/components/ViewTransitionLink";
 import styles from "./dive.module.css";
 import { certifications } from "@/lib/certifications";
 import { growthNotes } from "@/lib/growthNotes";
@@ -62,9 +62,9 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
               </span>
             ))}
           </div>
-          <Link href="/certifications" className="text-white underline text-lg">
+          <ViewTransitionLink href="/certifications" className="text-white underline text-lg">
             View all certifications &rarr;
-          </Link>
+          </ViewTransitionLink>
         </>
       );
     case "early":
@@ -80,9 +80,9 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
                 {note.person && <span className={styles.pill}>{note.person}</span>}
                 <span className={styles.pill}>{note.topic}</span>
               </div>
-              <Link href="/early-development" className="text-white underline text-lg">
+              <ViewTransitionLink href="/early-development" className="text-white underline text-lg">
                 View details &rarr;
-              </Link>
+              </ViewTransitionLink>
             </div>
             <div className={styles.pdfFrame}>
               {renderPdf && <iframe src={`${note.pdf}#toolbar=0`} title={`${note.title} preview`} />}
@@ -96,10 +96,10 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
           <h2 className={styles.secTitle}>Projects</h2>
           <div className={styles.proj}>
             {projects.map((p) => (
-              <Link key={p.href} href={p.href}>
+              <ViewTransitionLink key={p.href} href={p.href}>
                 {p.short}
                 <span>{p.tech}</span>
-              </Link>
+              </ViewTransitionLink>
             ))}
           </div>
         </>

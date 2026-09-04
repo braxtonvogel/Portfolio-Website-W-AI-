@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import ViewTransitionLink from "@/components/ViewTransitionLink";
 import { motion } from "framer-motion";
 import RippleRings from "@/components/RippleRings";
 import { growthNotes } from "@/lib/growthNotes";
@@ -11,7 +11,7 @@ export default function EarlyDevelopmentPage() {
       <RippleRings top={157} height={400} />
 
       {/* ================= HERO ================= */}
-      <Link
+      <ViewTransitionLink
         href="/"
         className="group inline-flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
       >
@@ -19,7 +19,7 @@ export default function EarlyDevelopmentPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Back Home
-      </Link>
+      </ViewTransitionLink>
 
       <div className="max-w-2xl mt-10">
         <p className="text-xs font-semibold tracking-[0.2em] text-cyan-600 dark:text-cyan-400 uppercase">

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import ViewTransitionLink from "@/components/ViewTransitionLink";
 import type { Certification, CertSegment } from "@/lib/certifications";
 
 // Course completion certificates, in order — files live in /public
@@ -266,7 +266,7 @@ export default function CertificationScrollExperience({
       </svg>
 
       {/* back to certifications list — always visible, top-left; expands to show label on hover */}
-      <Link
+      <ViewTransitionLink
         href="/certifications"
         aria-label="Back to Certifications"
         className="group fixed left-4 sm:left-8 top-4 sm:top-8 z-20 flex h-10 items-center gap-2 overflow-hidden rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-lg pl-2.5 pr-2.5 hover:pr-4 transition-all duration-300 ease-out"
@@ -277,7 +277,7 @@ export default function CertificationScrollExperience({
         <span className="max-w-0 group-hover:max-w-[12rem] overflow-hidden whitespace-nowrap text-sm font-medium transition-all duration-300 ease-out">
           Back to Certifications
         </span>
-      </Link>
+      </ViewTransitionLink>
 
       {/* back to top + progress dots */}
       <div className="fixed right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3">

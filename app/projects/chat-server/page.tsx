@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import ViewTransitionLink from "@/components/ViewTransitionLink";
 import { useEffect, useState } from "react";
 import FadeInSection from "@/components/FadeInSection";
 
@@ -34,12 +34,12 @@ export default function ChatServerProject() {
 
       {/* ================= BACK ================= */}
       <FadeInSection>
-        <Link
+        <ViewTransitionLink
           href="/"
           className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
         >
           ← Back to Home
-        </Link>
+        </ViewTransitionLink>
       </FadeInSection>
 
       {/* ================= TITLE ================= */}

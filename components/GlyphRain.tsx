@@ -10,8 +10,8 @@ const GLYPHS = "01アイウエオカキクケコサシスセソ⠁⠃⠇⠏⠟�
 const FRAME_MS = 1000 / 20;
 /** Half-resolution canvas px between glyphs down a column. */
 const CELL = 14;
-/** Half-resolution canvas px between columns (44 CSS px - sparse on purpose). */
-const COL_W = 22;
+/** Half-resolution canvas px between columns (36 CSS px - sparse on purpose). */
+const COL_W = 18;
 
 type Col = { x: number; y: number; next: number; v: number; a: number; wait: number };
 
@@ -46,7 +46,7 @@ export default function GlyphRain() {
 
     // cyan on black; on the light page a deep teal at lower alpha, so the
     // glyphs stay a texture behind the cards rather than competing with them
-    const color = (a: number) => (dark ? `rgba(103,232,249,${(a * 0.75).toFixed(3)})` : `rgba(14,116,144,${(a * 0.45).toFixed(3)})`);
+    const color = (a: number) => (dark ? `rgba(103,232,249,${(a * 0.95).toFixed(3)})` : `rgba(14,116,144,${(a * 0.6).toFixed(3)})`);
     const glyph = () => GLYPHS[(Math.random() * GLYPHS.length) | 0];
 
     const spawn = (c: Col, fresh: boolean) => {
@@ -56,7 +56,7 @@ export default function GlyphRain() {
       c.next = c.y;
       // cells per second - a glyph lands every 1-3s, ~10-25 CSS px/s of fall
       c.v = 0.35 + Math.random() * 0.55;
-      c.a = 0.3 + Math.random() * 0.7;
+      c.a = 0.45 + Math.random() * 0.55;
       c.wait = fresh ? (Math.random() < 0.4 ? Math.random() * 8 : 0) : 1 + Math.random() * 6;
     };
 

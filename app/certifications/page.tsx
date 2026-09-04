@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import GlyphRain from "@/components/GlyphRain";
 import Link from "next/link";
+import ViewTransitionLink from "@/components/ViewTransitionLink";
 import Image from "next/image";
 import { certifications } from "@/lib/certifications";
 
@@ -21,9 +22,9 @@ export default function CertificationsPage() {
         {/* the glyph rain sinks behind everything on the page, viewport-fixed */}
         <GlyphRain />
 
-        <Link href="/" className="text-sm underline text-zinc-600 dark:text-zinc-400">
+        <ViewTransitionLink href="/" className="text-sm underline text-zinc-600 dark:text-zinc-400">
           ← Back Home
-        </Link>
+        </ViewTransitionLink>
 
         <h1 className="text-4xl font-bold mt-6">Certifications</h1>
 
