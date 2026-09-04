@@ -55,7 +55,14 @@ export default function Navbar({
     const list = listRef.current;
     if (!list) return;
     const max = list.scrollWidth - list.clientWidth;
-    setCanScroll({ left: list.scrollLeft > 1, right: list.scrollLeft < max - 1 });
+    const left = list.scrollLeft > 1;
+    const right = list.scrollLeft < max - 1;
+    setCanScroll({ left, right });
+    // matches the arrows exactly - a side only ever fades when there's
+    // actually more content past it, never just because the row happens to
+    // scroll at all (see the .list rule in Navbar.module.css)
+    list.style.setProperty("--fadeL", left ? "20px" : "0px");
+    list.style.setProperty("--fadeR", right ? "20px" : "0px");
   };
 
   useEffect(() => {
