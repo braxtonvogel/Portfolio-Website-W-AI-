@@ -36,32 +36,50 @@ export default function CustomCursor() {
     let raf = 0;
     let x = 0;
     let y = 0;
-    let seen = false;
+    // Tracked as a flag (not "add the class once") so it can be hidden when
+    // the pointer leaves the window or the window loses focus, and then
+    // reliably shown again on the next move or click when it comes back.
+    let visible = false;
 
     const applyPosition = () => {
       raf = 0;
       dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
+    const show = () => {
+      if (visible) return;
+      visible = true;
+      dot.classList.add(styles.visible);
+    };
+    const hide = () => {
+      if (!visible) return;
+      visible = false;
+      dot.classList.remove(styles.visible);
+      dot.classList.remove(styles.down);
+    };
 
     const onMove = (e: MouseEvent) => {
       x = e.clientX;
       y = e.clientY;
-      if (!seen) {
-        seen = true;
-        dot.classList.add(styles.visible);
-      }
+      show();
       if (!raf) raf = requestAnimationFrame(applyPosition);
     };
-    const onDown = () => dot.classList.add(styles.down);
+    // the first event on the way back into the window can be the click
+    // itself, with no move before it - make sure that click is visible too
+    const onDown = (e: MouseEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      show();
+      dot.classList.add(styles.down);
+      if (!raf) raf = requestAnimationFrame(applyPosition);
+    };
     const onUp = () => dot.classList.remove(styles.down);
-    // don't leave it stuck mid-click if the pointer wanders off-window
-    const onLeave = () => dot.classList.remove(styles.visible);
 
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mousedown", onDown, { passive: true });
     window.addEventListener("mouseup", onUp, { passive: true });
-    window.addEventListener("blur", onUp);
-    document.addEventListener("mouseleave", onLeave);
+    // clicking off to another window: hide, and drop any stuck "down" state
+    window.addEventListener("blur", hide);
+    document.addEventListener("mouseleave", hide);
 
     return () => {
       document.documentElement.classList.remove("customCursorActive");
@@ -69,8 +87,8 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("blur", onUp);
-      document.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("blur", hide);
+      document.removeEventListener("mouseleave", hide);
     };
   }, [hasFinePointer]);
 
