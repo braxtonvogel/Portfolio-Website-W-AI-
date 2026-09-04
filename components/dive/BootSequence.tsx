@@ -15,6 +15,14 @@ const MODULES = [
 const MIN_MS = 1200;
 const MAX_MS = 2200;
 
+// the name resolves out of "code" one character at a time, left to right -
+// the boot-screen echo of the glyph rain on the certifications page. ASCII
+// only: every glyph here has the same advance in the panel's monospace
+// font, so the line never jitters in width as characters swap.
+const NAME = "BRAXTON VOGEL";
+const SCRAMBLE = "01<>/{}[]=+*#%&@?;:^~ABCDEFXYZ";
+const RESOLVE_MS = 65; // per character - the whole name lands in ~850ms, inside MIN_MS
+
 /** Shown once, right after diving in, before the world starts building
  * underneath it. Purely cosmetic - not a real progress bar - but bounded so
  * it can never overstay: it waits for document.fonts.ready up to MIN_MS,
@@ -23,6 +31,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
   const [line, setLine] = useState(0);
   const [filled, setFilled] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const nameRef = useRef<HTMLParagraphElement>(null);
   const doneRef = useRef(onDone);
   useEffect(() => {
     doneRef.current = onDone;
@@ -43,6 +52,27 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
       setLine((i) => (i + 1) % MODULES.length);
     }, 130);
 
+    // writes straight to the DOM node (no setState) at ~20 ticks/s for under
+    // a second - deliberately no canvas or rain behind it: the world is about
+    // to start assembling underneath, and this beat shouldn't cost it anything
+    const nameEl = nameRef.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let scramble: ReturnType<typeof setInterval> | undefined;
+    if (nameEl && !reduced) {
+      const t0 = performance.now();
+      const tick = () => {
+        const resolved = Math.floor((performance.now() - t0) / RESOLVE_MS);
+        let s = "";
+        for (let i = 0; i < NAME.length; i++) {
+          s += i < resolved || NAME[i] === " " ? NAME[i] : SCRAMBLE[(Math.random() * SCRAMBLE.length) | 0];
+        }
+        nameEl.textContent = s;
+        if (resolved >= NAME.length) clearInterval(scramble);
+      };
+      tick();
+      scramble = setInterval(tick, 50);
+    }
+
     const fontsReady = typeof document !== "undefined" && "fonts" in document ? document.fonts.ready : Promise.resolve();
     const ready = Promise.race([fontsReady, new Promise((r) => setTimeout(r, MAX_MS))]);
 
@@ -59,6 +89,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
     return () => {
       cancelAnimationFrame(raf);
       clearInterval(cycle);
+      if (scramble) clearInterval(scramble);
       clearTimeout(leaveTimer);
       clearTimeout(doneTimer);
     };
@@ -68,6 +99,10 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
     <div className={`${styles.boot} ${leaving ? styles.bootLeaving : ""}`} role="status" aria-live="polite">
       <div className={styles.bootPanel}>
         <p className={styles.bootHeader}>Initializing experience</p>
+        {/* server-rendered fully resolved, so reduced motion / no-JS see the name, not glyphs */}
+        <p ref={nameRef} className={styles.bootName} aria-label={NAME}>
+          {NAME}
+        </p>
         <p className={styles.bootLine}>&gt; loading {MODULES[line]}</p>
         <div className={styles.bootBar}>
           <div

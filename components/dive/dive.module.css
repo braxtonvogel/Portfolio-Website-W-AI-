@@ -394,6 +394,12 @@
   box-shadow: 0 0 28px rgba(56,189,248,0.12);
 }
 .bootHeader { margin: 0 0 10px 0; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #a5f3fc; }
+/* the name, resolving out of scrambled characters (see BootSequence.tsx).
+   Tabular figures + monospace keep its width fixed while glyphs swap. */
+.bootName {
+  margin: 0 0 10px 0; font-size: 18px; letter-spacing: 0.2em; color: #e0fbff; white-space: nowrap;
+  font-variant-numeric: tabular-nums; text-shadow: 0 0 14px rgba(103,232,249,0.45);
+}
 .bootLine { margin: 0 0 12px 0; font-size: 14px; color: #67e8f9; min-height: 18px; }
 .bootBar { width: 100%; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); overflow: hidden; }
 .bootBarFill {

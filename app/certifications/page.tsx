@@ -1,16 +1,25 @@
 import Navbar from "@/components/Navbar";
+import GlyphRain from "@/components/GlyphRain";
 import Link from "next/link";
 import Image from "next/image";
-import RippleRings from "@/components/RippleRings";
 import { certifications } from "@/lib/certifications";
 
 export default function CertificationsPage() {
   return (
     <>
-      <Navbar />
+      <Navbar
+        brand={{ label: "Braxton Vogel", href: "/" }}
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Certifications", href: "/certifications", active: true },
+          { label: "Early Dev", href: "/early-development" },
+        ]}
+      />
 
-      <main className="relative isolate overflow-hidden min-h-screen px-6 py-16 bg-zinc-50 dark:bg-black text-black dark:text-white">
-        <RippleRings top={160} height={400} />
+      {/* pt clears the fixed 48px nav plus the page's own top margin */}
+      <main className="relative isolate min-h-screen px-6 pt-28 pb-16 bg-zinc-50 dark:bg-black text-black dark:text-white">
+        {/* the glyph rain sinks behind everything on the page, viewport-fixed */}
+        <GlyphRain />
 
         <Link href="/" className="text-sm underline text-zinc-600 dark:text-zinc-400">
           ← Back Home
@@ -22,7 +31,7 @@ export default function CertificationsPage() {
           {certifications.map((cert) => (
             <div
               key={cert.slug}
-              className="border rounded-xl overflow-hidden flex flex-col"
+              className="border rounded-xl overflow-hidden flex flex-col bg-white/80 dark:bg-black/70 border-zinc-200 dark:border-zinc-800"
             >
               <div className="relative w-full aspect-[4/3] bg-zinc-100 dark:bg-zinc-900">
                 <Image

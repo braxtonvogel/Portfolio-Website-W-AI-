@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { notFound } from "next/navigation";
 import { certifications } from "@/lib/certifications";
 import CertificationScrollExperience from "@/components/CertificationScrollExperience";
@@ -18,11 +17,10 @@ export default async function CertificationDetailPage({
   if (!cert) notFound();
 
   return (
-    <>
-      <div className="fixed top-0 left-0 right-0 z-30 bg-zinc-50/70 dark:bg-black/70 backdrop-blur-sm">
-        <Navbar />
-      </div>
-      <CertificationScrollExperience cert={cert} />
-    </>
+    // no site nav here: the scroll experience carries its own fixed
+    // "back to certifications" control top-left, which a bar would sit on.
+    // (The old wrapper rendered an empty Navbar stub - nothing visible - but
+    // still cost a full-width backdrop-filter layer every frame.)
+    <CertificationScrollExperience cert={cert} />
   );
 }
