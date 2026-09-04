@@ -110,7 +110,10 @@
 @media (max-width: 767px) {
   .bar { height: 44px; }
   .inner { gap: 14px; padding: 0 14px; }
-  .brand { font-size: 11px; letter-spacing: 0.14em; }
+  /* the wordmark doesn't earn its keep on a phone - you're already on the
+     site it names, and Home does the same job. Dropping it hands its whole
+     width back to the section row, which is what was actually cramped. */
+  .brand { display: none; }
   .pinned { padding-right: 14px; }
   .list { gap: 18px; }
   .link { padding: 13px 0; font-size: 11px; letter-spacing: 0.12em; }
