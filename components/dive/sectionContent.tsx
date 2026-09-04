@@ -113,9 +113,9 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
               <p className={styles.skillGroupTitle}>Technical</p>
               <div className={styles.pills}>
                 {skills.technical.map((s) => (
-                  <span key={s.name} className={styles.pill}>
+                  <ViewTransitionLink key={s.name} href={s.href} className={`${styles.pill} ${styles.pillLink}`}>
                     {s.name}
-                  </span>
+                  </ViewTransitionLink>
                 ))}
               </div>
             </div>
@@ -123,9 +123,9 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
               <p className={styles.skillGroupTitle}>Interpersonal</p>
               <div className={styles.pills}>
                 {skills.interpersonal.map((s) => (
-                  <span key={s.name} className={styles.pill}>
+                  <ViewTransitionLink key={s.name} href={s.href} className={`${styles.pill} ${styles.pillLink}`}>
                     {s.name}
-                  </span>
+                  </ViewTransitionLink>
                 ))}
               </div>
             </div>
@@ -133,9 +133,9 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
               <p className={styles.skillGroupTitle}>Professional</p>
               <div className={styles.pills}>
                 {skills.professional.map((s) => (
-                  <span key={s.name} className={styles.pill}>
+                  <ViewTransitionLink key={s.name} href={s.href} className={`${styles.pill} ${styles.pillLink}`}>
                     {s.name}
-                  </span>
+                  </ViewTransitionLink>
                 ))}
               </div>
             </div>

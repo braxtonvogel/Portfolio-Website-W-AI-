@@ -346,6 +346,15 @@
 .skillGroups { display: flex; flex-wrap: wrap; gap: 24px; }
 .skillGroup { flex: 1 1 180px; min-width: 180px; }
 .skillGroupTitle { margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #a5f3fc; text-transform: uppercase; letter-spacing: 0.08em; }
+/* each skill pill is a real link to the project/certification that best
+   backs it up - same look as every other pill at rest, so nothing about the
+   panel's appearance changes, but it reads as clickable on interaction */
+.pillLink {
+  text-decoration: none; cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+}
+.pillLink:hover, .pillLink:focus-visible { border-color: rgba(103,232,249,0.7); background: rgba(56,189,248,0.12); color: #ffffff; }
+.pillLink:focus-visible { outline: 2px solid #67e8f9; outline-offset: 2px; }
 
 /* early dev: text on the left, the actual PDF on the right - stacked instead on
    narrow screens (mobile fallback), where there isn't room for both side by side */
