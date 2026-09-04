@@ -50,13 +50,40 @@
 }
 .brand:focus-visible { outline: 2px solid var(--navAccent); outline-offset: 3px; }
 
+/* Home (or whatever's pinned): sits right after the brand, never scrolls
+   with the rest - a short divider separates it from the paged row so it
+   reads as its own fixed anchor rather than just the first list item. */
+.pinned {
+  flex: 0 0 auto; padding-right: 20px; margin-right: 4px;
+  border-right: 1px solid var(--navLine);
+}
+
+.scrollWrap { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 4px; }
+
 .list {
   flex: 1 1 auto; min-width: 0; margin: 0; padding: 0; list-style: none;
-  display: flex; align-items: center; justify-content: center; gap: 26px;
+  display: flex; align-items: center; gap: 26px;
   overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+  /* fades whichever edge still has content past it - arrows appear/disappear
+     off the same scroll position, so the two always agree */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
 }
 .list::-webkit-scrollbar { display: none; }
 .list li { flex: 0 0 auto; }
+
+/* paging arrows: only ever shown when there's actually more of the row past
+   the edge (see Navbar.tsx's scroll-position check) - a screen wide enough
+   to fit every item never renders either one */
+.arrow {
+  flex: 0 0 auto; display: grid; place-items: center; width: 22px; height: 22px;
+  padding: 0; border: 0; border-radius: 999px; background: none; cursor: pointer;
+  color: var(--navText); transition: color 150ms ease, background 150ms ease;
+}
+.arrow svg { width: 15px; height: 15px; }
+.arrow:hover { color: var(--navTextHover); background: color-mix(in srgb, var(--navText) 12%, transparent); }
+.arrow:focus-visible { outline: 2px solid var(--navAccent); outline-offset: 1px; }
+.arrow[hidden] { display: none; }
 
 .link {
   position: relative; display: block; padding: 15px 0; border: 0; background: none; cursor: pointer;
@@ -81,15 +108,13 @@
   .bar { height: 44px; }
   .inner { gap: 14px; padding: 0 14px; }
   .brand { font-size: 11px; letter-spacing: 0.14em; }
-  /* one row that scrolls; the fade at the right edge is the hint there's more */
-  .list {
-    justify-content: flex-start; gap: 18px; padding-right: 28px;
-    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
-    mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
-  }
+  .pinned { padding-right: 14px; }
+  .list { gap: 18px; }
   .link { padding: 13px 0; font-size: 11px; letter-spacing: 0.12em; }
+  .arrow { width: 20px; height: 20px; }
+  .arrow svg { width: 13px; height: 13px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .link, .link::after { transition: none; }
+  .link, .link::after, .arrow, .list { transition: none; scroll-behavior: auto; }
 }

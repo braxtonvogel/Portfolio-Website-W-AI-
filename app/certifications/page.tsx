@@ -4,18 +4,12 @@ import Link from "next/link";
 import ViewTransitionLink from "@/components/ViewTransitionLink";
 import Image from "next/image";
 import { certifications } from "@/lib/certifications";
+import { SITE_NAV_BRAND, SITE_NAV_PINNED, siteNavItems } from "@/lib/siteNav";
 
 export default function CertificationsPage() {
   return (
     <>
-      <Navbar
-        brand={{ label: "Braxton Vogel", href: "/" }}
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Certifications", href: "/certifications", active: true },
-          { label: "Early Dev", href: "/early-development" },
-        ]}
-      />
+      <Navbar brand={SITE_NAV_BRAND} pinned={SITE_NAV_PINNED} items={siteNavItems("certifications")} />
 
       {/* pt clears the fixed 48px nav plus the page's own top margin */}
       <main className="relative isolate min-h-screen px-6 pt-28 pb-16 bg-zinc-50 dark:bg-black text-black dark:text-white">

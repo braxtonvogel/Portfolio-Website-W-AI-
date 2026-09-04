@@ -1,8 +1,10 @@
 "use client";
 
+import Navbar from "@/components/Navbar";
 import ViewTransitionLink from "@/components/ViewTransitionLink";
 import { useEffect, useState } from "react";
 import FadeInSection from "@/components/FadeInSection";
+import { SITE_NAV_BRAND, SITE_NAV_PINNED, siteNavItems } from "@/lib/siteNav";
 
 export default function ChatServerProject() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -22,10 +24,12 @@ export default function ChatServerProject() {
   }, []);
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-16 text-black dark:text-white">
+    <>
+      <Navbar brand={SITE_NAV_BRAND} pinned={SITE_NAV_PINNED} items={siteNavItems("projects")} />
+      <main className="max-w-5xl mx-auto px-6 pt-28 pb-16 text-black dark:text-white">
 
       {/* ================= PROGRESS BAR ================= */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-zinc-200 dark:bg-zinc-800 z-50">
+      <div className="fixed top-12 left-0 w-full h-1 bg-zinc-200 dark:bg-zinc-800 z-20">
         <div
           className="h-full bg-black dark:bg-white transition-all"
           style={{ width: `${scrollProgress}%` }}
@@ -204,7 +208,8 @@ export default function ChatServerProject() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </>
   );
 }
 

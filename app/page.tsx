@@ -52,6 +52,17 @@ export default function Home() {
     return () => timers.current.forEach(clearTimeout);
   }, []);
 
+  // Deep links from outside the world (the standalone pages' nav, e.g.
+  // "/#skills") land here as a hash on first load - dive straight to that
+  // floor instead of requiring a click, the same as picking it from the nav.
+  // Mount-only by design (empty deps): a later hash change while already in
+  // the space shouldn't re-trigger a dive.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1) as Section;
+    if ((SECTION_ORDER as string[]).includes(hash)) dive(hash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // The world's WebGL backdrop (three.js included) lives in its own chunk that
   // is only imported once the world mounts. Fetch it while the welcome screen
   // sits idle so the dive never races the download - on a slow connection the

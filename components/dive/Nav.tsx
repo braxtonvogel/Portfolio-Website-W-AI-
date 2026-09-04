@@ -17,13 +17,17 @@ export default function Nav({
   onHome: () => void;
   onGo: (section: Section) => void;
 }) {
-  const items: NavItem[] = [
-    { label: "Home", onClick: onHome },
-    ...SECTION_ORDER.map((section) => ({
-      label: SECTION_LABELS[section],
-      active: active === section,
-      onClick: () => onGo(section),
-    })),
-  ];
-  return <Navbar variant="dark" brand={{ label: "Braxton Vogel", onClick: onHome }} items={items} />;
+  const items: NavItem[] = SECTION_ORDER.map((section) => ({
+    label: SECTION_LABELS[section],
+    active: active === section,
+    onClick: () => onGo(section),
+  }));
+  return (
+    <Navbar
+      variant="dark"
+      brand={{ label: "Braxton Vogel", onClick: onHome }}
+      pinned={{ label: "Home", onClick: onHome }}
+      items={items}
+    />
+  );
 }

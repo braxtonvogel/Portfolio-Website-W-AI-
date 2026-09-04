@@ -1,14 +1,18 @@
 "use client";
 
+import Navbar from "@/components/Navbar";
 import ViewTransitionLink from "@/components/ViewTransitionLink";
 import { motion } from "framer-motion";
 import RippleRings from "@/components/RippleRings";
 import { growthNotes } from "@/lib/growthNotes";
+import { SITE_NAV_BRAND, SITE_NAV_PINNED, siteNavItems } from "@/lib/siteNav";
 
 export default function EarlyDevelopmentPage() {
   return (
-    <main className="relative isolate overflow-hidden min-h-screen px-6 py-16 bg-zinc-50 dark:bg-black text-black dark:text-white">
-      <RippleRings top={157} height={400} />
+    <>
+      <Navbar brand={SITE_NAV_BRAND} pinned={SITE_NAV_PINNED} items={siteNavItems("early-development")} />
+      <main className="relative isolate overflow-hidden min-h-screen px-6 pt-28 pb-16 bg-zinc-50 dark:bg-black text-black dark:text-white">
+        <RippleRings top={157} height={400} />
 
       {/* ================= HERO ================= */}
       <ViewTransitionLink
@@ -97,6 +101,7 @@ export default function EarlyDevelopmentPage() {
           </motion.div>
         ))}
       </div>
-    </main>
+      </main>
+    </>
   );
 }
