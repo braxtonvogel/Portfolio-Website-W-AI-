@@ -65,6 +65,12 @@ const World = forwardRef<
   const topDotRef = useRef<HTMLButtonElement>(null);
   const backdropRef = useRef<BackdropHandle>(null);
   const depthRef = useRef(DEPTH_MIN);
+  // last values actually written per floor during a glide, so a floor that's
+  // already fully settled (e.g. clamped at min fog, or faded to 0 and off
+  // camera) isn't re-styled every single animation frame of the glide - only
+  // the floor(s) actually changing pay for a style write.
+  const lastFogRef = useRef<number[]>([]);
+  const lastPanelRef = useRef<({ o: number; y: number } | undefined)[]>([]);
 
   // Drives the entrance choreography entirely from React state instead of
   // self-scheduled CSS `animation-delay`. On integrated graphics, `@keyframes`
@@ -138,12 +144,21 @@ const World = forwardRef<
   const onFrame = useCallback((d: number) => {
     depthRef.current = d;
     if (worldRef.current) worldRef.current.style.transform = worldTransform(d, mobile);
-    // a panel rises into place as its floor approaches and falls away past it
-    const placePanel = (panel: HTMLDivElement | null, at: number) => {
+    // a panel rises into place as its floor approaches and falls away past it.
+    // Skips the actual DOM write once a floor's computed values stop moving
+    // (e.g. it's several floors away and already pinned at its minimum/zero) -
+    // during a glide every floor gets recomputed each frame, but only the
+    // ones whose fog/opacity/offset are still genuinely changing need to
+    // touch the DOM; the rest would just be re-writing the same string.
+    const placePanel = (panel: HTMLDivElement | null, at: number, i: number) => {
       if (!panel) return;
       const o = Math.max(0, 1 - Math.abs(d - at) * 1.6);
+      const y = (d - at) * -60;
+      const last = lastPanelRef.current[i];
+      if (last && Math.abs(last.o - o) < 0.001 && Math.abs(last.y - y) < 0.05) return;
+      lastPanelRef.current[i] = { o, y };
       panel.style.opacity = o.toFixed(3);
-      panel.style.transform = `translateY(${((d - at) * -60).toFixed(1)}px)`;
+      panel.style.transform = `translateY(${y.toFixed(1)}px)`;
       panel.style.pointerEvents = o > 0.6 ? "auto" : "none";
     };
     for (let i = 0; i < SECTION_ORDER.length; i++) {
@@ -151,8 +166,12 @@ const World = forwardRef<
       // farther floors sink into the fog; the column is still readable from
       // the surface
       const mono = monoRefs.current[i];
-      if (mono) mono.style.setProperty("--fog", Math.max(0.12, 1 - dist * 0.22).toFixed(3));
-      placePanel(panelRefs.current[i], i);
+      const fog = Math.max(0.12, 1 - dist * 0.22);
+      if (mono && Math.abs((lastFogRef.current[i] ?? -1) - fog) >= 0.001) {
+        lastFogRef.current[i] = fog;
+        mono.style.setProperty("--fog", fog.toFixed(3));
+      }
+      placePanel(panelRefs.current[i], i, i);
     }
     backdropRef.current?.setDescent((d - DEPTH_MIN) / (DEPTH_MAX - DEPTH_MIN));
     if (gaugeRef.current) gaugeRef.current.textContent = formatDepth(d);

@@ -175,12 +175,18 @@
    side, fading into the fog away from the camera, so the descent reads as a
    shaft rather than open water. Static: only ever composited. */
 .shaftWall {
-  position: absolute; left: 0px; top: -800px; width: 760px; height: 4200px;
+  /* width trimmed to exactly where the mask below already fades to fully
+     transparent (760px * 80% = 608px) - the old 152px past that point was
+     invisible dead space that still cost a full GPU layer to rasterize.
+     Cropping the box there and moving the mask's zero point out to the new
+     edge (100% of 608px = 608px) reproduces the identical fade curve pixel
+     for pixel, just without the wasted transparent tail. */
+  position: absolute; left: 0px; top: -800px; width: 608px; height: 4200px;
   transform-origin: 0% 50%;
   background-image: linear-gradient(rgba(103,232,249,0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(103,232,249,0.22) 1px, transparent 1px);
   background-size: 120px 120px;
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.85), transparent 80%);
-  mask-image: linear-gradient(to right, rgba(0,0,0,0.85), transparent 80%);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.85), transparent);
+  mask-image: linear-gradient(to right, rgba(0,0,0,0.85), transparent);
   pointer-events: none;
   opacity: 0;
   transition: opacity 900ms ease-out 900ms;
