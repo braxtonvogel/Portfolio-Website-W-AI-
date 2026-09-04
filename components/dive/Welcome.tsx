@@ -94,14 +94,18 @@ export default function Welcome({
             </div>
           </div>
 
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 mt-6 md:mt-0">
+            {/* On mobile this is deliberately big enough to run past the
+                bottom of the first screenful - only its top shows at rest,
+                which reads as "there's more, scroll for it" rather than a
+                fully-visible small photo that gives no reason to scroll. */}
             <Image
               src="/Brax_Prof_Pic.jpg"
               alt="Braxton Vogel"
               width={280}
               height={280}
               priority
-              className="w-[92px] h-[92px] md:w-[280px] md:h-[280px] rounded-full border border-white/20 object-cover shadow-[0_0_60px_rgba(56,189,248,0.25)]"
+              className="w-[220px] h-[220px] md:w-[280px] md:h-[280px] rounded-full border border-white/20 object-cover shadow-[0_0_60px_rgba(56,189,248,0.25)]"
             />
           </div>
         </div>
