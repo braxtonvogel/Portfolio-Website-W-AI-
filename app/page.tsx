@@ -168,10 +168,10 @@ export default function Home() {
       setDiving(false);
 
       // the world is mounted now but held back from building (see World's
-      // `start` prop) until the loading beat finishes - once it does, the
-      // world starts its own entrance sequence, and only once THAT finishes
-      // does the auto-descent/hint fire, so the camera never moves while
-      // things are still assembling.
+      // `start` prop) until the loading panel begins its fade-out - the
+      // world then starts its own entrance sequence underneath it, and only
+      // once THAT finishes does the auto-descent/hint fire, so the camera
+      // never moves while things are still assembling.
       bootDoneRef.current = () => {
         if (section) descendTo(section);
         else setHint(true);
@@ -270,10 +270,10 @@ export default function Home() {
       {overlayOn && <DiveOverlay key={`overlay-${overlayKey}`} origin={overlayOrigin} />}
       {booting && (
         <BootSequence
-          onDone={() => {
-            setBooting(false);
-            setWorldStart(true);
-          }}
+          // the world starts rising as the panel starts fading (not after it
+          // has gone) - see World's `start` prop for why
+          onLeaving={() => setWorldStart(true)}
+          onDone={() => setBooting(false)}
         />
       )}
     </main>

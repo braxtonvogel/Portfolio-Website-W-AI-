@@ -23,6 +23,26 @@ import Backdrop, { type BackdropHandle } from "./Backdrop";
 
 const CENTERED_SECTIONS: Section[] = ["education", "certifications"];
 
+/** Gap between one monolith's reveal/burst and the next one's. Six of them
+ * at 60ms is a 300ms spread - long enough that they visibly peel off the
+ * stack one at a time, short enough that the last one is airborne before
+ * the first has finished landing, so it still reads as one burst. */
+const STAGGER_MS = 60;
+
+/** Mirrors `on` into local state after `delay` ms via a real setTimeout ->
+ * setState, so each monolith toggles its own class on its own beat. Never
+ * schedules anything if it starts already-on (the reduced-motion case) or is
+ * already through. */
+function useStaggered(on: boolean, delay: number): boolean {
+  const [state, setState] = useState(on);
+  useEffect(() => {
+    if (!on || state) return;
+    const t = setTimeout(() => setState(true), delay);
+    return () => clearTimeout(t);
+  }, [on, state, delay]);
+  return state;
+}
+
 export type WorldHandle = {
   /** Glide the camera to a floor (index into SECTION_ORDER). */
   goTo(floor: number): void;
@@ -49,8 +69,10 @@ const World = forwardRef<
     reducedMotion: boolean;
     /** Phone composition: everything on the center line, panel under its monolith. */
     mobile: boolean;
-    /** Holds the entrance choreography until true - lets the boot loading
-     * screen finish first, rather than racing it. */
+    /** Holds the entrance choreography until true. Flipped the moment the
+     * boot loading screen starts its fade-out (not after it), so the water
+     * and city rise underneath the departing panel as one crossfade instead
+     * of the panel fading to black and the world then popping on. */
     start: boolean;
     onFloorChange: (section: Section | null) => void;
     onTilt: (dx: number, dy: number) => void;
@@ -110,7 +132,10 @@ const World = forwardRef<
   // Three beats, in order: the grid floor grows out from the near edge to the
   // horizon and the shaft walls light up (`assembled`); all monoliths spawn in
   // stacked on top of each other at the center (`spawned`); they then burst
-  // down the shaft to their floors (`distributed`).
+  // down the shaft to their floors (`distributed`). The last two are the
+  // moment each beat BEGINS - every Monolith follows it on its own short
+  // per-floor timer (see useStaggered) so the six cascade rather than all
+  // popping in one frame.
   const [assembled, setAssembled] = useState(reducedMotion);
   const [spawned, setSpawned] = useState(reducedMotion);
   const [distributed, setDistributed] = useState(reducedMotion);
@@ -130,9 +155,10 @@ const World = forwardRef<
     const distributeTimer = setTimeout(() => setDistributed(true), 2150);
     // safety net: on a slow/throttled device the timers above can all land
     // late, but they should never land NEVER - this is a hard guarantee that
-    // the scene reaches its fully-lit, fully-distributed state within 4s no
-    // matter what, so a bad frame or a delayed timer can't leave the world
-    // permanently stuck looking unrendered.
+    // the scene reaches its fully-lit, fully-distributed state within 4s
+    // (plus the monoliths' own ~300ms stagger tail) no matter what, so a bad
+    // frame or a delayed timer can't leave the world permanently stuck
+    // looking unrendered.
     const forceTimer = setTimeout(() => {
       setAssembled(true);
       setSpawned(true);
@@ -374,11 +400,20 @@ function Monolith({
   innerRef: (el: HTMLDivElement | null) => void;
   onSelect: () => void;
 }) {
+  // Deepest floor first. All six sit on the exact same point while stacked,
+  // painted in DOM order (the deepest floor on top) - so peeling from the
+  // deepest means the card you can actually see is always the one that
+  // leaves. It also front-loads the longest, fastest shots and ends with the
+  // nearest floor easing into the foreground, which settles the burst rather
+  // than whipping the farthest one away last.
+  const delay = reducedMotion ? 0 : (SECTION_ORDER.length - 1 - index) * STAGGER_MS;
+  const revealed = useStaggered(spawned, delay);
+  const placed = useStaggered(distributed, delay);
   return (
     <div
       ref={innerRef}
-      className={`${styles.mono} ${isActive ? styles.active : ""} ${spawned ? styles.revealed : ""} ${
-        distributed ? styles.distributed : ""
+      className={`${styles.mono} ${isActive ? styles.active : ""} ${revealed ? styles.revealed : ""} ${
+        placed ? styles.distributed : ""
       }`}
       onClick={onSelect}
       style={{ "--fog": 1, "--place": monoPlace(index, mobile) } as React.CSSProperties}

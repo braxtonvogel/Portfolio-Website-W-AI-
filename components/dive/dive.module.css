@@ -150,8 +150,20 @@
 .assembled .horizon { opacity: 1; }
 
 /* the Three.js skyline - sits between the stars and the CSS 3D stage, so the
-   monoliths, floor grid and panels all render on top of it */
-.backdrop { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+   monoliths, floor grid and panels all render on top of it.
+   Its water background is drawn fully opaque from the very first frame after
+   `start` (the canvas is kept clear before that), which on its own is a hard
+   one-frame cut from black to teal right as the boot panel finishes fading.
+   Riding the same `.assembled` toggle as everything else fades the whole
+   canvas up instead - one composited opacity on an existing layer, and it
+   overlaps the boot panel's own fade-out, so the two read as a crossfade.
+   700ms: long enough to fully hide the cut, short enough that the city's
+   noise dissolve (already running underneath) is seen from near its start. */
+.backdrop {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
+  opacity: 0; transition: opacity 700ms ease-out;
+}
+.assembled .backdrop { opacity: 1; }
 
 .stage { position: absolute; inset: 0; perspective: 900px; perspective-origin: 50% 46%; }
 .tilt { position: absolute; left: 50%; top: 50%; width: 0px; height: 0px; transform-style: preserve-3d; transition: transform 400ms ease-out; }
@@ -296,10 +308,12 @@
   transition: opacity 450ms ease-out;
   will-change: opacity;
 }
-/* each monolith's own React-driven reveal timer (see World.tsx) adds this
-   class in sequence, staggered the same way the old animation-delay chain
-   was: grid floor first, then the arc of monoliths as dim wireframes, then
-   each one powers on in turn - "grid, then everything lights up". */
+/* each monolith's own React-driven reveal timer (useStaggered in World.tsx)
+   adds `.revealed` on its own beat, a few tens of ms after its neighbour -
+   the parent only says WHEN the reveal beat begins; the per-floor offset is
+   the monolith's own. Same again for `.distributed` below, so the six peel
+   off the stack in sequence: walls first, then the stack powers on, then
+   each one bursts down the shaft in turn. */
 .mono.revealed .slabDim { opacity: 0; }
 
 .lbl {

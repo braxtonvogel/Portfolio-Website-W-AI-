@@ -26,16 +26,23 @@ const RESOLVE_MS = 65; // per character - the whole name lands in ~850ms, inside
 /** Shown once, right after diving in, before the world starts building
  * underneath it. Purely cosmetic - not a real progress bar - but bounded so
  * it can never overstay: it waits for document.fonts.ready up to MIN_MS,
- * then leaves, with MAX_MS as a hard ceiling regardless. */
-export default function BootSequence({ onDone }: { onDone: () => void }) {
+ * then leaves, with MAX_MS as a hard ceiling regardless.
+ *
+ * `onLeaving` fires the moment the panel starts its fade-out; `onDone` fires
+ * once it has finished. The world starts assembling on the first, not the
+ * second, so it rises under the departing panel as a crossfade rather than
+ * after a beat of black. */
+export default function BootSequence({ onLeaving, onDone }: { onLeaving?: () => void; onDone: () => void }) {
   const [line, setLine] = useState(0);
   const [filled, setFilled] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const nameRef = useRef<HTMLParagraphElement>(null);
+  const leavingRef = useRef(onLeaving);
   const doneRef = useRef(onDone);
   useEffect(() => {
+    leavingRef.current = onLeaving;
     doneRef.current = onDone;
-  }, [onDone]);
+  }, [onLeaving, onDone]);
 
   useEffect(() => {
     const start = performance.now();
@@ -82,6 +89,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
       const wait = Math.max(0, MIN_MS - (performance.now() - start));
       leaveTimer = setTimeout(() => {
         setLeaving(true);
+        leavingRef.current?.();
         doneTimer = setTimeout(() => doneRef.current(), 260);
       }, wait);
     });
