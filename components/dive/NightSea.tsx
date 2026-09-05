@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import styles from "./dive.module.css";
 import { useIsMobile } from "@/lib/useMediaQuery";
 
@@ -28,7 +28,7 @@ const FRAME_MS = 1000 / 30;
  * `moonBlue` crossfades the moon to a blue moon and `rings` mounts the blue
  * ripple rings bursting out of it - both flip the moment Dive is pressed.
  */
-export default function NightSea({
+function NightSea({
   moonBlue,
   rings,
   reducedMotion,
@@ -160,3 +160,12 @@ export default function NightSea({
     </div>
   );
 }
+
+// All three props are primitives (moonBlue/rings/reducedMotion are always
+// booleans), so a shallow compare is exact - no case where it's structurally
+// equal but referentially different, and no case where a needed re-render is
+// missed. The parent's typewriter effect re-renders Welcome (and this) 15-25
+// times a second for as long as the welcome screen is up; every one of those
+// ticks previously reconciled this whole subtree - the sky, stars, three moon
+// layers, sea, canvas and (mid-dive) five ripple rings - for identical props.
+export default memo(NightSea);

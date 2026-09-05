@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import styles from "./dive.module.css";
 import {
   DEPTH_MAX,
@@ -68,9 +68,31 @@ const World = forwardRef<
   // last values actually written per floor during a glide, so a floor that's
   // already fully settled (e.g. clamped at min fog, or faded to 0 and off
   // camera) isn't re-styled every single animation frame of the glide - only
-  // the floor(s) actually changing pay for a style write.
+  // the floor(s) actually changing pay for a style write. Flat number arrays
+  // rather than a cache of {o, y} objects, since a glide allocates a couple
+  // of these every frame otherwise - pure GC pressure a weak device's nursery
+  // collector would otherwise have to chew through mid-scroll.
   const lastFogRef = useRef<number[]>([]);
-  const lastPanelRef = useRef<({ o: number; y: number } | undefined)[]>([]);
+  const lastPanelO = useRef<number[]>([]);
+  const lastPanelY = useRef<number[]>([]);
+  // the gauge's text only actually changes once per whole meter (40m/floor),
+  // so most frames of a glide would otherwise rewrite the identical string
+  const lastMetersRef = useRef(-1);
+
+  // stable per-floor callbacks: SECTION_ORDER's length never changes, so
+  // these never need to resize. Built once instead of as fresh inline
+  // arrows on every render, which previously made React detach and
+  // reattach all 12 monolith/panel refs (old callback called with null,
+  // new one with the element) on every render - including every mouse-move
+  // tilt frame at the overview.
+  const monoRefCbs = useMemo(
+    () => SECTION_ORDER.map((_, i) => (el: HTMLDivElement | null) => { monoRefs.current[i] = el; }),
+    []
+  );
+  const panelRefCbs = useMemo(
+    () => SECTION_ORDER.map((_, i) => (el: HTMLDivElement | null) => { panelRefs.current[i] = el; }),
+    []
+  );
 
   // Drives the entrance choreography entirely from React state instead of
   // self-scheduled CSS `animation-delay`. On integrated graphics, `@keyframes`
@@ -154,9 +176,11 @@ const World = forwardRef<
       if (!panel) return;
       const o = Math.max(0, 1 - Math.abs(d - at) * 1.6);
       const y = (d - at) * -60;
-      const last = lastPanelRef.current[i];
-      if (last && Math.abs(last.o - o) < 0.001 && Math.abs(last.y - y) < 0.05) return;
-      lastPanelRef.current[i] = { o, y };
+      const lo = lastPanelO.current[i];
+      const ly = lastPanelY.current[i];
+      if (lo !== undefined && Math.abs(lo - o) < 0.001 && Math.abs(ly - y) < 0.05) return;
+      lastPanelO.current[i] = o;
+      lastPanelY.current[i] = y;
       panel.style.opacity = o.toFixed(3);
       panel.style.transform = `translateY(${y.toFixed(1)}px)`;
       panel.style.pointerEvents = o > 0.6 ? "auto" : "none";
@@ -174,7 +198,11 @@ const World = forwardRef<
       placePanel(panelRefs.current[i], i, i);
     }
     backdropRef.current?.setDescent((d - DEPTH_MIN) / (DEPTH_MAX - DEPTH_MIN));
-    if (gaugeRef.current) gaugeRef.current.textContent = formatDepth(d);
+    const m = depthMeters(d);
+    if (m !== lastMetersRef.current) {
+      lastMetersRef.current = m;
+      if (gaugeRef.current) gaugeRef.current.textContent = formatDepth(d);
+    }
     // the square above the floor dots lights up while the camera is up at
     // the overview (no floor reports "active" there, so it's depth-driven)
     topDotRef.current?.classList.toggle(styles.dotActive, d < DEPTH_MIN + 0.4);
@@ -202,6 +230,11 @@ const World = forwardRef<
 
   useImperativeHandle(ref, () => ({ goTo }), [goTo]);
 
+  // same stable-callback reasoning as monoRefCbs/panelRefCbs above; goTo
+  // itself is already stable (useDescent's own useCallback), so this array
+  // only ever gets rebuilt if goTo's identity actually changes.
+  const selectCbs = useMemo(() => SECTION_ORDER.map((_, i) => () => goTo(i)), [goTo]);
+
   const handleMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       // the mouse-follow tilt is an overview-only flourish: once the camera is
@@ -218,6 +251,16 @@ const World = forwardRef<
 
   const worldTransition = reducedMotion ? { transition: "none" } : undefined;
   const activeIndex = floor === null ? -1 : SECTION_ORDER.indexOf(floor);
+
+  // getSectionContent is a pure function of (section, renderPdf), and
+  // renderPdf here is exactly `activeIndex === i` - so the six panels' whole
+  // element trees (the Skills panel alone builds ~40 links) only need
+  // rebuilding when activeIndex changes, not on every World render (a mouse
+  // tilt at the overview re-renders World at pointer rate).
+  const panelContent = useMemo(
+    () => SECTION_ORDER.map((section, i) => getSectionContent(section, activeIndex === i)),
+    [activeIndex]
+  );
 
   return (
     <div
@@ -259,10 +302,8 @@ const World = forwardRef<
                   distributed={distributed}
                   reducedMotion={reducedMotion}
                   mobile={mobile}
-                  innerRef={(el) => {
-                    monoRefs.current[i] = el;
-                  }}
-                  onSelect={() => goTo(i)}
+                  innerRef={monoRefCbs[i]}
+                  onSelect={selectCbs[i]}
                 />
               ))}
 
@@ -272,11 +313,9 @@ const World = forwardRef<
                   index={i}
                   mobile={mobile}
                   centered={CENTERED_SECTIONS.includes(section) && !mobile}
-                  innerRef={(el) => {
-                    panelRefs.current[i] = el;
-                  }}
+                  innerRef={panelRefCbs[i]}
                 >
-                  {getSectionContent(section, activeIndex === i)}
+                  {panelContent[i]}
                 </SectionPanel>
               ))}
             </div>

@@ -92,7 +92,11 @@ export type SceneData = {
     rel: Float32Array;
     timing: Float32Array;
     emissive: Float32Array;
-    index: Uint32Array;
+    // Uint16 when every index fits (the city mesh always does - see the
+    // buildScene() emission below); halves the index buffer's GPU memory
+    // and fetch bandwidth. three.js reads the typed array's own type to
+    // pick gl.UNSIGNED_SHORT vs gl.UNSIGNED_INT, so nothing downstream needs to change.
+    index: Uint16Array | Uint32Array;
   };
   lights: { position: Float32Array; timing: Float32Array; phase: Float32Array };
   motes: { norm: Float32Array; a: Float32Array; b: Float32Array };
@@ -465,7 +469,7 @@ export function buildScene(aspect: number): SceneData {
       rel: Float32Array.from(em.rel),
       timing: Float32Array.from(em.tim),
       emissive: Float32Array.from(em.emi),
-      index: Uint32Array.from(em.idx),
+      index: (em.n <= 65535 ? Uint16Array : Uint32Array).from(em.idx),
     },
     lights: { position: Float32Array.from(li.pos), timing: Float32Array.from(li.tim), phase: Float32Array.from(li.pha) },
     motes: { norm: Float32Array.from(mo.norm), a: Float32Array.from(mo.a), b: Float32Array.from(mo.b) },

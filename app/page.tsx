@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Nav from "@/components/dive/Nav";
 import Welcome from "@/components/dive/Welcome";
 import World, { type WorldHandle } from "@/components/dive/World";
@@ -120,10 +120,16 @@ export default function Home() {
   // the world reports which floor the camera has settled on (null between
   // floors and at the overview) - that drives the nav highlight, and the
   // "scroll to descend" hint only shows while hanging at the overview
-  function onFloorChange(section: Section | null) {
+  // Stable identity: World's own handleFloorChange callback depends on
+  // [onFloorChange, onTilt], so a fresh function here on every Home render
+  // previously made that dependency change on every render too, re-running
+  // useDescent's engine.configure() effect and World's readyRef-sync effect
+  // along with it. Safe to memoize with an empty dep array - the body only
+  // calls state setters, which React guarantees are stable across renders.
+  const onFloorChange = useCallback((section: Section | null) => {
     setActive(section);
     setHint(section === null);
-  }
+  }, []);
 
   function dive(section: Section | null) {
     if (animating || view !== "welcome") return;
@@ -222,9 +228,14 @@ export default function Home() {
     }, 1150);
   }
 
-  function onTilt(dx: number, dy: number) {
+  const onTilt = useCallback((dx: number, dy: number) => {
     setTilt(`rotateY(${(dx * 4).toFixed(2)}deg) rotateX(${(-dy * 2.5).toFixed(2)}deg)`);
-  }
+  }, []);
+
+  // same reasoning as onFloorChange above - bootDoneRef.current is read at
+  // call time, so a permanently-stable wrapper still always invokes
+  // whichever function the ref currently holds.
+  const handleReady = useCallback(() => bootDoneRef.current(), []);
 
   return (
     <main className="relative isolate overflow-hidden bg-black text-white min-h-[100dvh]">
@@ -252,7 +263,7 @@ export default function Home() {
           start={worldStart}
           onFloorChange={onFloorChange}
           onTilt={onTilt}
-          onReady={() => bootDoneRef.current()}
+          onReady={handleReady}
         />
       )}
 

@@ -18,14 +18,27 @@ const ACTIVE_SECTION: Record<StandalonePage, Section> = {
   projects: "projects",
 };
 
+// activePage only ever takes one of four values (undefined + the three
+// StandalonePage variants), and the map body depends on nothing else, so
+// its result is deep-equal on every call for a given argument - cached here
+// instead of re-derived on every render of the seven client pages (all six
+// project pages plus early-development) that call this inline in JSX.
+const navCache = new Map<StandalonePage | "", NavItem[]>();
+
 /** The full site nav for every page outside the dive world - same six
  * sections it has, so nothing is ever missing depending on where you are. */
 export function siteNavItems(activePage?: StandalonePage): NavItem[] {
-  return SECTION_ORDER.map((section) => ({
-    label: SECTION_LABELS[section],
-    href: STANDALONE_HREF[section] ?? `/#${section}`,
-    active: activePage !== undefined && ACTIVE_SECTION[activePage] === section,
-  }));
+  const key = activePage ?? "";
+  let items = navCache.get(key);
+  if (!items) {
+    items = SECTION_ORDER.map((section) => ({
+      label: SECTION_LABELS[section],
+      href: STANDALONE_HREF[section] ?? `/#${section}`,
+      active: activePage !== undefined && ACTIVE_SECTION[activePage] === section,
+    }));
+    navCache.set(key, items);
+  }
+  return items;
 }
 
 export const SITE_NAV_PINNED: NavItem = { label: "Home", href: "/" };

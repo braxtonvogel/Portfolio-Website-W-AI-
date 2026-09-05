@@ -349,7 +349,13 @@ export function mountBackdrop(
       h = canvas.clientHeight || 1;
     // phones render at 1x: their screens are dense and their GPUs are not
     const dpr = Math.min(window.devicePixelRatio || 1, (window.innerWidth || 1) < 768 ? 1 : MAX_DPR);
-    renderer.setPixelRatio(dpr);
+    // setPixelRatio always calls setSize internally, which reassigns
+    // canvas.width/height and reinitializes the WebGL drawing buffer even
+    // when the value is unchanged - skipping it when the ratio is already
+    // current avoids reallocating the whole framebuffer twice on every
+    // resize (a mobile browser's URL bar collapsing during scroll fires
+    // this often, and backbuffer reallocation is expensive on weak GPUs)
+    if (renderer.getPixelRatio() !== dpr) renderer.setPixelRatio(dpr);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();

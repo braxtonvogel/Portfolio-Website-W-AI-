@@ -428,9 +428,22 @@ const LINK_PATTERN = ALL_TERMS.length
   ? new RegExp(`\\b(${ALL_TERMS.map((t) => escapeRegExp(t.phrase)).join("|")})\\b`, "gi")
   : null;
 
+// Built lazily on first use (not at module scope) so a page that never
+// opens the chat pays nothing at import time. Iterates ALL_TERMS in its
+// existing longest-first order and never overwrites an existing key, so a
+// lookup returns the exact same first match Array.prototype.find used to -
+// including the duplicate-phrase case that motivated the longest-first sort.
+let termByLower: Map<string, LinkTerm> | null = null;
+
 function findTerm(matchedText: string): LinkTerm | undefined {
-  const lower = matchedText.toLowerCase();
-  return ALL_TERMS.find((t) => t.phrase.toLowerCase() === lower);
+  if (!termByLower) {
+    termByLower = new Map();
+    for (const t of ALL_TERMS) {
+      const key = t.phrase.toLowerCase();
+      if (!termByLower.has(key)) termByLower.set(key, t);
+    }
+  }
+  return termByLower.get(matchedText.toLowerCase());
 }
 
 /** Splits an AI message into plain text and clickable Link nodes wherever it
@@ -513,6 +526,8 @@ const MAX_MATCHES = 3;
  * then a light typo-tolerant pass over single words for anything still
  * unmatched. Longer keywords get a little more spelling leeway since a
  * one-character slip matters less on a long word than a short one. */
+let kbEntries: [string, string][] | null = null;
+
 function findMatches(input: string): string[] {
   const words = normalize(input);
   if (words.length === 0) return [];
@@ -527,21 +542,32 @@ function findMatches(input: string): string[] {
   const matches: string[] = [];
   const seen = new Set<string>();
 
-  outer: for (const group of Object.values(knowledgeBase)) {
-    for (const [key, answer] of Object.entries(group)) {
-      if (seen.has(answer)) continue;
+  // knowledgeBase is a static nested object literal, so Object.values/entries
+  // always visit the same (key, answer) pairs in the same order on every
+  // call - flattening it once instead of re-walking the nested structure
+  // (and re-allocating an entries array for every one of its ~160 keys) on
+  // every message sent.
+  if (!kbEntries) kbEntries = Object.values(knowledgeBase).flatMap((g) => Object.entries(g));
 
-      const exact = phrases.has(key);
-      const fuzzy =
-        !exact &&
-        key.length >= 4 &&
-        words.some((w) => w.length >= 4 && editDistance(w, key) <= (key.length >= 8 ? 2 : 1));
+  for (const [key, answer] of kbEntries) {
+    if (seen.has(answer)) continue;
 
-      if (exact || fuzzy) {
-        matches.push(answer);
-        seen.add(answer);
-        if (matches.length >= MAX_MATCHES) break outer;
-      }
+    const exact = phrases.has(key);
+    // Edit distance can change a string's length by at most 1 per operation
+    // (insert/delete ±1, substitute/transpose 0), so distance(a, b) is always
+    // >= |a.length - b.length|. Skipping any word whose length already rules
+    // out landing within maxEdits avoids building and filling a full DP
+    // matrix for a comparison that's mathematically guaranteed to fail.
+    const maxEdits = key.length >= 8 ? 2 : 1;
+    const fuzzy =
+      !exact &&
+      key.length >= 4 &&
+      words.some((w) => w.length >= 4 && Math.abs(w.length - key.length) <= maxEdits && editDistance(w, key) <= maxEdits);
+
+    if (exact || fuzzy) {
+      matches.push(answer);
+      seen.add(answer);
+      if (matches.length >= MAX_MATCHES) break;
     }
   }
 
