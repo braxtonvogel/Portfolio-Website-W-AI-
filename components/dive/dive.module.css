@@ -337,6 +337,18 @@
 .pills { display: flex; flex-wrap: wrap; gap: 10px; }
 .pill { display: inline-block; padding: 8px 16px; border-radius: 999px; border: 1px solid #52525b; color: #d4d4d8; font-size: 15px; background: rgba(255,255,255,0.06); }
 
+/* the Projects panel's type filter - starts on "All" (see ProjectsPanel in
+   sectionContent.tsx), so the default view is unchanged from before this
+   existed; picking Personal/Class just narrows the grid below it. */
+.filterRow { display: flex; gap: 8px; margin: 2px 0 4px; }
+.filterBtn {
+  padding: 6px 14px; border-radius: 999px; border: 1px solid #52525b; background: rgba(255,255,255,0.05);
+  color: #a1a1aa; font-size: 13px; cursor: pointer; transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+}
+.filterBtn:hover { border-color: rgba(103,232,249,0.55); color: #e4e4e7; }
+.filterBtn:focus-visible { outline: 2px solid #67e8f9; outline-offset: 2px; }
+.filterBtnActive { border-color: #67e8f9; background: rgba(56,189,248,0.16); color: #ffffff; }
+
 .proj { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .proj > a, .proj > div { padding: 14px 16px; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 15px; background: rgba(0,0,0,0.45); color: #ffffff; text-decoration: none; display: block; transition: border-color 200ms ease, background 200ms ease; }
 .proj > a:hover { border-color: rgba(56,189,248,0.6); background: rgba(0,0,0,0.6); }

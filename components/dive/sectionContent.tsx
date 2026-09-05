@@ -1,10 +1,57 @@
+"use client";
+
+import { useState } from "react";
 import ViewTransitionLink from "@/components/ViewTransitionLink";
 import styles from "./dive.module.css";
 import { certifications } from "@/lib/certifications";
 import { growthNotes } from "@/lib/growthNotes";
-import { projects, skills } from "@/lib/portfolioData";
+import { projects, skills, type Project } from "@/lib/portfolioData";
 import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/contact";
 import type { Section } from "./sections";
+
+type ProjectFilter = "all" | Project["category"];
+const PROJECT_FILTERS: { key: ProjectFilter; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "personal", label: "Personal" },
+  { key: "class", label: "Class" },
+];
+
+/** The Projects panel's own filter row - starts on "all", so nothing about
+ * the panel's default appearance changes; picking Personal or Class narrows
+ * the grid to that category alone. Its own component (not inline JSX in the
+ * switch below) purely because it's the one panel that needs state. */
+function ProjectsPanel() {
+  const [filter, setFilter] = useState<ProjectFilter>("all");
+  const visible = filter === "all" ? projects : projects.filter((p) => p.category === filter);
+
+  return (
+    <>
+      <h2 className={styles.secTitle}>Projects</h2>
+      <div className={styles.filterRow} role="tablist" aria-label="Filter projects by type">
+        {PROJECT_FILTERS.map(({ key, label }) => (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            aria-selected={filter === key}
+            className={`${styles.filterBtn} ${filter === key ? styles.filterBtnActive : ""}`}
+            onClick={() => setFilter(key)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className={styles.proj}>
+        {visible.map((p) => (
+          <ViewTransitionLink key={p.href} href={p.href}>
+            {p.short}
+            <span>{p.tech}</span>
+          </ViewTransitionLink>
+        ))}
+      </div>
+    </>
+  );
+}
 
 const note = growthNotes[0];
 
@@ -91,19 +138,7 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
         </>
       );
     case "projects":
-      return (
-        <>
-          <h2 className={styles.secTitle}>Projects</h2>
-          <div className={styles.proj}>
-            {projects.map((p) => (
-              <ViewTransitionLink key={p.href} href={p.href}>
-                {p.short}
-                <span>{p.tech}</span>
-              </ViewTransitionLink>
-            ))}
-          </div>
-        </>
-      );
+      return <ProjectsPanel />;
     case "skills":
       return (
         <>
