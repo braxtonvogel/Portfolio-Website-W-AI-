@@ -30,7 +30,7 @@ export const growthNotes: GrowthNote[] = [
     topic: "Cloud Infrastructure & DevOps",
     person: "Jeffrey Palermo",
     description:
-      "Jeffrey set me up with the Azure for Students credit, so I used it to build TaskFlow — a small .NET API in the Onion Architecture pattern he originated — and deploy it for real. The code was the easy part. What actually taught me something was the university tenant's region policy, a Conditional Access wall that blocked Azure DevOps outright, and a quota exhaustion that took the site down mid-debugging. Full writeup and the project itself live on the same page.",
+      "Jeffrey set me up with the Azure for Students credit, so I used it to build TaskFlow, a small .NET API in the Onion Architecture pattern he originated and deploy it for real. The code was the easy part. What actually taught me something was the university tenant's region policy, a Conditional Access wall that blocked Azure DevOps outright, and a quota exhaustion that took the site down mid-debugging. Full writeup and the project itself live on the same page.",
     pdf: "/growth-notes/taskflow-field-notes.pdf",
     href: "/projects/taskflow",
     linkLabel: "View Project & Full Writeup",
