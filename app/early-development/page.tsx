@@ -58,17 +58,32 @@ export default function EarlyDevelopmentPage() {
                 <h2 className="text-2xl font-bold mt-1">{note.title}</h2>
               </div>
 
-              <a
-                href={note.pdf}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 dark:hover:bg-white dark:hover:text-zinc-900 dark:hover:border-white transition-colors"
-              >
-                Open full PDF
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </a>
+              <div className="flex items-center gap-2 flex-wrap">
+                {note.href && (
+                  <ViewTransitionLink
+                    href={note.href}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 dark:hover:bg-white dark:hover:text-zinc-900 dark:hover:border-white transition-colors"
+                  >
+                    {note.linkLabel ?? "View more"}
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </ViewTransitionLink>
+                )}
+                {note.pdf && (
+                  <a
+                    href={note.pdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 dark:hover:bg-white dark:hover:text-zinc-900 dark:hover:border-white transition-colors"
+                  >
+                    Open full PDF
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2 mt-4">
@@ -90,13 +105,15 @@ export default function EarlyDevelopmentPage() {
                 {note.description}
               </p>
 
-              <div className="w-full lg:w-[320px] h-[420px] flex-shrink-0 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner bg-white">
-                <iframe
-                  src={`${note.pdf}#toolbar=0`}
-                  title={`${note.title} preview`}
-                  className="w-full h-full"
-                />
-              </div>
+              {note.pdf && (
+                <div className="w-full lg:w-[320px] h-[420px] flex-shrink-0 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner bg-white">
+                  <iframe
+                    src={`${note.pdf}#toolbar=0`}
+                    title={`${note.title} preview`}
+                    className="w-full h-full"
+                  />
+                </div>
+              )}
             </div>
           </motion.div>
         ))}

@@ -53,8 +53,6 @@ function ProjectsPanel() {
   );
 }
 
-const note = growthNotes[0];
-
 function submitContact(e: React.FormEvent<HTMLFormElement>) {
   e.preventDefault();
   const form = e.currentTarget;
@@ -118,23 +116,25 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
       return (
         <>
           <h2 className={styles.secTitle}>Early Personal Development</h2>
-          <div className={styles.pdfRow}>
-            <div className={styles.pdfCol}>
-              <p className={styles.lead}>{note.title}</p>
-              <p className={styles.secBody}>{note.description}</p>
-              <div className={styles.pills}>
-                <span className={styles.pill}>{note.date}</span>
-                {note.person && <span className={styles.pill}>{note.person}</span>}
-                <span className={styles.pill}>{note.topic}</span>
+          {growthNotes.map((n) => (
+            <div key={n.slug} className={styles.pdfRow}>
+              <div className={styles.pdfCol}>
+                <p className={styles.lead}>{n.title}</p>
+                <p className={styles.secBody}>{n.description}</p>
+                <div className={styles.pills}>
+                  <span className={styles.pill}>{n.date}</span>
+                  {n.person && <span className={styles.pill}>{n.person}</span>}
+                  <span className={styles.pill}>{n.topic}</span>
+                </div>
+                <ViewTransitionLink href={n.href ?? "/early-development"} className="text-white underline text-lg">
+                  {n.href ? n.linkLabel ?? "View more" : "View details"} &rarr;
+                </ViewTransitionLink>
               </div>
-              <ViewTransitionLink href="/early-development" className="text-white underline text-lg">
-                View details &rarr;
-              </ViewTransitionLink>
+              <div className={styles.pdfFrame}>
+                {renderPdf && n.pdf && <iframe src={`${n.pdf}#toolbar=0`} title={`${n.title} preview`} />}
+              </div>
             </div>
-            <div className={styles.pdfFrame}>
-              {renderPdf && <iframe src={`${note.pdf}#toolbar=0`} title={`${note.title} preview`} />}
-            </div>
-          </div>
+          ))}
         </>
       );
     case "projects":

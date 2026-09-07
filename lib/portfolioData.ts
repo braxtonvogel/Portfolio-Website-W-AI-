@@ -9,6 +9,14 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    title: "TaskFlow - Onion Architecture API on Azure",
+    short: "TaskFlow",
+    type: "Personal Project",
+    href: "/projects/taskflow",
+    tech: "C# • ASP.NET Core • Onion Architecture • EF Core • Azure App Service • GitHub Actions",
+    category: "personal",
+  },
+  {
     title: "SammyOS - Context Aware AI Productivity Platform",
     short: "SammyOS",
     type: "Personal Project",
@@ -65,6 +73,9 @@ export interface Skill {
 
 export const skills: { technical: Skill[]; interpersonal: Skill[]; professional: Skill[] } = {
   technical: [
+    { name: "C# & ASP.NET Core", href: "/projects/taskflow" },
+    { name: "Onion / Clean Architecture", href: "/projects/taskflow" },
+    { name: "Azure App Service & CI/CD Pipelines", href: "/projects/taskflow" },
     { name: "Python", href: "/projects/student-risk-prediction-system" },
     { name: "Java", href: "/projects/chat-server" },
     { name: "SQL & Relational Databases", href: "/projects/dnd-builder" },
@@ -98,6 +109,7 @@ export const skills: { technical: Skill[]; interpersonal: Skill[]; professional:
     { name: "Stakeholder Communication", href: "/certifications/google-data-analytics" },
   ],
   professional: [
+    { name: "Cloud Governance & Policy Troubleshooting", href: "/projects/taskflow" },
     { name: "GitHub Workflow", href: "/projects/stateful-browser-automation-engine" },
     { name: "System Debugging", href: "/projects/chat-server" },
     { name: "Project Documentation", href: "/projects/student-risk-prediction-system" },

@@ -32,6 +32,14 @@ const knowledgeBase = {
 
     javascript:
       "Yes — Braxton has vanilla JavaScript and DOM manipulation experience from his File Manager UI project — a framework-free build with its own hand-rolled virtual filesystem.",
+
+    csharp:
+      "Yes — Braxton has C# experience from his TaskFlow project, an ASP.NET Core Web API built in Onion Architecture and deployed to Azure App Service.",
+
+    // "C#" normalizes down to just "c" (the # is stripped as punctuation),
+    // so this single-letter alias is what actually catches someone typing
+    // "C#" on its own rather than a full sentence.
+    c: "Yes — Braxton has C# experience from his TaskFlow project, an ASP.NET Core Web API built in Onion Architecture and deployed to Azure App Service.",
   },
 
   frameworks: {
@@ -88,6 +96,24 @@ const knowledgeBase = {
 
     frontenddesign:
       "Yes — Braxton has frontend design experience from his File Manager UI project.",
+
+    aspnetcore:
+      "Yes — Braxton has ASP.NET Core experience from his TaskFlow project, a Web API built in Onion Architecture with a fully separate Domain, Application, Infrastructure, and Api layer.",
+
+    dotnet:
+      "Yes — Braxton has .NET experience from his TaskFlow project, an ASP.NET Core Web API deployed live on Azure App Service.",
+
+    efcore:
+      "Yes — Braxton has Entity Framework Core experience from his TaskFlow project, using EF Core with SQLite for persistence.",
+
+    entityframework:
+      "Yes — Braxton has Entity Framework Core experience from his TaskFlow project, using EF Core with SQLite for persistence.",
+
+    sqlite:
+      "Yes — Braxton has SQLite experience from his TaskFlow project, persisting data on Azure App Service's disk.",
+
+    githubactions:
+      "Yes — Braxton has GitHub Actions experience from his TaskFlow project, where he built a CI/CD pipeline that builds, tests, and deploys straight to Azure App Service on every push.",
   },
 
   concepts: {
@@ -312,6 +338,65 @@ const knowledgeBase = {
 
     oulad:
       "Yes — Braxton has experience working with the real-world OULAD educational dataset.",
+
+    taskflow:
+      "TaskFlow is Braxton's ASP.NET Core Web API built in Onion Architecture (the layering pattern originated by Jeffrey Palermo of Clear Measure) and deployed live to Azure App Service. Beyond the code, it's a real story of diagnosing Azure Policy region restrictions, an Azure DevOps Conditional Access block, and an App Service quota exhaustion — all documented in its Field Notes.",
+
+    onionarchitecture:
+      "Yes — Braxton has Onion Architecture experience from his TaskFlow project, structured into Domain, Application, Infrastructure, and Api layers with dependencies pointing strictly inward.",
+
+    cleanarchitecture:
+      "Yes — Braxton has Clean/Onion Architecture experience from his TaskFlow project, structured into Domain, Application, Infrastructure, and Api layers with dependencies pointing strictly inward.",
+
+    // Short single-word aliases - "onion architecture" typed as two words
+    // already matches onionarchitecture above via the n-gram concatenation,
+    // but someone typing just "onion" or "clean" on its own needs its own key.
+    onion:
+      "Yes — Braxton has Onion Architecture experience from his TaskFlow project, structured into Domain, Application, Infrastructure, and Api layers with dependencies pointing strictly inward.",
+
+    clean:
+      "Yes — Braxton has Clean/Onion Architecture experience from his TaskFlow project, structured into Domain, Application, Infrastructure, and Api layers with dependencies pointing strictly inward.",
+
+    // ".NET" normalizes down to just "net" (the period is stripped), and
+    // "ASP.NET" alone (without "Core") normalizes to two short words that
+    // don't reach dotnet/aspnetcore's exact- or fuzzy-match thresholds.
+    net: "Yes — Braxton has .NET experience from his TaskFlow project, an ASP.NET Core Web API deployed live on Azure App Service.",
+
+    aspnet:
+      "Yes — Braxton has ASP.NET Core experience from his TaskFlow project, a Web API built in Onion Architecture with a fully separate Domain, Application, Infrastructure, and Api layer.",
+
+    azure:
+      "Yes — Braxton has Azure experience from his TaskFlow project, deployed live on Azure App Service with a GitHub Actions CI/CD pipeline.",
+
+    azureappservice:
+      "Yes — Braxton has Azure App Service experience from his TaskFlow project, a live ASP.NET Core API running on Azure App Service (Linux).",
+
+    azuredevops:
+      "Braxton designed TaskFlow's pipeline for Azure DevOps first, but hit an Azure AD Conditional Access policy blocking Azure DevOps sign-in entirely on his university's tenant. He diagnosed it and rebuilt the pipeline in GitHub Actions instead — the original Azure Pipelines YAML is still in the repo, and the full story is in TaskFlow's Field Notes.",
+
+    azurepolicy:
+      "Yes — Braxton has hands-on Azure Policy experience from his TaskFlow project, where he had to read a policy assignment's raw allowed-locations parameter directly to work around an undocumented region restriction.",
+
+    conditionalaccess:
+      "Yes — Braxton has direct experience diagnosing Azure AD Conditional Access restrictions from his TaskFlow project, which silently blocked Azure DevOps sign-in across every device tied to his school account.",
+
+    cicd:
+      "Yes — Braxton has CI/CD pipeline design experience from his TaskFlow project (GitHub Actions, plus an originally-designed Azure Pipelines YAML) and this portfolio's own deployment.",
+
+    devops:
+      "Yes — Braxton has DevOps experience from his TaskFlow project: designing a CI/CD pipeline, diagnosing Azure governance restrictions, and recovering from a production quota-exhaustion incident.",
+
+    testing:
+      "Yes — Braxton has automated testing experience from his TaskFlow project: a unit test suite that proves the domain's business rules against an in-memory fake repository, never touching a real database.",
+
+    unittesting:
+      "Yes — Braxton has unit testing experience from his TaskFlow project, testing the Application layer against an in-memory fake repository instead of a real database.",
+
+    quota:
+      "Yes — Braxton has firsthand experience diagnosing an Azure App Service quota exhaustion on his TaskFlow project: a crash-loop burned through the Free tier's daily compute quota and auto-disabled the site until it reset.",
+
+    region:
+      "Yes — Braxton has experience working around Azure region restrictions on his TaskFlow project, where he had to read a policy assignment's raw allowed-locations parameter to find a region his subscription could actually deploy into.",
   },
 
   about: {
@@ -410,6 +495,13 @@ const SKILL_PHRASES: { phrase: string; skillName: string }[] = [
   { phrase: "Strategic Planning", skillName: "Strategic Planning" },
   { phrase: "Workflow Optimization", skillName: "Workflow Optimization" },
   { phrase: "MVC Architecture", skillName: "MVC Architecture" },
+  { phrase: "C#", skillName: "C# & ASP.NET Core" },
+  { phrase: "ASP.NET Core", skillName: "C# & ASP.NET Core" },
+  { phrase: "Onion Architecture", skillName: "Onion / Clean Architecture" },
+  { phrase: "Azure App Service", skillName: "Azure App Service & CI/CD Pipelines" },
+  { phrase: "Azure Policy", skillName: "Cloud Governance & Policy Troubleshooting" },
+  { phrase: "Conditional Access", skillName: "Cloud Governance & Policy Troubleshooting" },
+  { phrase: "GitHub Actions", skillName: "Azure App Service & CI/CD Pipelines" },
 ];
 
 const SKILL_TERMS: LinkTerm[] = SKILL_PHRASES.flatMap(({ phrase, skillName }) => {
@@ -518,7 +610,11 @@ function editDistance(a: string, b: string): number {
 }
 
 const MAX_PHRASE_WORDS = 3;
-const MAX_MATCHES = 3;
+// High enough that pasting a whole tech-stack tagline ("C# • ASP.NET Core •
+// Onion Architecture • EF Core • Azure App Service • GitHub Actions") still
+// surfaces every topic instead of the first 3 crowding out the rest - a
+// focused single-topic question naturally never comes close to this cap.
+const MAX_MATCHES = 8;
 
 /** Finds up to MAX_MATCHES knowledge-base answers for a user message: exact
  * phrase matches first (checked as contiguous 1-3 word runs, squashed, so
