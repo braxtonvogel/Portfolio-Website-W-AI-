@@ -74,9 +74,21 @@ export default function CustomCursor() {
     };
     const onUp = () => dot.classList.remove(styles.down);
 
+    // An <iframe> (the resume/cover-letter viewer) is a separate document -
+    // once the pointer crosses into it, mousemove stops reaching this page
+    // entirely, so the dot would otherwise freeze at its last position
+    // instead of following the pointer back to the OS cursor. The parent
+    // page still sees the moment the pointer lands ON the iframe element
+    // itself (that's a normal mouseover within this document), so that's
+    // the last reliable signal to hide the dot before events go dark.
+    const onOver = (e: MouseEvent) => {
+      if (e.target instanceof HTMLIFrameElement) hide();
+    };
+
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mousedown", onDown, { passive: true });
     window.addEventListener("mouseup", onUp, { passive: true });
+    document.addEventListener("mouseover", onOver, { passive: true });
     // clicking off to another window: hide, and drop any stuck "down" state
     window.addEventListener("blur", hide);
     document.addEventListener("mouseleave", hide);
@@ -87,6 +99,7 @@ export default function CustomCursor() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);
       window.removeEventListener("mouseup", onUp);
+      document.removeEventListener("mouseover", onOver);
       window.removeEventListener("blur", hide);
       document.removeEventListener("mouseleave", hide);
     };
