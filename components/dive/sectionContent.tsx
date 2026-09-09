@@ -53,6 +53,46 @@ function ProjectsPanel() {
   );
 }
 
+/** The Education panel's own "Clubs" toggle - starts closed, so nothing about
+ * the panel's default appearance changes; clicking it reveals the BASH club
+ * blurb in place. Its own component (not inline JSX in the switch below)
+ * purely because it's the one panel besides Projects that needs state. */
+function EducationPanel() {
+  const [showClubs, setShowClubs] = useState(false);
+
+  return (
+    <>
+      <h2 className={styles.secTitle}>Education</h2>
+      <p className={styles.lead}>Sam Houston State University &mdash; SHSU</p>
+      <p className={styles.secBody}>
+        Bachelor of Science in Software Engineering, Huntsville, Texas. Built through independent projects,
+        collaborative coursework, and self-driven exploration outside the classroom.
+      </p>
+      <div className={styles.pills}>
+        <button
+          type="button"
+          aria-expanded={showClubs}
+          onClick={() => setShowClubs((v) => !v)}
+          className="px-7 py-2.5 border border-cyan-400 rounded-full bg-cyan-500/10 text-cyan-300 font-medium hover:bg-cyan-500/20 transition shadow-[0_0_20px_rgba(56,189,248,0.3)]"
+        >
+          Clubs
+        </button>
+        <span className={styles.pill}>Major GPA 3.6</span>
+        <span className={styles.pill}>2024 &ndash; Present</span>
+      </div>
+      {showClubs && (
+        <div className="mt-1">
+          <p className={styles.lead}>SHSU BASH Club</p>
+          <p className={styles.secBody}>
+            A hands-on Linux club; setting up and administering virtual machines, practicing penetration testing in
+            a safe, sandboxed environment, and furthering my understanding of computer architecture along the way.
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+
 function submitContact(e: React.FormEvent<HTMLFormElement>) {
   e.preventDefault();
   const form = e.currentTarget;
@@ -81,21 +121,7 @@ function submitContact(e: React.FormEvent<HTMLFormElement>) {
 export function getSectionContent(section: Section, renderPdf: boolean): React.ReactNode {
   switch (section) {
     case "education":
-      return (
-        <>
-          <h2 className={styles.secTitle}>Education</h2>
-          <p className={styles.lead}>Sam Houston State University &mdash; SHSU</p>
-          <p className={styles.secBody}>
-            Bachelor of Science in Software Engineering, Huntsville, Texas. Built through independent projects,
-            collaborative coursework, and self-driven exploration outside the classroom.
-          </p>
-          <div className={styles.pills}>
-            <span className={styles.pill}>General GPA 3.4</span>
-            <span className={styles.pill}>Major GPA 3.6</span>
-            <span className={styles.pill}>2024 &ndash; Present</span>
-          </div>
-        </>
-      );
+      return <EducationPanel />;
     case "certifications":
       return (
         <>
