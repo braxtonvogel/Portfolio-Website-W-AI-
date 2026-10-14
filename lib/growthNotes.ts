@@ -20,7 +20,7 @@ export const growthNotes: GrowthNote[] = [
     topic: "Software Architecture",
     person: "Jeffrey Palermo",
     description:
-      "Starting an unofficial mentorship with Jeffrey Palermo, who's been helping me grow as a developer. These are my notes from our first round of discussions on software architecture: architectural styles and patterns, how to choose an architecture, embedded/edge computing, and why markups matter before starting a project.",
+      "Starting a mentorship with Jeffrey Palermo, who's been helping me grow as a developer. These are my notes from our first round of discussions on software architecture: architectural styles and patterns, how to choose an architecture, embedded/edge computing, and why markups matter before starting a project.",
     pdf: "/growth-notes/software-architecture-notes.pdf",
   },
   {

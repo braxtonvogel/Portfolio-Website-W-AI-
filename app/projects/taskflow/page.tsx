@@ -114,7 +114,7 @@ export default function TaskFlowProject() {
           <div className={styles.chapterGrid}>
             <motion.p {...fadeUp(reducedMotion)} className={styles.body}>
               TaskFlow is a small ASP.NET Core Web API — a task/project tracker — built to demonstrate
-              Onion Architecture (the layering pattern originated by Jeffrey Palermo, CTO of Clear
+              Onion Architecture (the layering pattern originated by Jeffrey Palermo, founder of Clear
               Measure) and a real deployment pipeline to Azure. The functionality itself is
               intentionally minimal; the point is the architecture and delivery pipeline around it.
             </motion.p>
