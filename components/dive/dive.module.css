@@ -351,6 +351,30 @@
 .pills { display: flex; flex-wrap: wrap; gap: 10px; }
 .pill { display: inline-block; padding: 8px 16px; border-radius: 999px; border: 1px solid #52525b; color: #d4d4d8; font-size: 15px; background: rgba(255,255,255,0.06); }
 
+/* the Experience panel's timeline rail: a glowing node for the current role,
+   a line that fades down the left edge, and a dashed node at the end for
+   whatever role comes next. Everything inside is the ordinary lead/body/pills,
+   so a second role is just another entry above or below on the same rail. */
+.rail { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 0 0 38px 38px; }
+.rail::before {
+  content: ""; position: absolute; left: 12px; top: 12px; bottom: 16px; width: 2px;
+  background: linear-gradient(to bottom, #67e8f9, rgba(103,232,249,0.45) 60%, rgba(103,232,249,0.18));
+}
+.railNode {
+  position: absolute; left: 5px; top: 4px; width: 16px; height: 16px; border-radius: 50%;
+  background: #67e8f9; box-shadow: 0 0 14px #38bdf8, 0 0 0 5px rgba(103,232,249,0.18);
+}
+.railNodeNext {
+  position: absolute; left: 6px; bottom: 4px; width: 14px; height: 14px; border-radius: 50%;
+  border: 1px dashed rgba(103,232,249,0.6);
+}
+@media (max-width: 767px) {
+  .rail { padding-left: 32px; }
+  .rail::before { left: 10px; }
+  .railNode { left: 3px; }
+  .railNodeNext { left: 4px; }
+}
+
 /* the Projects panel's type filter - starts on "All" (see ProjectsPanel in
    sectionContent.tsx), so the default view is unchanged from before this
    existed; picking Personal/Class just narrows the grid below it. */

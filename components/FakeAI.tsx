@@ -12,6 +12,11 @@ type Message = {
   content: string;
 };
 
+const APPRENTICESHIP_ANSWER =
+  "Since October 2026 Braxton has been a part-time Software Engineer Apprentice at Clear Measure, Inc., on a flexible schedule, working on software engineering tasks assigned directly by Jeffrey Palermo. You can see it on the Experience floor.";
+const MENTORSHIP_ANSWER =
+  "Braxton has been mentored by Jeffrey Palermo since September 2026. His notes from their discussions on software architecture are on the Early Dev floor.";
+
 /* ================= KNOWLEDGE BASE ================= */
 const knowledgeBase = {
   languages: {
@@ -414,6 +419,20 @@ const knowledgeBase = {
     shsu: "Braxton attends Sam Houston State University (SHSU) in Huntsville, Texas.",
     degree: "Braxton is pursuing a Bachelor of Science in Software Engineering.",
 
+    experience: APPRENTICESHIP_ANSWER,
+    apprenticeship: APPRENTICESHIP_ANSWER,
+    apprentice: APPRENTICESHIP_ANSWER,
+    internship: APPRENTICESHIP_ANSWER,
+    job: APPRENTICESHIP_ANSWER,
+    employment: APPRENTICESHIP_ANSWER,
+    employer: APPRENTICESHIP_ANSWER,
+    clearmeasure: APPRENTICESHIP_ANSWER,
+
+    mentor: MENTORSHIP_ANSWER,
+    mentorship: MENTORSHIP_ANSWER,
+    palermo: MENTORSHIP_ANSWER,
+    jeffrey: MENTORSHIP_ANSWER,
+
     certification: `Yes — Braxton holds the ${certifications.map((c) => c.title).join(", ")}. You can view it on the Certifications page.`,
     certifications: `Yes — Braxton holds the ${certifications.map((c) => c.title).join(", ")}. You can view it on the Certifications page.`,
     certificate: `Yes — Braxton holds the ${certifications.map((c) => c.title).join(", ")}. You can view it on the Certifications page.`,
@@ -421,7 +440,7 @@ const knowledgeBase = {
 };
 
 const FALLBACK =
-  "That topic isn't explicitly listed, but I can help with his skills, projects, education, certifications, or how to get in touch.";
+  "That topic isn't explicitly listed, but I can help with his skills, projects, education, experience, certifications, or how to get in touch.";
 
 /* ================= LINKIFYING PROJECT/CERT/SKILL MENTIONS =================
  * The chat only ever says one of a small, fixed set of sentences (the

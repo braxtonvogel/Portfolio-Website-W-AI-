@@ -21,7 +21,7 @@ import { getSectionContent } from "./sectionContent";
 import { useDescent } from "./useDescent";
 import Backdrop, { type BackdropHandle } from "./Backdrop";
 
-const CENTERED_SECTIONS: Section[] = ["education", "certifications"];
+const CENTERED_SECTIONS: Section[] = ["education", "experience", "certifications"];
 
 /** Gap between one monolith's reveal/burst and the next one's. Six of them
  * at 60ms is a 300ms spread - long enough that they visibly peel off the

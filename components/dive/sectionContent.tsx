@@ -122,6 +122,28 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
   switch (section) {
     case "education":
       return <EducationPanel />;
+    case "experience":
+      return (
+        <>
+          <h2 className={styles.secTitle}>Experience</h2>
+          <div className={styles.rail}>
+            <span className={styles.railNode} aria-hidden="true" />
+            <p className={styles.lead}>Software Engineer Apprentice</p>
+            <p className={styles.secBody}>
+              Clear Measure, Inc. A flexible-schedule apprenticeship, working on software engineering tasks assigned
+              directly by Jeffrey Palermo.
+            </p>
+            <div className={styles.pills}>
+              <span className={styles.pill}>Oct 2026 &ndash; Present</span>
+              <span className={styles.pill}>Part-time</span>
+            </div>
+            <ViewTransitionLink href="/early-development" className="text-white underline text-lg">
+              View the mentorship notes &rarr;
+            </ViewTransitionLink>
+            <span className={styles.railNodeNext} aria-hidden="true" />
+          </div>
+        </>
+      );
     case "certifications":
       return (
         <>

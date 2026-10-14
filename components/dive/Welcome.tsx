@@ -126,7 +126,7 @@ export default function Welcome({
 
             <h2 className="text-3xl font-bold mb-1">About Me</h2>
             <p className="text-cyan-300 text-xs uppercase tracking-wider mb-6">
-              Currently: coursework &amp; this portfolio &mdash; a new project is coming soon
+              Currently: apprenticing at Clear Measure, coursework &amp; this portfolio &mdash; a new project is coming soon
             </p>
 
             <p className="text-zinc-300 leading-relaxed mb-6">

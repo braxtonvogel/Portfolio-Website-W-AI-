@@ -1,12 +1,13 @@
-export type Section = "education" | "certifications" | "early" | "projects" | "skills" | "contact";
+export type Section = "education" | "experience" | "certifications" | "early" | "projects" | "skills" | "contact";
 
 /** The one list to extend: each entry becomes a floor of the descent, top to
  * bottom. Add a section here (plus its content in sectionContent.tsx) and
  * every placement, nav link, dot and depth marker follows. */
-export const SECTION_ORDER: Section[] = ["education", "certifications", "early", "projects", "skills", "contact"];
+export const SECTION_ORDER: Section[] = ["education", "experience", "certifications", "early", "projects", "skills", "contact"];
 
 export const SECTION_LABELS: Record<Section, string> = {
   education: "Education",
+  experience: "Experience",
   certifications: "Certifications",
   early: "Early Dev",
   projects: "Projects",
