@@ -3,11 +3,11 @@
 import Navbar, { type NavItem } from "@/components/Navbar";
 import { SECTION_LABELS, SECTION_ORDER, type Section } from "./sections";
 
-/** Only rendered once the dive-in has landed in the space - there's nothing to
- * navigate to from the welcome page, so it stays hidden until then. Links come
- * straight from SECTION_ORDER so a new floor shows up here automatically.
- * The bar itself is the shared site Navbar; these entries drive the camera
- * instead of routing. */
+/** Shown from first paint so visitors can skip the intro and jump to a floor.
+ * On the welcome screen, onGo runs the dive and lands on that section; once
+ * in the space it drives the camera. Links come straight from SECTION_ORDER
+ * so a new floor shows up here automatically. The bar itself is the shared
+ * site Navbar. */
 export default function Nav({
   active,
   onHome,

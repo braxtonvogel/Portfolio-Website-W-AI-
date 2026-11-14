@@ -239,7 +239,10 @@ export default function Home() {
 
   return (
     <main className="relative isolate overflow-hidden bg-black text-white min-h-[100dvh]">
-      {view === "space" && <Nav active={active} onHome={goHome} onGo={go} />}
+      {/* Always mounted so visitors can skip the intro and jump to any floor
+       * before diving. onGo already routes welcome clicks through dive(section),
+       * which mounts the world and lands on that floor once boot finishes. */}
+      <Nav active={active} onHome={goHome} onGo={go} />
 
       {view === "welcome" && (
         <Welcome
