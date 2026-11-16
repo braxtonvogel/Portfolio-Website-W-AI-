@@ -114,6 +114,20 @@ export default function EarlyDevelopmentPage() {
                   />
                 </div>
               )}
+              {!note.pdf && note.preview && (
+                <div className="w-full lg:w-[320px] h-[420px] flex-shrink-0 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner bg-white">
+                  <div className="h-full px-[18px] py-[22px] bg-white text-[#18181b] font-[Arial,Helvetica,sans-serif]">
+                    <p className="m-0 mb-3 text-[13px] font-bold tracking-[-0.02em] leading-normal">{note.preview.title}</p>
+                    {note.preview.byline && <p className="m-0 text-[10px] leading-normal text-[#71717a]">{note.preview.byline}</p>}
+                    {note.preview.sections.map((s) => (
+                      <div key={s.heading}>
+                        <p className="mt-[10px] mb-[2px] text-[10px] font-bold leading-normal text-[#18181b]">{s.heading}</p>
+                        <p className="m-0 text-[10px] leading-[1.4] text-[#71717a]">{s.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         ))}
