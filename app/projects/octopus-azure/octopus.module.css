@@ -32,11 +32,12 @@
 /* groups a layer with the arrow after it for React's sake only; the layer and
    the arrow lay out as direct items of the stack */
 .pipeStep { display: contents; }
-.pipeDesc { overflow-wrap: anywhere; }
-.liveLink {
-  color: var(--accent); font-family: var(--font-mono, monospace); text-decoration: none; overflow-wrap: anywhere;
-}
-.liveLink:hover { text-decoration: underline; }
+/* line-height normal on the 13px desc and arrow, as in the markup; otherwise
+   they inherit the site-wide 1.5 and each box/connector grows 4px */
+.pipeDesc.pipeDesc { overflow-wrap: anywhere; line-height: normal; }
+.pipeArrow.pipeArrow { line-height: normal; }
+/* plain layer body text (Arial 13px), underlined, accent like the markup */
+.liveLink { color: var(--accent); text-decoration: underline; overflow-wrap: anywhere; }
 .arrowRight { display: none; }
 
 @media (min-width: 641px) {
@@ -60,7 +61,7 @@
 .flipSnaps { display: none; }
 
 @media (prefers-reduced-motion: no-preference) {
-  .flipTrack { position: relative; height: 600vh; }
+  .flipTrack { position: relative; height: 900vh; }
 
   /* No transform-style: preserve-3d: stacking stays flat, so z-index alone
      keeps the lifting card painted over the stack while perspective still
@@ -70,7 +71,7 @@
     position: sticky; top: 80px; z-index: 5;
     max-width: 1080px; margin: 0 auto; padding: 0 24px;
     height: var(--flip-card-h, 555px);
-    perspective: 900px; perspective-origin: 50% 0%;
+    perspective: 2800px; perspective-origin: 50% 0%;
   }
 
   /* Resting stack, before the scroll handler takes over (it writes the same
@@ -80,6 +81,8 @@
     height: calc(var(--flip-card-h, 555px) - 30px);
     max-width: none; margin: 0; padding: 0;
     transform-origin: top center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     transform: translateY(calc(var(--i, 0) * 6px)) scale(0.96);
     z-index: calc(6 - var(--i, 0));
     pointer-events: none;
@@ -95,6 +98,10 @@
     background-image: linear-gradient(var(--flip-tint), var(--flip-tint));
   }
   .flipStage .flipCard .flipInner { height: 100%; overflow-y: auto; }
+  /* markup line-heights for the first row: the kicker's line box would
+     otherwise take the inherited 24px strut and the card grows 5px */
+  .flipStage .flipHead { line-height: normal; }
+  .flipStage .flipHead > span { line-height: 18px; }
 
   /* snap markers: one per hold start (p = k/6) plus the end (p = 1) */
   .flipSnaps { display: block; position: absolute; inset: 0; pointer-events: none; }
@@ -105,8 +112,8 @@
   }
 
   @media (max-width: 768px) {
-    .flipTrack { height: 420vh; }
-    .flipStage { top: 68px; padding: 0 16px; }
+    .flipTrack { height: 630vh; }
+    .flipStage { top: 68px; padding: 0 16px; perspective: 5600px; }
     .flipSnap { scroll-margin-top: 68px; }
   }
 

@@ -312,7 +312,7 @@ function FlipStage() {
           opacity = "0";
         } else if (i === f) {
           transform = lift(e, phone);
-          const op = e > 0.7 ? 1 - (e - 0.7) / 0.3 : 1;
+          const op = Math.max(0, 1 - (e - 0.4) / 0.45);
           opacity = fx(op);
           zIndex = "20"; // above the whole stack for the entire swing
           pointerEvents = op < 0.05 ? "none" : "auto";
