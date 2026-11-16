@@ -14,6 +14,18 @@ export interface GrowthNote {
 
 export const growthNotes: GrowthNote[] = [
   {
+    slug: "octopus-azure",
+    title: "Octopus + Azure: Shipping a .NET 11 App",
+    date: "Nov 2026",
+    person: "Jeffrey Palermo",
+    topic: "DevOps",
+    description:
+      "A .NET 11 Razor Pages app, backed by EF Core and Azure SQL, shipped through a real CI/CD path. GitHub Actions builds the container and pushes it to GHCR; Octopus Deploy releases it to Azure Container Apps.",
+    href: "/projects/octopus-azure",
+    linkLabel: "Read the case study",
+    // no pdf key until a real PDF exists
+  },
+  {
     slug: "software-architecture-notes",
     title: "Software Architecture Notes",
     date: "Sept 2026",

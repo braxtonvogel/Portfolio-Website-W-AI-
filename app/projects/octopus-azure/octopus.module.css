@@ -1,0 +1,117 @@
+/* Octopus + Azure case study. Everything visual comes from
+   ../taskflow/taskflow.module.css; this file only holds the rules that page
+   doesn't have: the sticky flip stage (S4-S9), the desktop pipeline row,
+   focus rings, and a few spacing values. No new colors, fonts or easings.
+
+   Selectors that have to beat a TaskFlow class are doubled (.a.a / .a .b) so
+   the result doesn't depend on which CSS module the bundler emits first. */
+
+/* overflow-x: hidden (TaskFlow's .page) would make the page root a scroll
+   container and the sticky stage would stick to it instead of the viewport.
+   clip keeps the same "no sideways scroll" without creating one. */
+.root.root { overflow-x: clip; }
+
+.root h1,
+.root h2 { line-height: normal; }
+
+/* ============ FOCUS ============ */
+.focusRing:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ============ HERO ============ */
+.badgeMeta.badgeMeta { color: var(--text-soft); border-color: var(--border-strong); background: transparent; }
+
+/* ============ COPY SPACING ============ */
+.body { margin: 16px 0 0; }
+.stackWrap { margin-top: 28px; }
+.urlLine { margin: 12px 0 0; }
+.urlLine a { color: var(--accent); text-decoration: underline; }
+.urlLine code { overflow-wrap: anywhere; }
+.plainCode { font-family: var(--font-mono, monospace); }
+
+/* ============ PIPELINE (S2) ============ */
+/* groups a layer with the arrow after it for React's sake only; the layer and
+   the arrow lay out as direct items of the stack */
+.pipeStep { display: contents; }
+.pipeDesc { overflow-wrap: anywhere; }
+.liveLink {
+  color: var(--accent); font-family: var(--font-mono, monospace); text-decoration: none; overflow-wrap: anywhere;
+}
+.liveLink:hover { text-decoration: underline; }
+.arrowRight { display: none; }
+
+@media (min-width: 641px) {
+  .pipeline.pipeline { flex-direction: row; flex-wrap: nowrap; gap: 8px; align-items: stretch; }
+  .pipeline .pipeLayer { flex: 1 1 0; min-width: 0; }
+  .pipeline .pipeArrow { flex: 0 0 auto; align-self: center; padding: 0 4px; }
+  .arrowRight { display: inline; }
+  .arrowDown { display: none; }
+}
+
+/* ============ LIVE DOT ============ */
+@media (prefers-reduced-motion: reduce) {
+  .dot.dot { animation: none; }
+}
+
+/* ============ STICKY FLIP (S4-S9) ============
+   Outside the media query below these are ordinary TaskFlow chapters, which
+   is the reduced-motion layout - and because that's plain CSS it's already
+   correct before hydration. */
+.flipBg { background: var(--flip-tint); }
+.flipSnaps { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .flipTrack { position: relative; height: 600vh; }
+
+  /* No transform-style: preserve-3d: stacking stays flat, so z-index alone
+     keeps the lifting card painted over the stack while perspective still
+     applies to it. No overflow here either - the card swings out past the
+     stage's box on its way up and must not be clipped by it. */
+  .flipStage {
+    position: sticky; top: 80px; z-index: 5;
+    max-width: 1080px; margin: 0 auto; padding: 0 24px;
+    height: var(--flip-card-h, 555px);
+    perspective: 900px; perspective-origin: 50% 0%;
+  }
+
+  /* Resting stack, before the scroll handler takes over (it writes the same
+     values inline): card 0 on top, the rest tucked 6px apiece beneath it. */
+  .flipStage .flipCard {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: calc(var(--flip-card-h, 555px) - 30px);
+    max-width: none; margin: 0; padding: 0;
+    transform-origin: top center;
+    transform: translateY(calc(var(--i, 0) * 6px)) scale(0.96);
+    z-index: calc(6 - var(--i, 0));
+    pointer-events: none;
+  }
+  .flipStage .flipCard:first-child { transform: none; z-index: 20; pointer-events: auto; }
+  .flipStage .flipCard.isActive { will-change: transform, opacity; }
+
+  /* opaque page background under the usual translucent panel tint, so the
+     stacked cards don't show through one another */
+  .flipStage .flipCard .flipBg {
+    inset: 0;
+    background-color: var(--bg);
+    background-image: linear-gradient(var(--flip-tint), var(--flip-tint));
+  }
+  .flipStage .flipCard .flipInner { height: 100%; overflow-y: auto; }
+
+  /* snap markers: one per hold start (p = k/6) plus the end (p = 1) */
+  .flipSnaps { display: block; position: absolute; inset: 0; pointer-events: none; }
+  .flipSnap {
+    position: absolute; left: 0; right: 0; height: 1px;
+    top: calc(var(--k) / 6 * (100% - var(--flip-card-h, 555px)));
+    scroll-snap-align: start; scroll-margin-top: 80px;
+  }
+
+  @media (max-width: 768px) {
+    .flipTrack { height: 420vh; }
+    .flipStage { top: 68px; padding: 0 16px; }
+    .flipSnap { scroll-margin-top: 68px; }
+  }
+
+  /* keeps the card's kicker/title clear of the fixed theme toggle */
+  @media (max-width: 767px) {
+    .flipHead { padding-right: 52px; }
+  }
+}

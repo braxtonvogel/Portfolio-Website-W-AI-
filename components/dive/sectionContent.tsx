@@ -180,6 +180,19 @@ export function getSectionContent(section: Section, renderPdf: boolean): React.R
               </div>
               <div className={styles.pdfFrame}>
                 {renderPdf && n.pdf && <iframe src={`${n.pdf}#toolbar=0`} title={`${n.title} preview`} />}
+                {!n.pdf && (
+                  <div className={styles.pdfPlaceholder} aria-hidden="true">
+                    <p className={styles.pdfPlaceholderTitle}>{n.title}</p>
+                    <div className={styles.pdfPlaceholderLine} />
+                    <div className={styles.pdfPlaceholderLine} />
+                    <div className={`${styles.pdfPlaceholderLine} ${styles.pdfPlaceholderShort}`} />
+                    <p className={styles.pdfPlaceholderNote}>Preview · no PDF yet</p>
+                    <div className={styles.pdfPlaceholderLine} />
+                    <div className={`${styles.pdfPlaceholderLine} ${styles.pdfPlaceholderShort}`} />
+                    <div className={styles.pdfPlaceholderLine} />
+                    <div className={`${styles.pdfPlaceholderLine} ${styles.pdfPlaceholderShort}`} />
+                  </div>
+                )}
               </div>
             </div>
           ))}
