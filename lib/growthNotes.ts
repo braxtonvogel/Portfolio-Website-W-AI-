@@ -10,9 +10,41 @@ export interface GrowthNote {
   /** Link out to a fuller page elsewhere on the site (e.g. a project page). Can be combined with `pdf`. */
   href?: string;
   linkLabel?: string; // label for the `href` button - defaults to "View more"
+  /** Text-only stand-in for the PDF preview page when there's no `pdf`. Rendered as plain text. */
+  preview?: { title: string; byline?: string; sections: { heading: string; body: string }[] };
 }
 
 export const growthNotes: GrowthNote[] = [
+  {
+    slug: "octopus-azure",
+    title: "Octopus + Azure: Shipping a .NET 11 App",
+    date: "Nov 2026",
+    person: "Jeffrey Palermo",
+    topic: "DevOps",
+    description:
+      "A .NET 11 Razor Pages app, backed by EF Core and Azure SQL, shipped through a real CI/CD path. GitHub Actions builds the container and pushes it to GHCR; Octopus Deploy releases it to Azure Container Apps.",
+    href: "/projects/octopus-azure",
+    linkLabel: "Read the case study",
+    // no pdf key until a real PDF exists
+    preview: {
+      title: "Octopus + Azure: Shipping a .NET 11 App",
+      byline: "Braxton Vogel",
+      sections: [
+        {
+          heading: "GitOps (Fundamentals, at Scale, Enterprise)",
+          body: "I learned GitOps principles with Argo CD and Argo Rollouts, including progressive delivery. At scale, the work is managing apps across QA, staging, and production, and knowing which version is where. The enterprise course covers multi-tenant Argo CD and preview environments.",
+        },
+        {
+          heading: "Octopus Fundamentals",
+          body: "I learned the Octopus Way and the main building blocks: projects, environments, releases, deployments, runbooks, and variables.",
+        },
+        {
+          heading: "How I applied it",
+          body: "I kept build and release as separate steps. GitHub Actions builds the .NET 11 container and pushes it to GHCR; Octopus creates a release from that image and deploys it to Azure Container Apps.",
+        },
+      ],
+    },
+  },
   {
     slug: "software-architecture-notes",
     title: "Software Architecture Notes",
